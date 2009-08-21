@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>pl.eo.apps.bossa</groupId>
+	<artifactId>foDS</artifactId>
+	<packaging>pom</packaging>
+	<version>3.2-SNAPSHOT</version>
+	<name>foDS</name>
+	<url>http://maven.apache.org</url>
+
+	<modules>
+		<module>fods-client</module>
+		<module>fods-core</module>
+	</modules>
+
+	<developers>
+		<developer>
+			<name>Szalik</name>
+		</developer>
+	</developers>
+	<scm>
+		<url>https://svn.cmsdev.olbrachta.eo.pl/svn/bossa-apps/trunk</url>
+		<connection>scm:svn:https://svn.cmsdev.olbrachta.eo.pl/svn/bossa-apps/trunk</connection>
+		<developerConnection>scm:svn:https://svn.cmsdev.olbrachta.eo.pl/svn/bossa-apps/trunk</developerConnection>
+	</scm>
+	<distributionManagement>
+		<repository>
+			<id>eo-repo</id>
+			<name>release repository</name>
+			<url>ftp://repo.eo.pl/inhouse/</url>
+		</repository>
+		<!-- use the following if you ARE using a snapshot version. -->
+		<snapshotRepository>
+			<id>eo-repo-snapshot</id>
+			<name>release repository-snapshot</name>
+			<url>ftp://repo.eo.pl/inhouse/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<compilerVersion>1.5</compilerVersion>
+					<source>1.5</source>
+					<target>1.5</target>
+					<fork>true</fork>
+					<encoding>utf-8</encoding>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+					<optimize>true</optimize>
+					<debug>true</debug>
+				</configuration>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>hudsonBuild</id>
+			<activation>
+				<property>
+					<name>buildVersion</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<configuration>
+							<finalName>${project.build.directory}/${project.build.finalName}-${buildVersion}</finalName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.5</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+</project>
