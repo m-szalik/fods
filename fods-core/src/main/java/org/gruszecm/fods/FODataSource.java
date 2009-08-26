@@ -255,5 +255,14 @@ public class FODataSource implements DataSource {
 	private void notifyChangeEvent(AbstractChangeEvent event) {
 		eventsSenderThread.notifyChangeEvent(event);
 	}
+
+// ------------------ Methods for JDK6 ---------------------------------------
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		throw new RuntimeException("Not supported.");
+	}
+
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		throw new RuntimeException("Not supported.");
+	}
 }
 
