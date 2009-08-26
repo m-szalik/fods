@@ -17,24 +17,6 @@
 			<name>Szalik</name>
 		</developer>
 	</developers>
-	<scm>
-		<url>https://svn.cmsdev.olbrachta.eo.pl/svn/bossa-apps/trunk</url>
-		<connection>scm:svn:https://svn.cmsdev.olbrachta.eo.pl/svn/bossa-apps/trunk</connection>
-		<developerConnection>scm:svn:https://svn.cmsdev.olbrachta.eo.pl/svn/bossa-apps/trunk</developerConnection>
-	</scm>
-	<distributionManagement>
-		<repository>
-			<id>eo-repo</id>
-			<name>release repository</name>
-			<url>ftp://repo.eo.pl/inhouse/</url>
-		</repository>
-		<!-- use the following if you ARE using a snapshot version. -->
-		<snapshotRepository>
-			<id>eo-repo-snapshot</id>
-			<name>release repository-snapshot</name>
-			<url>ftp://repo.eo.pl/inhouse/</url>
-		</snapshotRepository>
-	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -68,28 +50,13 @@
 			</extension>
 		</extensions>
 	</build>
+	
+	<scm>
+	    <url>svn://jsoftware.org/grucha/fods/trunk</url>
+	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</connection>
+	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</developerConnection>
+	</scm>
 
-	<profiles>
-		<profile>
-			<id>hudsonBuild</id>
-			<activation>
-				<property>
-					<name>buildVersion</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-jar-plugin</artifactId>
-						<configuration>
-							<finalName>${project.build.directory}/${project.build.finalName}-${buildVersion}</finalName>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
