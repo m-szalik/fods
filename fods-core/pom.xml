@@ -20,7 +20,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>pl.eo.apps.bossa</groupId>
+			<groupId>org.gruszecm</groupId>
 			<artifactId>foDS-client</artifactId>
 			<version>3.2-SNAPSHOT</version>
 		</dependency>
