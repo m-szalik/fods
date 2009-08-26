@@ -3,7 +3,7 @@
 	<groupId>org.gruszecm</groupId>
 	<artifactId>foDS</artifactId>
 	<packaging>pom</packaging>
-	<version>3.2</version>
+	<version>3.3-SNAPSHOT</version>
 	<name>foDS</name>
 	<url>http://fods.jsoftware.org</url>
 
@@ -65,9 +65,9 @@
 	</build>
 	
 	<scm>
-	    <url>svn://jsoftware.org/grucha/fods/tags/foDS-3.2</url>
-	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/tags/foDS-3.2</connection>
-	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/tags/foDS-3.2</developerConnection>
+	    <url>svn://jsoftware.org/grucha/fods/trunk</url>
+	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</connection>
+	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</developerConnection>
 	</scm>
 
 
