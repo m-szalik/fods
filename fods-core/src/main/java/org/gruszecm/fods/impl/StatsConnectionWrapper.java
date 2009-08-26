@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.impl;
+package org.gruszecm.fods.impl;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -10,7 +10,8 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Map;
 
-import pl.eo.apps.bossa.fods.stats.StatisticsItem;
+import org.gruszecm.fods.stats.StatisticsItem;
+
 
 public class StatsConnectionWrapper implements Connection {
 	private Connection connection;

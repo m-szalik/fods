@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods;
+package org.gruszecm.fods;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,10 +7,11 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import pl.eo.apps.bossa.fods.dsfactory.DSFactory;
-import pl.eo.apps.bossa.fods.impl.RecovererFactory;
-import pl.eo.apps.bossa.fods.log.LogLevel;
-import pl.eo.apps.bossa.fods.log.Logger;
+import org.gruszecm.fods.dsfactory.DSFactory;
+import org.gruszecm.fods.impl.RecovererFactory;
+import org.gruszecm.fods.log.LogLevel;
+import org.gruszecm.fods.log.Logger;
+
 
 /**
  * 
@@ -134,7 +135,7 @@ public class Configuration {
 
 class DataSourceWithName {
 	private int id;
-	private pl.eo.apps.bossa.fods.dsfactory.DSFactory dsFactory;
+	private org.gruszecm.fods.dsfactory.DSFactory dsFactory;
 	private DataSource dataSource;
 	private String name;
 	

@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.log;
+package org.gruszecm.fods.log;
 
 public enum LogLevel {
 	DEBUG, INFO, WARN, CRITICAL

@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.jmx;
+package org.gruszecm.fods.jmx;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,17 +11,19 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.NotificationEmitter;
 import javax.sql.DataSource;
 
-import pl.eo.apps.bossa.fods.Configuration;
-import pl.eo.apps.bossa.fods.FODataSource;
-import pl.eo.apps.bossa.fods.Recoverer;
-import pl.eo.apps.bossa.fods.client.ChangeEventListener;
-import pl.eo.apps.bossa.fods.client.EventNotification;
-import pl.eo.apps.bossa.fods.event.AbstractChangeEvent;
-import pl.eo.apps.bossa.fods.event.AbstractFailedChangeEvent;
-import pl.eo.apps.bossa.fods.event.IndexChangedChangeEvent;
-import pl.eo.apps.bossa.fods.event.NoMoreDataSourcesChangeEvent;
-import pl.eo.apps.bossa.fods.event.RecoveryChangeEvent;
-import pl.eo.apps.bossa.fods.stats.Statistics;
+import org.gruszecm.fods.Configuration;
+import org.gruszecm.fods.FODataSource;
+import org.gruszecm.fods.Recoverer;
+import org.gruszecm.fods.client.ChangeEventListener;
+import org.gruszecm.fods.client.EventNotification;
+import org.gruszecm.fods.event.AbstractChangeEvent;
+import org.gruszecm.fods.event.AbstractFailedChangeEvent;
+import org.gruszecm.fods.event.IndexChangedChangeEvent;
+import org.gruszecm.fods.event.NoMoreDataSourcesChangeEvent;
+import org.gruszecm.fods.event.RecoveryChangeEvent;
+import org.gruszecm.fods.jmx.FODataSourceConsoleMBean;
+import org.gruszecm.fods.stats.Statistics;
+
 
 /**
  * 

@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.impl;
+package org.gruszecm.fods.impl;
 
 
 public class DefaultSelector extends AbstractSelector  {

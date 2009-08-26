@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods;
+package org.gruszecm.fods;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -7,24 +7,25 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import pl.eo.apps.bossa.fods.client.ChangeEventListener;
-import pl.eo.apps.bossa.fods.client.ext.DatabasesState;
-import pl.eo.apps.bossa.fods.client.ext.Selector;
-import pl.eo.apps.bossa.fods.event.AbstractChangeEvent;
-import pl.eo.apps.bossa.fods.event.DatabaseFiledChangeEvent;
-import pl.eo.apps.bossa.fods.event.IndexChangedChangeEvent;
-import pl.eo.apps.bossa.fods.event.NoMoreDataSourcesChangeEvent;
-import pl.eo.apps.bossa.fods.event.RecoveryCanceledChangeEvent;
-import pl.eo.apps.bossa.fods.event.RecoveryChangeEvent;
-import pl.eo.apps.bossa.fods.event.RecoveryFiledChangeEvent;
-import pl.eo.apps.bossa.fods.impl.RecovererFactory;
-import pl.eo.apps.bossa.fods.impl.StatsConnectionWrapper;
-import pl.eo.apps.bossa.fods.impl.StatsListener;
-import pl.eo.apps.bossa.fods.log.LogLevel;
-import pl.eo.apps.bossa.fods.log.Logger;
-import pl.eo.apps.bossa.fods.log.LoggerWriter;
-import pl.eo.apps.bossa.fods.stats.Statistics;
-import pl.eo.apps.bossa.fods.stats.StatisticsItem;
+import org.gruszecm.fods.client.ChangeEventListener;
+import org.gruszecm.fods.client.ext.DatabasesState;
+import org.gruszecm.fods.client.ext.Selector;
+import org.gruszecm.fods.event.AbstractChangeEvent;
+import org.gruszecm.fods.event.DatabaseFiledChangeEvent;
+import org.gruszecm.fods.event.IndexChangedChangeEvent;
+import org.gruszecm.fods.event.NoMoreDataSourcesChangeEvent;
+import org.gruszecm.fods.event.RecoveryCanceledChangeEvent;
+import org.gruszecm.fods.event.RecoveryChangeEvent;
+import org.gruszecm.fods.event.RecoveryFiledChangeEvent;
+import org.gruszecm.fods.impl.RecovererFactory;
+import org.gruszecm.fods.impl.StatsConnectionWrapper;
+import org.gruszecm.fods.impl.StatsListener;
+import org.gruszecm.fods.log.LogLevel;
+import org.gruszecm.fods.log.Logger;
+import org.gruszecm.fods.log.LoggerWriter;
+import org.gruszecm.fods.stats.Statistics;
+import org.gruszecm.fods.stats.StatisticsItem;
+
 
 /**
  * Failover {@link DataSource}

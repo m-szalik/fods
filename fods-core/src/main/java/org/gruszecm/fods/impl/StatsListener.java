@@ -1,10 +1,11 @@
-package pl.eo.apps.bossa.fods.impl;
+package org.gruszecm.fods.impl;
 
-import pl.eo.apps.bossa.fods.client.ChangeEventListener;
-import pl.eo.apps.bossa.fods.event.AbstractChangeEvent;
-import pl.eo.apps.bossa.fods.event.DatabaseFiledChangeEvent;
-import pl.eo.apps.bossa.fods.event.RecoveryChangeEvent;
-import pl.eo.apps.bossa.fods.stats.Statistics;
+import org.gruszecm.fods.client.ChangeEventListener;
+import org.gruszecm.fods.event.AbstractChangeEvent;
+import org.gruszecm.fods.event.DatabaseFiledChangeEvent;
+import org.gruszecm.fods.event.RecoveryChangeEvent;
+import org.gruszecm.fods.stats.Statistics;
+
 
 public class StatsListener implements ChangeEventListener {
 	private Statistics statistics;

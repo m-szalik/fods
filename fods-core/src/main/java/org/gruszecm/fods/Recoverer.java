@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods;
+package org.gruszecm.fods;
 
 /**
  * 

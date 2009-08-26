@@ -1,7 +1,7 @@
-package pl.eo.apps.bossa.fods.impl;
+package org.gruszecm.fods.impl;
 
-import pl.eo.apps.bossa.fods.Configuration;
-import pl.eo.apps.bossa.fods.Recoverer;
+import org.gruszecm.fods.Configuration;
+import org.gruszecm.fods.Recoverer;
 
 
 /**
@@ -25,7 +25,7 @@ public class RecovererImpl implements Recoverer {
 	}
 	
 	/* (non-Javadoc)
-	 * @see pl.eo.apps.bossa.fods.Recoverer#canRecovery()
+	 * @see org.gruszecm.fods.Recoverer#canRecovery()
 	 */
 	public boolean canRecovery() {
 		if (! configuration.isAutoRecovery()) return false;
@@ -34,14 +34,14 @@ public class RecovererImpl implements Recoverer {
 	}
 	
 	/* (non-Javadoc)
-	 * @see pl.eo.apps.bossa.fods.Recoverer#getRecoveryTimestamp()
+	 * @see org.gruszecm.fods.Recoverer#getRecoveryTimestamp()
 	 */
 	public long getRecoveryTimestamp() {
 		return recoveryTS;
 	}
 
 	/* (non-Javadoc)
-	 * @see pl.eo.apps.bossa.fods.Recoverer#recoveryFailed()
+	 * @see org.gruszecm.fods.Recoverer#recoveryFailed()
 	 */
 	public void recoveryFailed() {
 		if (tryNo < Integer.MAX_VALUE) {

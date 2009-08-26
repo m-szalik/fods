@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods;
+package org.gruszecm.fods;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,10 +6,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import pl.eo.apps.bossa.fods.client.ChangeEventListener;
-import pl.eo.apps.bossa.fods.event.AbstractChangeEvent;
-import pl.eo.apps.bossa.fods.log.LogLevel;
-import pl.eo.apps.bossa.fods.log.Logger;
+import org.gruszecm.fods.client.ChangeEventListener;
+import org.gruszecm.fods.event.AbstractChangeEvent;
+import org.gruszecm.fods.log.LogLevel;
+import org.gruszecm.fods.log.Logger;
+
 
 /**
  * 

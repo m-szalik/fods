@@ -1,7 +1,7 @@
-package pl.eo.apps.bossa.fods.impl;
+package org.gruszecm.fods.impl;
 
-import pl.eo.apps.bossa.fods.client.ext.DatabasesState;
-import pl.eo.apps.bossa.fods.client.ext.Selector;
+import org.gruszecm.fods.client.ext.DatabasesState;
+import org.gruszecm.fods.client.ext.Selector;
 
 public abstract class AbstractSelector implements Selector {
 	protected int currentIndex;

@@ -1,8 +1,9 @@
-package pl.eo.apps.bossa.fods.dsfactory;
+package org.gruszecm.fods.dsfactory;
 
 import javax.sql.DataSource;
 
-import pl.eo.apps.bossa.fods.log.Logger;
+import org.gruszecm.fods.log.Logger;
+
 
 public interface DSFactory {
 	

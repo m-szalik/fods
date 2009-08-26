@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.log;
+package org.gruszecm.fods.log;
 
 import java.util.Collections;
 import java.util.HashSet;

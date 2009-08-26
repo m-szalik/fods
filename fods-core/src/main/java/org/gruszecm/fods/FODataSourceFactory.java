@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods;
+package org.gruszecm.fods;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -14,13 +14,14 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
-import pl.eo.apps.bossa.fods.client.ChangeEventListener;
-import pl.eo.apps.bossa.fods.client.ext.Selector;
-import pl.eo.apps.bossa.fods.dsfactory.JndiDSFactory;
-import pl.eo.apps.bossa.fods.impl.DefaultSelector;
-import pl.eo.apps.bossa.fods.jmx.FODataSourceConsole;
-import pl.eo.apps.bossa.fods.log.Logger;
-import pl.eo.apps.bossa.fods.log.PrintWriterLogEventListener;
+import org.gruszecm.fods.client.ChangeEventListener;
+import org.gruszecm.fods.client.ext.Selector;
+import org.gruszecm.fods.dsfactory.JndiDSFactory;
+import org.gruszecm.fods.impl.DefaultSelector;
+import org.gruszecm.fods.jmx.FODataSourceConsole;
+import org.gruszecm.fods.log.Logger;
+import org.gruszecm.fods.log.PrintWriterLogEventListener;
+
 
 
 /**

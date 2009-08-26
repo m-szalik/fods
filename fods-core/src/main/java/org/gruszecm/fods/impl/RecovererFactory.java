@@ -1,7 +1,7 @@
-package pl.eo.apps.bossa.fods.impl;
+package org.gruszecm.fods.impl;
 
-import pl.eo.apps.bossa.fods.Configuration;
-import pl.eo.apps.bossa.fods.Recoverer;
+import org.gruszecm.fods.Configuration;
+import org.gruszecm.fods.Recoverer;
 
 public class RecovererFactory {
 

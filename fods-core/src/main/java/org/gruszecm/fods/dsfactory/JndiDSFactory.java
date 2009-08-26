@@ -1,12 +1,13 @@
-package pl.eo.apps.bossa.fods.dsfactory;
+package org.gruszecm.fods.dsfactory;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import pl.eo.apps.bossa.fods.log.LogLevel;
-import pl.eo.apps.bossa.fods.log.Logger;
+import org.gruszecm.fods.log.LogLevel;
+import org.gruszecm.fods.log.Logger;
+
 
 public class JndiDSFactory implements DSFactory {
 	private String jndiName;
