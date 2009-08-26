@@ -1,10 +1,11 @@
-package pl.eo.apps.bossa.fods.jmx;
+package org.gruszecm.fods.jmx;
 
 import java.sql.Connection;
 
 import javax.sql.DataSource;
 
-import pl.eo.apps.bossa.fods.stats.Statistics;
+import org.gruszecm.fods.stats.Statistics;
+
 
 
 /**

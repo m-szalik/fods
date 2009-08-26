@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.client.ext;
+package org.gruszecm.fods.client.ext;
 
 public class DatabasesState {
 	private int size;

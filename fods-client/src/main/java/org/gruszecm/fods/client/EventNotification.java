@@ -1,8 +1,9 @@
-package pl.eo.apps.bossa.fods.client;
+package org.gruszecm.fods.client;
 
 import javax.management.Notification;
 
-import pl.eo.apps.bossa.fods.event.AbstractChangeEvent;
+import org.gruszecm.fods.event.AbstractChangeEvent;
+
 
 public class EventNotification extends Notification {
 	private static final long serialVersionUID = -5128253683032137315L;

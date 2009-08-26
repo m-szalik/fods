@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.event;
+package org.gruszecm.fods.event;
 
 
 public class IndexChangedChangeEvent extends AbstractChangeEvent {

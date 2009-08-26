@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.stats;
+package org.gruszecm.fods.stats;
 
 import java.util.Date;
 

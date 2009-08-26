@@ -1,6 +1,6 @@
-package pl.eo.apps.bossa.fods.client;
+package org.gruszecm.fods.client;
 
-import pl.eo.apps.bossa.fods.event.AbstractChangeEvent;
+import org.gruszecm.fods.event.AbstractChangeEvent;
 
 /**
  * 

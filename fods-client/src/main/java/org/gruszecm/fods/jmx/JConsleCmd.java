@@ -1,4 +1,4 @@
-package pl.eo.apps.bossa.fods.jmx;
+package org.gruszecm.fods.jmx;
 
 import java.io.BufferedReader;
 import java.io.IOException;
