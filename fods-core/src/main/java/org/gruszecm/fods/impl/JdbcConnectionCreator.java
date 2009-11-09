@@ -50,7 +50,7 @@ public class JdbcConnectionCreator implements ConnectionCreator {
 		String username = getProperty(properties, "username", null);
 		String password = getProperty(properties, "password", null);
 		this.maxActive = Integer.valueOf(getProperty(properties, "maxactive", "8"));
-		this.maxIdle = Integer.valueOf(getProperty(properties, "maxidle", "8"));
+		this.maxIdle = Integer.valueOf(getProperty(properties, "maxidle", "1"));
 		this.minIdle = Integer.valueOf(getProperty(properties, "minidle", "0"));
 		this.maxWait = Integer.valueOf(getProperty(properties, "maxwait", "-1"));
 		if (maxIdle < minIdle) throw new IllegalArgumentException("maxIdle < minIdle");
@@ -66,6 +66,10 @@ public class JdbcConnectionCreator implements ConnectionCreator {
 			connectionHolders[i] = new ConnectionHolder(jp, conProperties);
 		}
 		this.connectionHolders = connectionHolders;
+		// initialize connections 
+		for(ConnectionHolder ch : connectionHolders) {
+			ch.doCleanup();
+		}
 	}
 	
 	private String getProperty(Properties properties, String key, String defaultValue) {
