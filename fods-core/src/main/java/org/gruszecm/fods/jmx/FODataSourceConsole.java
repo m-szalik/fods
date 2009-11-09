@@ -9,9 +9,8 @@ import java.sql.SQLException;
 import javax.management.MBeanNotificationInfo;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.NotificationEmitter;
-import javax.sql.DataSource;
 
-import org.gruszecm.fods.Configuration;
+import org.gruszecm.fods.ConnectionCreator;
 import org.gruszecm.fods.FODataSource;
 import org.gruszecm.fods.Recoverer;
 import org.gruszecm.fods.client.ChangeEventListener;
@@ -21,7 +20,6 @@ import org.gruszecm.fods.event.AbstractFailedChangeEvent;
 import org.gruszecm.fods.event.IndexChangedChangeEvent;
 import org.gruszecm.fods.event.NoMoreDataSourcesChangeEvent;
 import org.gruszecm.fods.event.RecoveryChangeEvent;
-import org.gruszecm.fods.jmx.FODataSourceConsoleMBean;
 import org.gruszecm.fods.stats.Statistics;
 
 
@@ -57,10 +55,10 @@ public class FODataSourceConsole extends NotificationBroadcasterSupport implemen
 	
 	public String getCurrentDataSourceName() {
 		int ind = currentIndex;
-		if (ind >= ds.getConfiguration().size() || ind<0) {
+		if (ind >= ds.getConnectionCreator().numOfDatabases() || ind<0) {
 			return "";
 		} else {
-			return ds.getConfiguration().getDataSourceName(ind);
+			return ds.getConnectionCreator().getConnectionId(ind);
 		}
 	}
 
@@ -96,24 +94,24 @@ public class FODataSourceConsole extends NotificationBroadcasterSupport implemen
 	}
 	
 	public Boolean isConnectionReadOnly(int index) {
-		DataSource dataSource = ds.getConfiguration().getDataSource(index);
 		try {
-			return Boolean.valueOf(dataSource.getConnection().isReadOnly());
+			Connection con = ds.getConnectionCreator().getConnection(index);
+			return Boolean.valueOf(con.isReadOnly());
 		} catch (SQLException e) {
 			return null;	
 		}
 	}
 	
 	public String test() {
-		Configuration conf = ds.getConfiguration();
+		ConnectionCreator cc = ds.getConnectionCreator();
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		String sql = conf.getTestSql();
+		String sql = ds.getConfiguration().getTestSql();
 		pw.append("Test SQL: ").append(sql).append('\n');
-		for(int i=0; i<conf.size(); i++) {
+		for(int i=0; i<cc.numOfDatabases(); i++) {
 			try {
-				pw.append(conf.getDataSourceName(i)).append(": ");
-				Connection connection = conf.getDataSource(i).getConnection();
+				pw.append(cc.getConnectionId(i)).append(": ");
+				Connection connection = cc.getConnection(i);
 				PreparedStatement statement = connection.prepareStatement(sql);
 				statement.execute();
 				pw.append("OK\n");

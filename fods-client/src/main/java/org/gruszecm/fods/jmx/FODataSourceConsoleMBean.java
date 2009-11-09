@@ -1,6 +1,7 @@
 package org.gruszecm.fods.jmx;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -77,6 +78,7 @@ public interface FODataSourceConsoleMBean {
 	 * @see Connection#isReadOnly()
 	 * @param index
 	 * @return <tt>null<tt> if error ocured while getting {@link Connection}
+	 * @throws SQLException 
 	 */
-	Boolean isConnectionReadOnly(int index);
+	Boolean isConnectionReadOnly(int index) throws SQLException;
 }

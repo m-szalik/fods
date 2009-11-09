@@ -1,21 +1,14 @@
 package org.gruszecm.fods.impl;
 
-import java.sql.Array;
-import java.sql.Blob;
 import java.sql.CallableStatement;
-import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Struct;
 import java.util.Map;
-import java.util.Properties;
 
 import org.gruszecm.fods.stats.StatisticsItem;
 
@@ -192,6 +185,7 @@ public class StatsConnectionWrapper implements Connection {
 	}
 
 	// ------------------ Methods for JDK6 ---------------------------------------
+	/*
 	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
 		throw new RuntimeException("Not supported.");
 	}
@@ -243,5 +237,5 @@ public class StatsConnectionWrapper implements Connection {
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		throw new RuntimeException("Not supported.");
 	}	
-	
+	*/
 }

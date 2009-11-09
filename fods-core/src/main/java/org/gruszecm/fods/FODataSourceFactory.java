@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -16,8 +17,9 @@ import javax.naming.spi.ObjectFactory;
 
 import org.gruszecm.fods.client.ChangeEventListener;
 import org.gruszecm.fods.client.ext.Selector;
-import org.gruszecm.fods.dsfactory.JndiDSFactory;
 import org.gruszecm.fods.impl.DefaultSelector;
+import org.gruszecm.fods.impl.JdbcConnectionCreator;
+import org.gruszecm.fods.impl.JndiConnectionCreator;
 import org.gruszecm.fods.jmx.FODataSourceConsole;
 import org.gruszecm.fods.log.Logger;
 import org.gruszecm.fods.log.PrintWriterLogEventListener;
@@ -37,7 +39,8 @@ public class FODataSourceFactory implements ObjectFactory {
 			boolean loggerDebug = false;
 			boolean jmxOn = true;
 			Reference r = (Reference) obj;
-			
+			ConnectionCreator connectionCreator = null;
+			Properties properties = new Properties();
 			for(Enumeration<RefAddr> en=r.getAll(); en.hasMoreElements();) {
 				RefAddr ra = en.nextElement();
 				if ("testSQL".equalsIgnoreCase(ra.getType())) {
@@ -51,12 +54,11 @@ public class FODataSourceFactory implements ObjectFactory {
 					String filename = ra.getContent().toString().trim();
 					logEventListener = new PrintWriterLogEventListener(new PrintWriter(new FileWriter(filename)));
 				}
-				if ("jndiDataSources".equalsIgnoreCase(ra.getType())) {
-					String[] names = ra.getContent().toString().split(",");
-					int id=0;
-					for(String jndiname : names) {
-						configuration.addDataSource(id++, jndiname, new JndiDSFactory(jndiname));
-					}
+				if ("jndiDataSources".equalsIgnoreCase(ra.getType())) {					
+					connectionCreator = new JndiConnectionCreator();
+				}
+				if ("url".equalsIgnoreCase(ra.getType())) {					
+					connectionCreator = new JdbcConnectionCreator();
 				}
 				if ("debug".equalsIgnoreCase(ra.getType())) {
 					loggerDebug = Boolean.valueOf(ra.getContent().toString()).booleanValue();
@@ -68,12 +70,29 @@ public class FODataSourceFactory implements ObjectFactory {
 				if ("stats".equalsIgnoreCase(ra.getType())) {
 					configuration.setEnableStats(Boolean.valueOf(ra.getContent().toString()).booleanValue());
 				}
+				if ("connectionProperties".equalsIgnoreCase(ra.getType())) {
+					Properties conProperties = new Properties();
+					for(String ps : ra.getContent().toString().split(";")) {
+						String[] cprop = ps.split("=");
+						conProperties.put(cprop[0], cprop[1]);
+					}
+					if (! conProperties.isEmpty()) {
+						properties.put("connectionProperties", conProperties);
+					}
+				}
+				
+				properties.put(ra.getType().toLowerCase(), ra.getContent().toString());
 			} // for
 			logEventListener.setDebug(loggerDebug);
 			Logger logger = new Logger();
 			logger.addLogEventListener(logEventListener);
 			Selector selector = new DefaultSelector();
-			FODataSource ds = new FODataSource(selector, logger, configuration);
+			if (connectionCreator == null) {
+				throw new IllegalArgumentException("Can not determinate database access type. Check configuration file.");
+			}
+			logger.info("Database access is " + connectionCreator.getClass().getSimpleName());
+			connectionCreator.init(logger, properties);
+			FODataSource ds = new FODataSource(selector, logger, connectionCreator, configuration);
 			if (jmxOn) {
 				registerMXBean(ds, name.get(0));
 			}

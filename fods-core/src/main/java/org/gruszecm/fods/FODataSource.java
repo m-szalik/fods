@@ -36,7 +36,7 @@ import org.gruszecm.fods.stats.StatisticsItem;
  */
 public class FODataSource implements DataSource {
 	private static final String NO_MORE_DATASOURCE_MESSAGE = "No more dataSources available!";
-	
+	private ConnectionCreator creator;
 	private Logger logger;
 	private PrintWriter printWriter;
 	private Configuration configuration;
@@ -49,23 +49,29 @@ public class FODataSource implements DataSource {
 	private Selector selector;
 
 	
-	public FODataSource(Selector selector, Logger log, Configuration configuration) {
+	public FODataSource(Selector selector, Logger log, ConnectionCreator connectionCreator, Configuration configuration) {
+		int nodb = connectionCreator.numOfDatabases();
+		this.creator = connectionCreator;
 		this.logger = log;
 		this.selector = selector;
 		this.configuration = configuration;
 		this.printWriter = new PrintWriter(new LoggerWriter(logger));
 		this.eventsSenderThread = new ChangeEventsThread(log);
 		this.eventsSenderThread.start();
-		this.state = new DatabasesState(configuration.size());
+		this.state = new DatabasesState(nodb);
 		this.prevIndex = -1;
 		if (configuration.isEnableStats()) {
-			stats = new Statistics(configuration.size());
+			stats = new Statistics(nodb);
 			addChangeEventListener(new StatsListener(stats));
 		}
 	}
 	
 	public Statistics getStatistics() {
 		return stats;
+	}
+	
+	public ConnectionCreator getConnectionCreator() {
+		return creator;
 	}
 
 	/*
@@ -97,7 +103,7 @@ public class FODataSource implements DataSource {
 	 * @see javax.sql.DataSource#getLoginTimeout()
 	 */
 	public int getLoginTimeout() throws SQLException {
-		return configuration.getDataSource(0).getLoginTimeout();
+		return creator.getLoginTimeout();
 	}
 
 	/*
@@ -114,9 +120,7 @@ public class FODataSource implements DataSource {
 	 */
 	public void setLoginTimeout(int seconds) throws SQLException {
 		checkInit();
-		for(int i=0; i<configuration.size(); i++) {
-			configuration.getDataSource(i).setLoginTimeout(seconds);
-		}
+		creator.setLoginTimeout(seconds);
 	}
 
 	
@@ -133,7 +137,7 @@ public class FODataSource implements DataSource {
 	}
 	
 	private Connection test(int index) throws SQLException {
-		Connection connection = configuration.getDataSource(index).getConnection();
+		Connection connection = creator.getConnection(index);
 		PreparedStatement statement = connection.prepareStatement(configuration.getTestSql());
 		statement.execute();
 		return connection;
@@ -150,19 +154,19 @@ public class FODataSource implements DataSource {
 		// check if try to back
 		if (recoverer != null && recoverer.canRecovery()) {
 			boolean isBroken = false;
-			for(int i = 0; i<configuration.size(); i++) {
+			for(int i = 0; i<creator.numOfDatabases(); i++) {
 				if (! state.isBroken(i)) continue;
-				logger.debug("Checking if the dataSource " + configuration.getDataSourceName(i) + " is back.");
+				logger.debug("Checking if the dataSource " + creator.getConnectionId(i) + " is back.");
 				try { 
 					test(i);
 					notifyChangeEvent(new RecoveryChangeEvent(i));
-					logger.info("DataSource " + configuration.getDataSourceName(i) + " is back. :-)");
+					logger.info("DataSource " + creator.getConnectionId(i) + " is back. :-)");
 					state.clearReason(i);
 					stateChanged = true;
 				} catch (SQLException e) {
 					isBroken = true;
 					notifyChangeEvent(new RecoveryFiledChangeEvent(i, e));
-					logger.debug("DataSource " + configuration.getDataSourceName(i) + " is still broken.");
+					logger.debug("DataSource " + creator.getConnectionId(i) + " is still broken.");
 					recoverer.recoveryFailed();
 					state.setReakReason(i, e);
 					stateChanged = true;
@@ -184,7 +188,7 @@ public class FODataSource implements DataSource {
 					break;
 				}
 			} catch (SQLException e) {
-				logger.log(LogLevel.WARN, "DataSource " + configuration.getDataSourceName(index) + " is broken!", e);
+				logger.log(LogLevel.WARN, "DataSource " + creator.getConnectionId(index) + " is broken!", e);
 				state.setReakReason(index, e);
 				selector.onStateChanged();
 				if (recoverer == null) {
@@ -239,7 +243,7 @@ public class FODataSource implements DataSource {
 		if (index != prevIndex) {
 			try {
 				selector.forceSetIndex(index);
-				logger.info("DataSource set to " + configuration.getDataSourceName(index) + " by user");
+				logger.info("DataSource set to " + creator.getConnectionId(index) + " by user");
 				notifyChangeEvent(new IndexChangedChangeEvent(index, prevIndex));
 				prevIndex = index;
 			} catch (UnsupportedOperationException e) {
