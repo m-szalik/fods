@@ -6,7 +6,13 @@
 	<version>3.3-SNAPSHOT</version>
 	<name>foDS</name>
 	<url>http://fods.jsoftware.org</url>
-
+	<inceptionYear>2008</inceptionYear>
+	<organization>
+	    <name>JSoftware</name>
+	    <url>http://jsoftware.org</url>
+        </organization>
+	<description>Failover DataSource. Add failover database layer to your application without any modification of your code.</description>
+	
 	<modules>
 		<module>fods-client</module>
 		<module>fods-core</module>
