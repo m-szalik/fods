@@ -157,7 +157,7 @@ public class JdbcConnectionCreator implements ConnectionCreator {
 			
 
 		public synchronized Connection getConnection() throws SQLException {
-			Connection connection = null;
+			JdbcWrappedConnection connection = null;
 			if (connections.isEmpty()) {
 				if (borrowedCounter >= maxActive) {
 					throw new SQLException("Can not create more then " + maxActive + " connections to " + jdbcParameter.getDbId() + ".");
@@ -166,7 +166,14 @@ public class JdbcConnectionCreator implements ConnectionCreator {
 				}
 			} else {
 				connection = connections.get(0);
+				if (connection.isClosed()) {
+					removeConnection(connection);
+					connection = createNewConnection();
+				} else {
+					connections.remove(connection);
+				}
 			}
+			borrowedCounter++;
 			return connection;
 		}
 
