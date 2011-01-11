@@ -5,33 +5,31 @@
 	<packaging>pom</packaging>
 	<version>3.3-SNAPSHOT</version>
 	<name>foDS</name>
-	<url>http://fods.jsoftware.org</url>
+	<url>http://jsoftware.org/fods</url>
 	<inceptionYear>2008</inceptionYear>
-	<organization>
-	    <name>JSoftware</name>
-	    <url>http://jsoftware.org</url>
-        </organization>
 	<description>Failover DataSource. Add failover database layer to your application without any modification of your code.</description>
-	
+	<licenses>
+		<license>
+			<name>GPL</name>
+		</license>
+	</licenses>
+	<organization>
+		<name>Jsoftware.org</name>
+		<url>http://www.jsoftware.org</url>
+	</organization>
+	<developers>
+		<developer>
+			<name>Marek Szalik</name>
+			<email>marek.szalik@jsoftware.org</email>
+		</developer>
+	</developers>
+
+
 	<modules>
 		<module>fods-client</module>
 		<module>fods-core</module>
 	</modules>
 
-	<developers>
-	    <developer>	
-		<id>szalik</id>
-		<name>Szalik</name>
-		<email>dev@jsoftware.org</email>
-		<organization>JSoftware</organization>
-		<organizationUrl>http://www.jsoftware.org</organizationUrl>
-		<roles>
-		    <role>architect</role>
-	    	    <role>developer</role>
-		</roles>
-	    </developer>
-	</developers>
-	
 	<properties>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
