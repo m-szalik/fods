@@ -1,0 +1,4 @@
+  FoDS - Fail over dataSource version 3.3
+     Connection creator: %connectionCreator%
+     Database selector:  %databaseSelector%
+  Visit http://jsoftware.org/fods 

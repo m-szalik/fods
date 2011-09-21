@@ -4,7 +4,7 @@
 	<artifactId>foDS-client</artifactId>
 	<packaging>jar</packaging>
 	<name>foDS-client</name>
-	<description>failoverDataSource - client</description>
+	<description>FailoverDataSource - client. Support for statistic informations, remote FoDS management.</description>
 
 	<parent>
 		<groupId>org.jsoftware</groupId>
@@ -20,7 +20,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>pl.eo.apps.bossa.fods.jmx.JConsleCmd</mainClass>
+							<mainClass>org.jsoftware.fods.jmx.JConsleCmd</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
