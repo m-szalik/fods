@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.jsoftware</groupId>
 		<artifactId>foDS</artifactId>
-		<version>3.3-SNAPSHOT</version>
+		<version>3.3</version>
 	</parent>
 
 
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.jsoftware</groupId>
 			<artifactId>foDS-client</artifactId>
-			<version>3.3-SNAPSHOT</version>
+			<version>3.3</version>
 		</dependency>
 	</dependencies>
 
