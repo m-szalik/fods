@@ -1,5 +1,4 @@
-  FoDS - Fail over dataSource information
+  FoDS - Fail over dataSource version ${project.version}
      DataSource name: %fodsName%
-     Databases count: %dbsCount%
      Database selector: %databaseSelector%
   For more details visit: http://jsoftware.org/fods 
