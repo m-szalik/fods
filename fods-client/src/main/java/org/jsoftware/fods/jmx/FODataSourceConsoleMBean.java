@@ -2,12 +2,14 @@ package org.jsoftware.fods.jmx;
 
 import javax.sql.DataSource;
 
+import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.stats.Statistics;
 
 
 
 /**
  * MxBean console for FODataSource.
+ * <p>Allows to manage FoDataSource.</p>
  * @author szalik
  */
 public interface FODataSourceConsoleMBean {
@@ -23,18 +25,30 @@ public interface FODataSourceConsoleMBean {
 	 */
 	String getCurrentDatabaseName();	
 	
-	
 	/**
 	 * Change {@link DataSource} index
 	 * @param index new database
+	 * @return <tt>true</tt> if operation successful.
 	 */
-	void setCurrentDatabaseName(String name);
+	boolean forceSetCurrentDatabaseName(String name);
 	
 	/**
 	 * Test all {@link DataSource}
-	 * @return test raport
+	 * @return test report
 	 */
-	String test();
+	String testRaport();
+	
+	/**
+	 * Test single database
+	 * @param dbName
+	 * @return test result, if <tt>null</tt> no database found
+	 */
+	Boolean test(String dbName);
+	
+	/**
+	 * @return all database names
+	 */
+	String[] getDatabaseNames();
 	
 	/**
 	 * Databases {@link Statistics} or <tt>null</tt> if statistics are disabled.
@@ -42,5 +56,23 @@ public interface FODataSourceConsoleMBean {
 	 */
 	Statistics getStatistics();
 	
+	/**
+	 * Turned off databases sholdn't be used.
+	 * @param dbName
+	 * @return <tt>true</tt> if state changed.
+	 */
+	boolean turnOffDatabase(String dbName);
 	
+	/**
+	 * Turn on database.
+	 * @param dbName
+	 * @return <tt>true</tt> if state changed.
+	 */
+	boolean turnOnDatabase(String dbName);
+	
+	/**
+	 * @param dbName
+	 * @return current database state, <tt>null</tt> if database not found.
+	 */
+	FodsDbState getCurrentDatabaseState(String dbName);
 }

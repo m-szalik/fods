@@ -1,6 +1,9 @@
 package org.jsoftware.fods.client.ext;
 
-
+/**
+ * 
+ * @author szalik
+ */
 public interface Logger {
 	
 	public void info(String msg);

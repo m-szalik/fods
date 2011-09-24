@@ -7,7 +7,6 @@ import javax.management.ObjectName;
 
 /**
  * Fods main configuration for single {@link FODataSource}
- * 
  * @author szalik
  */
 public interface Configuration {

@@ -1,32 +1,41 @@
 package org.jsoftware.fods.client.ext;
 
 
+/**
+ * Single database state.
+ * @author szalik
+ */
 public class FodsDbState {
-
-	public enum STATE {
-		VALID, DISCONNETED, BROKEN
-	}
 	
 	private long brokenTS;
-	private STATE state = STATE.VALID;
+	private FodsDbStateStatus status = FodsDbStateStatus.VALID;
 	
+	/**
+	 * @return number of ms when last database error occurred.
+	 */
 	public long getBrokenTime() {
-		if (state == STATE.BROKEN) {
+		if (status == FodsDbStateStatus.BROKEN) {
 			return System.currentTimeMillis() - brokenTS;
 		}
 		return -1;
 	}
 	
-	public void setState(STATE state) {
-		if (state != this.state && state == STATE.BROKEN) {
+	/**
+	 * <font color="red">Do not use this method.</font>
+	 * @param status
+	 */
+	public void setState(FodsDbStateStatus status) {
+		if (status != this.status && status == FodsDbStateStatus.BROKEN) {
 			brokenTS = System.currentTimeMillis();
 		}
-		this.state = state;
+		this.status = status;
 	}
 	
-	
-	public STATE getState() {
-		return state;
+	/**
+	 * @return current database {@link STATE}
+	 */
+	public FodsDbStateStatus getStatus(){
+		return status;
 	}
 	
 	

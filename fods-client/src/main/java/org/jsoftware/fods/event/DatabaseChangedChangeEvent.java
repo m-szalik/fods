@@ -1,7 +1,13 @@
 package org.jsoftware.fods.event;
 
+import org.jsoftware.fods.jmx.FODataSourceConsoleMBean;
 
-public class DatabaseChangedChangeEvent extends AbstractChangeEvent {
+/**
+ * Invoked on active database changed.
+ * TODO add this event on {@link FODataSourceConsoleMBean#forceSetCurrentDatabaseName(String)} 
+ * @author szalik
+ */
+public class DatabaseChangedChangeEvent extends AbstractFodsEvent {
 	private String from;
 	private boolean userRequest;
 	
