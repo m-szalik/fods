@@ -4,6 +4,11 @@ import org.jsoftware.fods.client.ext.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** 
+ * {@link LogEventListener} thats writes logs to slf4j {@link Logger}
+ * @see DefaultLoggerImpl
+ * @author szalik
+ */
 public class Slf4jLogEventListener implements LogEventListener {
 	private Logger logger;
 

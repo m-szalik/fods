@@ -3,10 +3,11 @@ package org.jsoftware.fods.log;
 import org.jsoftware.fods.client.ext.LogLevel;
 
 /**
- * 
+ * Listener for log entries.
+ * @see DefaultLoggerImpl
  * @author szalik
  */
-public interface LogEventListener {
+interface LogEventListener {
 
 	/**
 	 * @param level

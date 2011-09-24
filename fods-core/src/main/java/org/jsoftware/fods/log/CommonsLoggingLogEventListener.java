@@ -4,7 +4,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoftware.fods.client.ext.LogLevel;
 
-public class CommonsLoggingLogEventListener implements LogEventListener {
+/** 
+ * {@link LogEventListener} thats writes logs to commons logging {@link Log}
+ * @see DefaultLoggerImpl
+ * @author szalik
+ */
+class CommonsLoggingLogEventListener implements LogEventListener {
 	private Log logger;
 	
 	public CommonsLoggingLogEventListener() {

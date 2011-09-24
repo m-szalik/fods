@@ -8,7 +8,8 @@ import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 
 /**
- * 
+ * Default {@link Logger} implementation.
+ * @see DefaultLoggerFactory
  * @author szalik
  */
 public class DefaultLoggerImpl implements Logger {
@@ -56,8 +57,5 @@ public class DefaultLoggerImpl implements Logger {
 			l.add(listener);
 			this.listeners = l;
 		}
-	}
-
-	
-			
+	}			
 }

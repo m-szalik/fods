@@ -7,17 +7,16 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.jsoftware.fods.ChangeEventsThread;
-import org.jsoftware.fods.client.ChangeEventListener;
+import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.FodsDbState;
-import org.jsoftware.fods.client.ext.FodsDbState.STATE;
+import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 import org.jsoftware.fods.client.ext.FodsState;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.client.ext.Selector;
-import org.jsoftware.fods.event.AbstractChangeEvent;
+import org.jsoftware.fods.event.AbstractFodsEvent;
 import org.jsoftware.fods.event.DatabaseChangedChangeEvent;
-import org.jsoftware.fods.event.DatabaseFiledChangeEvent;
+import org.jsoftware.fods.event.DatabaseFiledEvent;
 import org.jsoftware.fods.event.NoMoreDataSourcesChangeEvent;
 import org.jsoftware.fods.event.RecoveryFailedEvent;
 import org.jsoftware.fods.event.RecoveryStartEvent;
@@ -27,11 +26,7 @@ import org.jsoftware.fods.stats.Statistics;
 import org.jsoftware.fods.stats.StatisticsItem;
 
 /**
- * Failover {@link DataSource}
- * <p>
- * Check if primary {@link DataSource} is available if not return next one.
- * </p>
- * 
+ * Fail over {@link DataSource} implementation.
  * @author szalik
  */
 public class FODataSource implements DataSource {
@@ -51,12 +46,7 @@ public class FODataSource implements DataSource {
 			this.eventsSenderThread.start();
 		}
 		if (configuration.isEnableStats()) {
-			if (this.eventsSenderThread == null) {
-				logger.warn("Can not setup stats without events turned on. Set property \"disableEvents\" to false.");
-			} else {
-				stats = new Statistics(configuration.getDatabaseNames());
-				addChangeEventListener(new StatsListener(stats));
-			}
+			stats = new Statistics(configuration.getDatabaseNames());
 		}
 		this.fodsState = new FodsState(configuration.getDatabaseNames()); 
 	}
@@ -147,30 +137,30 @@ public class FODataSource implements DataSource {
 			if (dbname == null) break;
 			FodsDbState dbState = fodsState.getDbstate(dbname);
 			try {
-				if (dbState.getState() == STATE.BROKEN) {
+				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 					notifyChangeEvent(new RecoveryStartEvent(dbname));
 				}
 				Connection con = test(dbname);
-				if (dbState.getState() == STATE.BROKEN) {
+				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 					notifyChangeEvent(new RecoverySucessEvent(dbname));
 				}
-				dbState.setState(STATE.VALID);
+				dbState.setState(FodsDbStateStatus.VALID);
 				if (! dbname.equals(fodsState.getCurrentDatabase())) {
 					notifyChangeEvent(new DatabaseChangedChangeEvent(dbname, fodsState.getCurrentDatabase()));
 					fodsState.setCurrentDatabase(dbname); 
 				}
 				return wrap(con, dbname);
 			} catch (SQLException e) {
-				if (dbState.getState() == STATE.BROKEN) {
+				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 					notifyChangeEvent(new RecoveryFailedEvent(dbname, e));
 				} else {
-					notifyChangeEvent(new DatabaseFiledChangeEvent(dbname, e));
+					notifyChangeEvent(new DatabaseFiledEvent(dbname, e));
 				}
-				dbState.setState(STATE.BROKEN); 
+				dbState.setState(FodsDbStateStatus.BROKEN); 
 			}
 		} while (dbname != null);
 		notifyChangeEvent(new NoMoreDataSourcesChangeEvent());
-		throw new SQLException("No more connections avaialable");
+		throw new SQLException("No more databases avaialable.");
 	}
 
 	private Connection wrap(Connection con, String dbName) {
@@ -184,15 +174,23 @@ public class FODataSource implements DataSource {
 		return connection;
 	}
 
-	public void addChangeEventListener(ChangeEventListener listener) {
+	public void addChangeEventListener(FodsEventListener listener) {
 		if (eventsSenderThread != null) {
 			eventsSenderThread.addChangeEventListener(listener);
 		}
 	}
 
-	private void notifyChangeEvent(AbstractChangeEvent event) {
+	private void notifyChangeEvent(AbstractFodsEvent event) {
 		if (eventsSenderThread != null) {	
 			eventsSenderThread.notifyChangeEvent(event);
+		}
+		if (stats != null) {
+			if (event instanceof RecoverySucessEvent) {
+				stats.getItem(event.getDbname()).addRecovery();
+			}
+			if (event instanceof DatabaseFiledEvent) {
+				stats.getItem(event.getDbname()).addBreak();
+			}
 		}
 	}
 

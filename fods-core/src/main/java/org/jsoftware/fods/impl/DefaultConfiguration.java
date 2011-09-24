@@ -13,16 +13,21 @@ import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.client.ext.Selector;
+import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
+/**
+ * Default implementation of {@link FODataSource}'s {@link Configuration}.
+ * @author szalik
+ */
 public class DefaultConfiguration implements Configuration {
 	private Selector selector;
 	private Logger logger;
 	private String fodsName;
 	private DatabaseConfiguration[] databases;
-	private Properties properties;
+	private PropertiesUtil pu;
 
 	public DefaultConfiguration(Properties main) {
-		properties = main;
+		pu = new PropertiesUtil(main);
 		fodsName = getProperty("fodsName");
 	}
 
@@ -72,27 +77,13 @@ public class DefaultConfiguration implements Configuration {
 	}
 
 	public String getProperty(String key) {
-		String val = properties.getProperty(key);
-		if (val == null) {
-			throw new RuntimeException("Missing property " + key);
-		}
-		return val;
+		return pu.getProperty(key);
 	}
 
 	public String getProperty(String key, Object defaultValue) {
-		String val = properties.getProperty(key);
-		return (val == null) ? (defaultValue == null ? null : defaultValue.toString()) : val;
-
+		return pu.getProperty(key, defaultValue != null ? defaultValue.toString() : null);
 	}
 
-	public int getPropertyAsInt(String key) {
-		return Integer.valueOf(getProperty(key));
-	}
-
-	public int getPropertyAsInt(String key, int defaultValue) {
-		String str = getProperty(key, null);
-		return (str == null) ? defaultValue : Integer.valueOf(str);
-	}
 
 	public boolean isEnableStats() {
 		return Boolean.valueOf(getProperty("statsEnabled", "false"));

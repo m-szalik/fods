@@ -10,14 +10,15 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.sql.DataSource;
 
-import org.jsoftware.fods.client.ChangeEventListener;
+import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.jmx.FODataSourceConsole;
 
 
 
 /**
- * Factory of {@link FODataSource} object
+ * Factory of {@link FODataSource} object.
+ * <p>This is the only way to create {@link FODataSource} object.<p>
  * @author szalik
  */
 public abstract class AbstractDataSourceFactory {
@@ -70,8 +71,8 @@ public abstract class AbstractDataSourceFactory {
 		try {
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer(); 
 			Object bean = new FODataSourceConsole(ds, configuration);
-			if (bean instanceof ChangeEventListener) {
-				ds.addChangeEventListener((ChangeEventListener) bean);
+			if (bean instanceof FodsEventListener) {
+				ds.addChangeEventListener((FodsEventListener) bean);
 			}
 			if (mbs.isRegistered(objectName)) {
 				mbs.unregisterMBean(objectName);
