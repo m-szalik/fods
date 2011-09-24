@@ -9,19 +9,19 @@ import java.io.Serializable;
  */
 public abstract class AbstractChangeEvent implements Serializable {
 	private static final long serialVersionUID = 698999080750942836L;
-	private int index;
+	private String dbname;
 	
-	public AbstractChangeEvent(int index) {
-		this.index = index;
+	public AbstractChangeEvent(String dbname) {
+		this.dbname = dbname;
 	}
 		
-	public int getIndex() {
-		return index;
+	public String getDbname() {
+		return dbname;
 	}
 	
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(index="+index+")";
+		return getClass().getSimpleName() + "(dbname="+dbname+")";
 	}
 		
 }

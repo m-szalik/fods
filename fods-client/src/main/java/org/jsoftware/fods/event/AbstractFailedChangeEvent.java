@@ -8,8 +8,8 @@ package org.jsoftware.fods.event;
 public class AbstractFailedChangeEvent extends AbstractChangeEvent {
 	private Throwable reason;
 	
-	public AbstractFailedChangeEvent(int index, Throwable reason) {
-		super(index);
+	public AbstractFailedChangeEvent(String dbname, Throwable reason) {
+		super(dbname);
 		this.reason = reason;
 	}
 	

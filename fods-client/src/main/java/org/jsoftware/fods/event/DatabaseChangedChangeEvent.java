@@ -1,13 +1,13 @@
 package org.jsoftware.fods.event;
 
 
-public class IndexChangedChangeEvent extends AbstractChangeEvent {
-	private int fromIndex;
+public class DatabaseChangedChangeEvent extends AbstractChangeEvent {
+	private String from;
 	private boolean userRequest;
 	
-	public IndexChangedChangeEvent(int newIndex, int fromIndex) {
-		super(newIndex);
-		this.fromIndex = fromIndex;
+	public DatabaseChangedChangeEvent(String toDbName, String fromDbName) {
+		super(toDbName);
+		this.from = fromDbName;
 	}
 	
 	public boolean isUserRequest() {
@@ -18,19 +18,19 @@ public class IndexChangedChangeEvent extends AbstractChangeEvent {
 		this.userRequest = userRequest;
 	}
 	
-	public int getFromIndex() {
-		return fromIndex;
+	public String getFromDbName() {
+		return from;
 	}
 	
-	public int getToIndex() {
-		return getIndex();
+	public String getToDbName() {
+		return getDbname();
 	}
 		
 	
 	@Override
 	public String toString() {
 		String ur = userRequest ? ",userRequest" : "";
-		return getClass().getSimpleName() + "(index="+fromIndex+" to " + getIndex() + ")" + ur;
+		return getClass().getSimpleName() + "(index="+from+" to " + getDbname() + ")" + ur;
 	}
 
 	private static final long serialVersionUID = -5168363946234877658L;

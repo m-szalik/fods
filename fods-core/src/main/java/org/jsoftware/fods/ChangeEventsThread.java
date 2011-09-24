@@ -7,9 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jsoftware.fods.client.ChangeEventListener;
+import org.jsoftware.fods.client.ext.LogLevel;
+import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.event.AbstractChangeEvent;
-import org.jsoftware.fods.log.LogLevel;
-import org.jsoftware.fods.log.Logger;
 
 
 /**

@@ -10,7 +10,7 @@ public class NoMoreDataSourcesChangeEvent extends AbstractChangeEvent {
 
 
 	public NoMoreDataSourcesChangeEvent() {
-		super(-1);
+		super(null);
 	}
 
 	

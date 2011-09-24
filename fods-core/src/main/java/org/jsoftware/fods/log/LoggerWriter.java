@@ -3,6 +3,9 @@ package org.jsoftware.fods.log;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.jsoftware.fods.client.ext.LogLevel;
+import org.jsoftware.fods.client.ext.Logger;
+
 /**
  * 
  * @author szalik

@@ -1,6 +1,9 @@
 package org.jsoftware.fods.stats;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * FoDS statistics.
@@ -8,28 +11,29 @@ import java.util.Date;
  *
  */
 public class Statistics {
-	private StatisticsItem[] statisticsItems;
+	private Map<String, StatisticsItem> statisticItems;
 	private long startTime;
 	
-	public Statistics(int size) {
+	public Statistics(Collection<String> dbNames) {
 		this.startTime = System.currentTimeMillis();
-		this.statisticsItems = new StatisticsItem[size];
-		for(int i=0; i<statisticsItems.length; i++) {
-			statisticsItems[i] = new StatisticsItem();
+		
+		this.statisticItems = new HashMap<String, StatisticsItem>();
+		for(String name : dbNames) {
+			statisticItems.put(name, new StatisticsItem());
 		}
 	}
 	
-	public StatisticsItem getItem(int index) {
-		return statisticsItems[index];
+	public StatisticsItem getItem(String name) {
+		return statisticItems.get(name);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 		out.append("Statistics - " + new Date(startTime)).append("\n:");
-		for(int i=0; i<statisticsItems.length; i++) {
-			out.append(i).append(": ");
-			out.append(statisticsItems[i].toString());
+		for(String dbn : statisticItems.keySet()) {
+			out.append(dbn).append(": ");
+			out.append(statisticItems.get(dbn).toString());
 			out.append('\n');
 		}
 		return out.toString();

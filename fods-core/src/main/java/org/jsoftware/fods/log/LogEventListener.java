@@ -1,5 +1,7 @@
 package org.jsoftware.fods.log;
 
+import org.jsoftware.fods.client.ext.LogLevel;
+
 /**
  * 
  * @author szalik

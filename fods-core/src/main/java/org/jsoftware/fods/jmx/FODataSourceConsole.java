@@ -10,17 +10,11 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.NotificationEmitter;
 
-import org.jsoftware.fods.ConnectionCreator;
-import org.jsoftware.fods.FODataSource;
-import org.jsoftware.fods.Recoverer;
 import org.jsoftware.fods.client.ChangeEventListener;
 import org.jsoftware.fods.client.EventNotification;
+import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.event.AbstractChangeEvent;
-import org.jsoftware.fods.event.AbstractFailedChangeEvent;
-import org.jsoftware.fods.event.IndexChangedChangeEvent;
-import org.jsoftware.fods.event.NoMoreDataSourcesChangeEvent;
-import org.jsoftware.fods.event.RecoveryChangeEvent;
-import org.jsoftware.fods.jmx.FODataSourceConsoleMBean;
+import org.jsoftware.fods.impl.FODataSource;
 import org.jsoftware.fods.stats.Statistics;
 
 
@@ -30,94 +24,27 @@ import org.jsoftware.fods.stats.Statistics;
  */
 public class FODataSourceConsole extends NotificationBroadcasterSupport implements NotificationEmitter, FODataSourceConsoleMBean, ChangeEventListener {
 	private FODataSource ds;
-	private volatile Throwable lastPrimaryDatabaseFailReason;
-	private int currentIndex = -1;
 	private long notificationSeq;
-	private Boolean currentConnectionReadOnly;
+	private Configuration configuration;
 	
-	public FODataSourceConsole(FODataSource ds) {
+	public FODataSourceConsole(FODataSource ds, Configuration configuration) {
 		this.ds = ds;
+		this.configuration = configuration;
 	}
 
-	public int getBackTime() {
-		return ds.getConfiguration().getBackTime();
-	}
-
-	public int getCurrentDataSourceIndex() {
-		return currentIndex;
-	}
-	
-	public Boolean getCurrentConnectionReadOnly() {
-		if (currentConnectionReadOnly == null && currentIndex >= 0) {
-			currentConnectionReadOnly = isConnectionReadOnly(currentIndex);
-		}
-		return currentConnectionReadOnly;
-	}
-	
-	public String getCurrentDataSourceName() {
-		int ind = currentIndex;
-		if (ind >= ds.getConnectionCreator().numOfDatabases() || ind<0) {
-			return "";
-		} else {
-			return ds.getConnectionCreator().getConnectionId(ind);
-		}
-	}
-
-	public String getLastBrokenReason() {
-		return lastPrimaryDatabaseFailReason != null ? lastPrimaryDatabaseFailReason.toString() : "";
-	}
-
-	public boolean isAutoRecovery() {
-		return ds.getConfiguration().isAutoRecovery();
-	}
-
-	public void setAutoRecovery(boolean b) {
-		ds.getConfiguration().setAutoRecovery(b);
-		if (! b) {
-			ds.cancleCurrentRecoveryProcedure();
-		}
-	}
-	
-	public Integer getNextRecoveryCountdown() {
-		Recoverer r = ds.getRecoverer();
-		if (r != null) {
-			return Integer.valueOf((int)(r.getRecoveryTimestamp() - System.currentTimeMillis()) / 1000);
-		}
-		return null;
-	}
-
-	public void setBackTime(int sec) {
-		ds.getConfiguration().setBackTime(sec);
-	}
-
-	public void setCurrentDataSourceIndex(int index) {
-		ds.changeIndexTo(index);
-	}
-	
-	public Boolean isConnectionReadOnly(int index) {
-		try {
-			Connection con = ds.getConnectionCreator().getConnection(index);
-			return Boolean.valueOf(con.isReadOnly());
-		} catch (SQLException e) {
-			return null;	
-		}
-	}
 	
 	public String test() {
-		ConnectionCreator cc = ds.getConnectionCreator();
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		String sql = ds.getConfiguration().getTestSql();
-		pw.append("Test SQL: ").append(sql).append('\n');
-		for(int i=0; i<cc.numOfDatabases(); i++) {
+		for(Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
 			try {
-				pw.append(cc.getConnectionId(i)).append(": ");
-				Connection connection = cc.getConnection(i);
-				PreparedStatement statement = connection.prepareStatement(sql);
+				pw.append(dbc.getDatabaseName()).append(": ").append(dbc.getTestSql()).append(" - ");
+				Connection connection = dbc.getConnectionCreator().getConnection();
+				PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
 				statement.execute();
 				pw.append("OK\n");
 			} catch (SQLException e) {
-				pw.append("FAILED\n");
+				pw.append("FAILED " + e.getMessage() + "\n");
 				e.printStackTrace(pw);
 				pw.append('\n');
 			}
@@ -130,24 +57,22 @@ public class FODataSourceConsole extends NotificationBroadcasterSupport implemen
 		return ds.getStatistics();
 	}
 
-	public void onEvent(AbstractChangeEvent event) {
-		if (event instanceof IndexChangedChangeEvent) {
-			IndexChangedChangeEvent e = (IndexChangedChangeEvent) event;
-			currentIndex = e.getIndex();
-			currentConnectionReadOnly = isConnectionReadOnly(currentIndex);
-		}
-		if (event.getIndex() == 0 && event instanceof AbstractFailedChangeEvent) {
-			AbstractFailedChangeEvent e = (AbstractFailedChangeEvent) event;
-			lastPrimaryDatabaseFailReason = e.getReason();
-		}
-		if (event.getIndex() == 0 && event instanceof RecoveryChangeEvent) {
-			lastPrimaryDatabaseFailReason = null;
-		}
-		if (event instanceof NoMoreDataSourcesChangeEvent) {
-			currentIndex = -1;
-			currentConnectionReadOnly = null;
-		}
-		
+	public String getFodsName() {
+		return configuration.getFoDSName();
+	}
+
+
+	public String getCurrentDatabaseName() {
+		return ds.getFodsState().getCurrentDatabase();
+	}
+
+
+	public void setCurrentDatabaseName(String name) {
+		ds.getFodsState().setCurrentDatabase(name);
+	}
+
+
+	public void onEvent(AbstractChangeEvent event) {		
 		EventNotification notification = new EventNotification(event, this, notificationSeq++, System.currentTimeMillis());
 		sendNotification(notification);
 	}
@@ -158,5 +83,8 @@ public class FODataSourceConsole extends NotificationBroadcasterSupport implemen
 		MBeanNotificationInfo mbni1 = new MBeanNotificationInfo(new String[] { EventNotification.NTYPE }, EventNotification.class.getName(), "DataSource event");
 		return new MBeanNotificationInfo[] { mbni1 };
 	}
+
+
+
 
 }

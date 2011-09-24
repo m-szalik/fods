@@ -1,6 +1,7 @@
 package org.jsoftware.fods.client.ext;
 
 
+
 /**
  * 
  * Database selection strategy.
@@ -8,11 +9,6 @@ package org.jsoftware.fods.client.ext;
  */
 public interface Selector {
 
-	void init(DatabasesState state);
+	String select(FodsState databaseState);
 
-	int select();	
-
-	void onStateChanged();
-
-	void forceSetIndex(int index) throws UnsupportedOperationException;
 }
