@@ -5,7 +5,7 @@
 	<artifactId>foDS-core</artifactId>
 	<packaging>jar</packaging>
 	<name>foDS-core</name>
-	<description>FailoverDataSource - core. This artifact contains real Failover DataSource implementation. Add this library and fods-client to lib directory of your application server.</description>
+	<description>FailoverDataSource - core. This artifact contains real Fail over DataSource implementation. Add this artifact and the fods-client to library directory of your application server.</description>
 
 	<parent>
 		<groupId>org.jsoftware</groupId>
