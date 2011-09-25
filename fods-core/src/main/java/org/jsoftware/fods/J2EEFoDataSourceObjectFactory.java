@@ -26,7 +26,7 @@ import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
  * <p>Use this factory to place {@link FoDataSource} into {@link InitialContext}.</p> 
  * @author szalik
  */
-public class J2EEFODataSourceFactory implements ObjectFactory {
+public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
 		if (obj instanceof Reference) {
