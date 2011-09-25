@@ -31,7 +31,7 @@ import org.jsoftware.fods.stats.StatisticsItem;
  * Fail over {@link DataSource} implementation.
  * @author szalik
  */
-public class FoDataSource implements DataSource, Closeable {
+public class FoDataSourceImpl implements DataSource, Closeable {
 	private Logger logger;
 	private PrintWriter printWriter;
 	private Configuration configuration;
@@ -40,7 +40,7 @@ public class FoDataSource implements DataSource, Closeable {
 	private FodsStateImpl fodsState;
 	private boolean active;
 
-	FoDataSource(Configuration configuration) {
+	FoDataSourceImpl(Configuration configuration) {
 		this.logger = configuration.getLogger();
 		this.configuration = configuration;
 		this.printWriter = new PrintWriter(new LoggerWriter(logger));

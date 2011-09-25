@@ -18,12 +18,12 @@ import javax.sql.DataSource;
 
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
-import org.jsoftware.fods.impl.FoDataSource;
+import org.jsoftware.fods.impl.FoDataSourceImpl;
 import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
 
 /**
- * Factory of {@link FoDataSource} object.
- * <p>Use this factory to place {@link FoDataSource} into {@link InitialContext}.</p> 
+ * Factory of {@link FoDataSourceImpl} object.
+ * <p>Use this factory to place {@link FoDataSourceImpl} into {@link InitialContext}.</p> 
  * @author szalik
  */
 public class J2EEFoDataSourceObjectFactory implements ObjectFactory {

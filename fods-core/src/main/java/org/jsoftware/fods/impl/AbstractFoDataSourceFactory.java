@@ -19,9 +19,9 @@ import org.jsoftware.fods.client.ext.ManageableViaMXBean;
 import org.jsoftware.fods.jmx.FoDataSourceConsole;
 
 /**
- * Factory of {@link FoDataSource} object.
+ * Factory of {@link FoDataSourceImpl} object.
  * <p>
- * This is the only way to create {@link FoDataSource} object.
+ * This is the only way to create {@link FoDataSourceImpl} object.
  * <p>
  * 
  * @author szalik
@@ -33,7 +33,7 @@ public abstract class AbstractFoDataSourceFactory {
 	public DataSource getObjectInstance() throws IOException {
 		Configuration configuration = getConfiguration();
 		ObjectName mxbeanObjectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
-		FoDataSource ds = new FoDataSource(configuration);
+		FoDataSourceImpl ds = new FoDataSourceImpl(configuration);
 
 		Map<String, Boolean> testResults = new HashMap<String, Boolean>();
 		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
@@ -64,7 +64,7 @@ public abstract class AbstractFoDataSourceFactory {
 		// display information
 		boolean debug = configuration.getLogger().isDebugEnabled();
 		try {
-			InputStream ins = FoDataSource.class.getResourceAsStream("/org/jsoftware/fods/message.txt");
+			InputStream ins = FoDataSourceImpl.class.getResourceAsStream("/org/jsoftware/fods/message.txt");
 			if (ins != null) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(ins));
 				StringBuilder out = new StringBuilder();
@@ -138,7 +138,7 @@ public abstract class AbstractFoDataSourceFactory {
 		}
 	}
 
-	private void registerMXBeanForDS(FoDataSource ds, Configuration configuration, ObjectName objectName) {
+	private void registerMXBeanForDS(FoDataSourceImpl ds, Configuration configuration, ObjectName objectName) {
 		String dsName = configuration.getFoDSName();
 		try {
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();

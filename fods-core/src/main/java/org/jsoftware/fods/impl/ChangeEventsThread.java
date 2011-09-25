@@ -14,7 +14,7 @@ import org.jsoftware.fods.event.AbstractFodsEvent;
 
 /**
  * This {@link Thread} sends notifications to all {@link FodsEventListener}s.
- * @see FoDataSource#addChangeEventListener(FodsEventListener)
+ * @see FoDataSourceImpl#addChangeEventListener(FodsEventListener)
  * @author szalik
  */
 public class ChangeEventsThread extends Thread {
