@@ -102,7 +102,7 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 			return null;
 		long bt = dbs.getBrokenTime();
 		Throwable reason = bt > 0 ? dbs.getLastException() : null;
-		return new JMXFodsDbState(dbName, dbs.getStatus().toString(), reason, bt > 0 ? bt : null);
+		return new JMXFodsDbState(dbName, dbs.getStatus().name(), reason, bt > 0 ? bt : null);
 	}
 
 	public JMXStatistics[] getStatistics() {

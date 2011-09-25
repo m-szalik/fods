@@ -33,9 +33,7 @@ public class JMXStatistics implements Serializable {
 		return dbName;
 	}
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -1585112927126973734L;
 
 }

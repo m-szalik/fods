@@ -60,7 +60,7 @@ public class DefaultConfiguration implements Configuration {
 		return Collections.unmodifiableSet(names);
 	}
 
-	public DatabaseConfiguration getDatabaseConfigurationByName(String name) {
+	public DatabaseConfiguration getDatabaseConfigurationByName(String name) throws NoSuchElementException {
 		for (DatabaseConfiguration dbc : getDatabaseConfigurations()) {
 			if (dbc.getDatabaseName().equals(name)) {
 				return dbc;

@@ -1,6 +1,7 @@
 package org.jsoftware.fods.client.ext;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import javax.management.ObjectName;
@@ -22,7 +23,7 @@ public interface Configuration {
 
 	Collection<String> getDatabaseNames();
 
-	DatabaseConfiguration getDatabaseConfigurationByName(String name);
+	DatabaseConfiguration getDatabaseConfigurationByName(String name) throws NoSuchElementException;
 
 	boolean isEnableStats();
 
