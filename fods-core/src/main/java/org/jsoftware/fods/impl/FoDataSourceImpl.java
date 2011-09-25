@@ -48,9 +48,7 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 			this.eventsSenderThread = new ChangeEventsThread(configuration.getLogger());
 			this.eventsSenderThread.start();
 		}
-		if (configuration.isEnableStats()) {
-			stats = new Statistics(configuration.getDatabaseNames());
-		}
+		stats = new Statistics(configuration.getDatabaseNames());
 		this.fodsState = new FodsStateImpl(configuration.getDatabaseNames()); 
 	}
 	
@@ -192,7 +190,7 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 			if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 				notifyChangeEvent(new RecoveryStartEvent(dbname));
 			}
-			// test sql.
+			// test sql
 			Configuration.DatabaseConfiguration dbc = configuration.getDatabaseConfigurationByName(dbname);
 			connection = dbc.getConnectionCreator().getConnection();
 			PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
@@ -247,7 +245,7 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 		if (eventsSenderThread != null) {	
 			eventsSenderThread.notifyChangeEvent(event);
 		}
-		if (stats != null) {
+		if (configuration.isEnableStats()) {
 			if (event instanceof RecoverySucessEvent) {
 				stats.getItem(event.getDbName()).addRecovery();
 			}

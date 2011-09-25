@@ -20,15 +20,11 @@ import org.jsoftware.fods.client.ext.Selector;
  */
 public class DefaultRoundRobinSelector implements Selector, ManageableViaMXBean {
 	private List<String> sequence;
-	private long recoveryTime = 1000 * 60 *10;
-	
+	private Configuration configuration;
 	
 	public DefaultRoundRobinSelector(Configuration configuration) {
+		this.configuration = configuration;
 		this.sequence = new LinkedList<String>();
-		String str = configuration.getProperty("recoveryTime");
-		if (str != null) {
-			recoveryTime = Long.valueOf(str);
-		}
 		String selectorSeq = configuration.getProperty("selectorSequence", null);
 		if (selectorSeq != null) {
 			for(String s : selectorSeq.split(",")) {
@@ -77,7 +73,7 @@ public class DefaultRoundRobinSelector implements Selector, ManageableViaMXBean 
 		if (fodsdbState.getStatus() == FodsDbStateStatus.VALID) {
 			return true;
 		}
-		if (fodsdbState.getStatus() == FodsDbStateStatus.BROKEN && fodsdbState.getBrokenTime() >= recoveryTime) {
+		if (fodsdbState.getStatus() == FodsDbStateStatus.BROKEN && fodsdbState.getBrokenTime() >= configuration.getMinRecoveryTime()) {
 			return true;
 		}
 		return false;

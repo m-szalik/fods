@@ -23,12 +23,14 @@ public class DefaultConfiguration implements Configuration {
 	private Selector selector;
 	private Logger logger;
 	private String fodsName;
+	private long minRecoveryTime;
 	private DatabaseConfiguration[] databases;
 	private PropertiesUtil pu;
 
 	public DefaultConfiguration(Properties main) {
 		pu = new PropertiesUtil(main);
 		fodsName = getProperty("fodsName");
+		minRecoveryTime = Long.valueOf(pu.getProperty("minRecoveryTime"));
 	}
 
 	public Selector getSelector() {
@@ -37,6 +39,14 @@ public class DefaultConfiguration implements Configuration {
 	
 	public void setSelector(Selector selector) {
 		this.selector = selector;
+	}
+	
+	public long getMinRecoveryTime() {
+		return minRecoveryTime;
+	}
+	
+	public void setMinRecoveryTime(long minRecoveryTime) {
+		this.minRecoveryTime = minRecoveryTime;
 	}
 	
 	public void setLogger(Logger logger) {
