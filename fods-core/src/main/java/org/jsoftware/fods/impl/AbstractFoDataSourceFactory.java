@@ -35,15 +35,6 @@ public abstract class AbstractFoDataSourceFactory {
 		ObjectName mxbeanObjectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
 		FoDataSourceImpl ds = new FoDataSourceImpl(configuration);
 
-		Map<String, Boolean> testResults = new HashMap<String, Boolean>();
-		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
-			Boolean b = ds.testDatabase(dbc.getDatabaseName());
-			if (b == null) {
-				b = Boolean.FALSE;
-			}
-			testResults.put(dbc.getDatabaseName(), b);
-		}
-
 		if (mxbeanObjectName != null) {
 			registerMXBeanForDS(ds, configuration, mxbeanObjectName);
 			registerMXBeanFromFactory(configuration.getLogger(), configuration, "logger");
@@ -52,8 +43,17 @@ public abstract class AbstractFoDataSourceFactory {
 				registerMXBeanFromFactory(dbc.getConnectionCreator(), configuration, "database-" + dbc.getDatabaseName());
 			}
 		}
-		displayInfo(configuration, testResults);
+
 		ds.start();
+		Map<String, Boolean> testResults = new HashMap<String, Boolean>();
+		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
+			Boolean b = ds.testDatabase(dbc.getDatabaseName());
+			if (b == null) {
+				b = Boolean.FALSE;
+			}
+			testResults.put(dbc.getDatabaseName(), b);
+		}
+		displayInfo(configuration, testResults);
 		return ds;
 	}
 	
