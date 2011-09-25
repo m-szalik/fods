@@ -8,18 +8,20 @@ public class JMXFodsDbState implements Serializable {
 	private Long breakdownTS;
 	private String lastBreakdownReason;
 	private String statusAsString;
+	private boolean readOnly;
 	
-	@ConstructorProperties({"dbName", "status", "lastBreakdownReason", "breakdownTS"})
-	public JMXFodsDbState(String dbName, String statusAsString, String reason, Long breakdownTS) {
+	@ConstructorProperties({"dbName", "status", "lastBreakdownReason", "breakdownTS", "readOnly"})
+	public JMXFodsDbState(String dbName, String statusAsString, String reason, Long breakdownTS, boolean readOnly) {
 		super();
 		this.breakdownTS = breakdownTS;
 		this.dbName = dbName;
 		this.lastBreakdownReason = reason;
 		this.statusAsString = statusAsString;
+		this.readOnly = readOnly;
 	}
 	
 	
-	public JMXFodsDbState(String dbName, String statusAsString, Throwable reason, Long breakdownTS) {
+	public JMXFodsDbState(String dbName, String statusAsString, Throwable reason, Long breakdownTS, boolean readOnly) {
 		super();
 		this.dbName = dbName;
 		this.statusAsString = statusAsString;
@@ -27,8 +29,12 @@ public class JMXFodsDbState implements Serializable {
 		if (reason != null) {
 			lastBreakdownReason = reason.toString();
 		}
+		this.readOnly = readOnly;
 	}
 
+	public boolean isReadOnly() {
+		return readOnly;
+	}
 	
 	public String getDbName() {
 		return dbName;
