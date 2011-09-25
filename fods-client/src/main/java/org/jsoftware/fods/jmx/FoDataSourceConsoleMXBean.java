@@ -1,5 +1,6 @@
 package org.jsoftware.fods.jmx;
 
+import javax.management.MXBean;
 import javax.sql.DataSource;
 
 
@@ -9,6 +10,7 @@ import javax.sql.DataSource;
  * <p>Allows to manage FoDataSource.</p>
  * @author szalik
  */
+@MXBean
 public interface FoDataSourceConsoleMXBean {
 	
 	/**

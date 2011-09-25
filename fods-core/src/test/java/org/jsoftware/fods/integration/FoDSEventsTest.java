@@ -76,7 +76,6 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 	}
 
 
-
 	@Test 
 	public void testSwitchOutOfConnections() throws Exception {
 		stop(0);

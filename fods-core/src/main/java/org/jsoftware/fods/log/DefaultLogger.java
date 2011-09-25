@@ -77,6 +77,13 @@ public class DefaultLogger implements Logger, ManageableViaMXBean {
 		log(level, msg, null);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jsoftware.fods.client.ext.Logger#isDebugEnabled()
+	 */
+	public boolean isDebugEnabled() {
+		return debug;
+	}
 	
 	/*
 	 * (non-Javadoc)

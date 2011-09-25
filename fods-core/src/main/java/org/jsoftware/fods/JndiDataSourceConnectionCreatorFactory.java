@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
+import org.jsoftware.fods.client.ext.Displayable;
 import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
@@ -26,10 +27,11 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * @author szalik
  */
 public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreatorFactory {
-
+	private String jndiName;
+	
 	public ConnectionCreator getConnectionCreator(String dbName, Logger logger, Properties properties) {
 		PropertiesUtil pu = new PropertiesUtil(properties, dbName);
-		String jndiName = pu.getProperty("jndiName");
+		jndiName = pu.getProperty("jndiName");
 		try {
 			InitialContext initContext = new InitialContext();
 			Context envContext = (Context) initContext.lookup("java:/comp/env");
@@ -44,7 +46,7 @@ public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreator
 
 	}
 
-	class JndiDataSourceConnectionCreator implements ConnectionCreator {
+	class JndiDataSourceConnectionCreator implements ConnectionCreator, Displayable {
 		private DataSource ds;
 		
 		public JndiDataSourceConnectionCreator(DataSource dsin) {
@@ -55,5 +57,8 @@ public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreator
 			return ds.getConnection();
 		}
 
+		public String asString(boolean addDebugInfo) {
+			return "JndiDataSourceConnectionCreator" + (addDebugInfo ? "(jndiName=" + jndiName + ")": "");
+		}
 	}
 }

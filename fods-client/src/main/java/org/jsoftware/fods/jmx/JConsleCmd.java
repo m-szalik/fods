@@ -18,8 +18,10 @@ import javax.management.remote.JMXServiceURL;
 /**
  * Simple CommandLine JConsole 
  * @author szalik
+ * DO NOT USE
+ * FIXME dostosowac do wersj 4.0
  */
-public class JConsleCmd {
+class JConsleCmd {
 	private JMXServiceURL serviceURL;
 	private MBeanServerConnection mbc;
 	private ObjectName beanName;

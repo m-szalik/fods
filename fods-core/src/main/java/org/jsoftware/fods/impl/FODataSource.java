@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
+import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.client.ext.Selector;
 import org.jsoftware.fods.event.AbstractFodsEvent;
@@ -115,14 +116,22 @@ public class FODataSource implements DataSource {
 		// creator.setLoginTimeout(seconds);
 	}
 
-	private Connection test(String dbname) throws SQLException {
-		Configuration.DatabaseConfiguration dbc = configuration.getDatabaseConfigurationByName(dbname);
-		Connection connection = dbc.getConnectionCreator().getConnection();
-		PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
-		statement.execute();
-		return connection;
+	
+	public Boolean testDatabase(String dbName) {
+		Configuration.DatabaseConfiguration dbc = configuration.getDatabaseConfigurationByName(dbName);
+		Boolean b = null;
+		if (dbc != null) {
+			Connection connection = getConnectionFromDb(dbName);
+			b = (connection != null);
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {		}
+		}
+		return b;
 	}
-
+	
 	/**
 	 * @return
 	 * @throws SQLException
@@ -132,35 +141,9 @@ public class FODataSource implements DataSource {
 		String dbname;
 		Connection connection;
 		do {
-			connection = null;
 			dbname = selector.select(fodsState);
 			if (dbname == null) break;
-			FodsDbStateImpl dbState = fodsState.getDbstate(dbname);
-			FodsDbStateStatus newStatus = dbState.getStatus();
-			try {
-				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
-					notifyChangeEvent(new RecoveryStartEvent(dbname));
-				}
-				connection = test(dbname);
-				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
-					notifyChangeEvent(new RecoverySucessEvent(dbname));
-				}
-				newStatus = FodsDbStateStatus.VALID;
-			} catch (SQLException e) {
-				dbState.setLastException(e);
-				connection = null;
-				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
-					notifyChangeEvent(new RecoveryFailedEvent(dbname, e));
-				} else {
-					notifyChangeEvent(new DatabaseFiledEvent(dbname, e));
-				}
-				newStatus = FodsDbStateStatus.BROKEN;
-			}
-			
-			if (dbState.getStatus() != newStatus) {
-				notifyChangeEvent(new DatabaseStatusChangedEvent(dbname, dbState.getStatus(), newStatus));
-				dbState.setState(newStatus);
-			}
+			connection = getConnectionFromDb(dbname);
 			if (connection != null) {
 				if (! dbname.equals(fodsState.getCurrentDatabase())) {
 					notifyChangeEvent(new ActiveDatabaseChangedEvent(dbname, fodsState.getCurrentDatabase()));
@@ -171,6 +154,48 @@ public class FODataSource implements DataSource {
 		} while (dbname != null);
 		notifyChangeEvent(new NoMoreDatabasesEvent());
 		throw new SQLException("No more databases avaialable.");
+	}
+	
+	private Connection getConnectionFromDb(String dbname) {
+		FodsDbStateImpl dbState = fodsState.getDbstate(dbname);
+		FodsDbStateStatus newStatus = dbState.getStatus();
+		Connection connection;
+		try {
+			if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
+				notifyChangeEvent(new RecoveryStartEvent(dbname));
+			}
+			// test sql
+			Configuration.DatabaseConfiguration dbc = configuration.getDatabaseConfigurationByName(dbname);
+			connection = dbc.getConnectionCreator().getConnection();
+			PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
+			statement.execute();
+			//
+			if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
+				notifyChangeEvent(new RecoverySucessEvent(dbname));
+			}
+			newStatus = FodsDbStateStatus.VALID;
+		} catch (SQLException e) {
+			dbState.setLastException(e);
+			connection = null;
+			if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
+				notifyChangeEvent(new RecoveryFailedEvent(dbname, e));
+			} else {
+				notifyChangeEvent(new DatabaseFiledEvent(dbname, e));
+			}
+			newStatus = FodsDbStateStatus.BROKEN;
+		}
+		if (dbState.getStatus() != newStatus) {
+			notifyChangeEvent(new DatabaseStatusChangedEvent(dbname, dbState.getStatus(), newStatus));
+			dbState.setState(newStatus);
+		}
+		if (connection != null) {
+			try {
+				dbState.setReadonly(connection.isReadOnly());
+			} catch (SQLException e) {	
+				logger.log(LogLevel.DEBUG, "Error obtaining readOnly information from " + dbname, e);
+			}
+		}
+		return connection;
 	}
 
 	private Connection wrap(Connection con, String dbName) {
@@ -213,5 +238,4 @@ public class FODataSource implements DataSource {
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		throw new RuntimeException("Not supported.");
 	}
-
 }

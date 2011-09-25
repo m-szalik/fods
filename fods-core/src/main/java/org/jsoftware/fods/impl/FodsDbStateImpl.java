@@ -16,6 +16,7 @@ public class FodsDbStateImpl implements Serializable, FodsDbState {
 	private long brokenTS;
 	private SQLException lastException;
 	private FodsDbStateStatus status = FodsDbStateStatus.VALID;
+	private boolean readonly;
 	
 	
 	public long getBrokenTime() {
@@ -29,6 +30,13 @@ public class FodsDbStateImpl implements Serializable, FodsDbState {
 		return status;
 	}
 	
+	public boolean isReadOnly() {
+		return readonly;
+	}
+	
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
+	}
 	
 	public void setState(FodsDbStateStatus status) {
 		if (status != this.status && status == FodsDbStateStatus.BROKEN) {
@@ -44,4 +52,5 @@ public class FodsDbStateImpl implements Serializable, FodsDbState {
 	public void setLastException(SQLException lastException) {
 		this.lastException = lastException;
 	}
+	
 }

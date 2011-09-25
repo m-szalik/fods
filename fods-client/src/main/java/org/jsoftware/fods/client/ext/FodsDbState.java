@@ -1,5 +1,7 @@
 package org.jsoftware.fods.client.ext;
 
+import java.sql.Connection;
+
 
 /**
  * Single database state 
@@ -16,4 +18,11 @@ public interface FodsDbState {
 	 * @return number of milliseconds when last database error occurred.
 	 */
 	long getBrokenTime();
+	
+	/**
+	 * If {@link Connection} to this database is read only.
+	 * @return <tt>true</tt> if read only.
+	 */
+	boolean isReadOnly();
+	
 }

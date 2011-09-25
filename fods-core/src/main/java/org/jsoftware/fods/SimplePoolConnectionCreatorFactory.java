@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
+import org.jsoftware.fods.client.ext.Displayable;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
@@ -31,19 +32,21 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * <p>
  * Required configuration values:
  * <ul>
- * 	<li>jdbcURI - database's jdbc uri</li>
- *  <li>driverClassName - jdbc {@link Driver}</li>
- *  <li><i>Other jdbc connection properties.</i></li>
+ * <li>jdbcURI - database's jdbc uri</li>
+ * <li>driverClassName - jdbc {@link Driver}</li>
+ * <li><i>Other jdbc connection properties.</i></li>
  * </ul>
  * Optional configuration values:
  * <ul>
- * 	<li>maxWait - login timeout</li>
- *  <li>maxActive - maximal active connections</li>
- *  <li>maxIdle - maximal idle connections</li>
- *  <li>minWait - minimal idle connections</li>
- *  <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be forced to close</li>
+ * <li>maxWait - login timeout</li>
+ * <li>maxActive - maximal active connections</li>
+ * <li>maxIdle - maximal idle connections</li>
+ * <li>minWait - minimal idle connections</li>
+ * <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be
+ * forced to close</li>
  * </ul>
  * </p>
+ * 
  * @author szalik
  */
 public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFactory {
@@ -61,7 +64,7 @@ public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFact
 
 }
 
-class SimplePoolConnectionCreator extends Thread implements ConnectionCreator {
+class SimplePoolConnectionCreator extends Thread implements ConnectionCreator, Displayable {
 	private Logger logger;
 	private int maxWait;
 	private int maxActive;
@@ -187,8 +190,6 @@ class SimplePoolConnectionCreator extends Thread implements ConnectionCreator {
 			logger.warn(getName() + " closing.");
 		}
 	}
-
-	
 
 	/**
 	 * @author szalik
@@ -405,6 +406,10 @@ class SimplePoolConnectionCreator extends Thread implements ConnectionCreator {
 		public <T> T unwrap(Class<T> iface) throws SQLException {
 			throw new RuntimeException("Not supported.");
 		}
+	}
+
+	public String asString(boolean addDebugInfo) {
+		return "SimplePoolConnectionCreator" + (addDebugInfo ? "(jdbcURI=" + jdbcURI + ")" : "");
 	}
 
 }

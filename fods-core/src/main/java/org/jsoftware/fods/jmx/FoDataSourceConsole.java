@@ -40,9 +40,10 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
+			Connection connection = null;
 			try {
 				pw.append(dbc.getDatabaseName()).append(": ").append(dbc.getTestSql()).append(" - ");
-				Connection connection = dbc.getConnectionCreator().getConnection();
+				connection = dbc.getConnectionCreator().getConnection();
 				PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
 				statement.execute();
 				pw.append("OK\n");
@@ -50,6 +51,8 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 				pw.append("FAILED " + e.getMessage() + "\n");
 				e.printStackTrace(pw);
 				pw.append('\n');
+			} finally {
+				try { if (connection != null) connection.close(); } catch (SQLException e) {	}
 			}
 		}
 		pw.close();
@@ -57,19 +60,7 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 	}
 
 	public Boolean test(String dbName) {
-		Configuration.DatabaseConfiguration dbc = configuration.getDatabaseConfigurationByName(dbName);
-		Boolean b = null;
-		if (dbc != null) {
-			try {
-				Connection connection = dbc.getConnectionCreator().getConnection();
-				PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
-				statement.execute();
-				b = Boolean.TRUE;
-			} catch (SQLException e) {
-				b = Boolean.FALSE;
-			}
-		}
-		return b;
+		return ds.testDatabase(dbName);
 	}
 
 	public String[] getDatabaseNames() {
