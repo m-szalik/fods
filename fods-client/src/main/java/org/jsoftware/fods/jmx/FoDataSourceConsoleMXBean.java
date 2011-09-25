@@ -2,9 +2,6 @@ package org.jsoftware.fods.jmx;
 
 import javax.sql.DataSource;
 
-import org.jsoftware.fods.client.ext.FodsDbState;
-import org.jsoftware.fods.stats.Statistics;
-
 
 
 /**
@@ -12,7 +9,7 @@ import org.jsoftware.fods.stats.Statistics;
  * <p>Allows to manage FoDataSource.</p>
  * @author szalik
  */
-public interface FODataSourceConsoleMBean {
+public interface FoDataSourceConsoleMXBean {
 	
 	/**
 	 * @return get name of current {@link DataSource}
@@ -51,10 +48,10 @@ public interface FODataSourceConsoleMBean {
 	String[] getDatabaseNames();
 	
 	/**
-	 * Databases {@link Statistics} or <tt>null</tt> if statistics are disabled.
+	 * Databases statistics or <tt>null</tt> if statistics are disabled.
 	 * @return
 	 */
-	Statistics getStatistics();
+	JMXStatistics[] getStatistics();
 	
 	/**
 	 * Turned off databases sholdn't be used.
@@ -74,5 +71,5 @@ public interface FODataSourceConsoleMBean {
 	 * @param dbName
 	 * @return current database state, <tt>null</tt> if database not found.
 	 */
-	FodsDbState getCurrentDatabaseState(String dbName);
+	JMXFodsDbState getCurrentDatabaseState(String dbName);
 }

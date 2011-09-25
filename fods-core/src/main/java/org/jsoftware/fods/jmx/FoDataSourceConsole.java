@@ -13,23 +13,25 @@ import javax.management.NotificationEmitter;
 import org.jsoftware.fods.client.EventNotification;
 import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 import org.jsoftware.fods.event.AbstractFodsEvent;
+import org.jsoftware.fods.event.ActiveDatabaseChangedEvent;
 import org.jsoftware.fods.impl.FODataSource;
-import org.jsoftware.fods.stats.Statistics;
+import org.jsoftware.fods.impl.FodsDbStateImpl;
+import org.jsoftware.fods.stats.StatisticsItem;
 
 /**
- * JmxBean implementation of {@link FODataSourceConsoleMBean} for
+ * JmxBean implementation of {@link FoDataSourceConsoleMBean} for
  * {@link FODataSource}.
+ * 
  * @author szalik
  */
-public class FODataSourceConsole extends NotificationBroadcasterSupport implements NotificationEmitter, FODataSourceConsoleMBean, FodsEventListener {
+public class FoDataSourceConsole extends NotificationBroadcasterSupport implements NotificationEmitter, FoDataSourceConsoleMXBean, FodsEventListener {
 	private FODataSource ds;
 	private long notificationSeq;
 	private Configuration configuration;
 
-	public FODataSourceConsole(FODataSource ds, Configuration configuration) {
+	public FoDataSourceConsole(FODataSource ds, Configuration configuration) {
 		this.ds = ds;
 		this.configuration = configuration;
 	}
@@ -83,7 +85,7 @@ public class FODataSourceConsole extends NotificationBroadcasterSupport implemen
 	}
 
 	private boolean turnInternal(String dbName, boolean b) {
-		FodsDbState dbs = ds.getFodsState().getDbstate(dbName);
+		FodsDbStateImpl dbs = ds.getFodsState().getDbstate(dbName);
 		if (dbs == null) {
 			return false;
 		}
@@ -94,12 +96,27 @@ public class FODataSourceConsole extends NotificationBroadcasterSupport implemen
 		return true;
 	}
 
-	public FodsDbState getCurrentDatabaseState(String dbName) {
-		return ds.getFodsState().getDbstate(dbName);
+	public JMXFodsDbState getCurrentDatabaseState(String dbName) {
+		FodsDbStateImpl dbs = ds.getFodsState().getDbstate(dbName);
+		if (dbs == null)
+			return null;
+		long bt = dbs.getBrokenTime();
+		Throwable reason = bt > 0 ? dbs.getLastException() : null;
+		return new JMXFodsDbState(dbName, dbs.getStatus().toString(), reason, bt > 0 ? bt : null);
 	}
 
-	public Statistics getStatistics() {
-		return ds.getStatistics();
+	public JMXStatistics[] getStatistics() {
+		JMXStatistics[] ret = new JMXStatistics[configuration.getDatabaseNames().size()];
+		int i = 0;
+		for (String dbname : configuration.getDatabaseNames()) {
+			StatisticsItem si = ds.getStatistics().getItem(dbname);
+			if (si == null) {
+				si = new StatisticsItem();
+			}
+			ret[i] = si.createJMXStatistics(dbname);
+			i++;
+		}
+		return ret;
 	}
 
 	public String getFodsName() {
@@ -114,10 +131,12 @@ public class FODataSourceConsole extends NotificationBroadcasterSupport implemen
 		if (configuration.getDatabaseConfigurationByName(name) == null) {
 			return false;
 		}
-		if (getCurrentDatabaseName().equals(name)) {
+		String currentDBName = getCurrentDatabaseName();
+		if (name.equals(currentDBName)) {
 			return false;
 		}
 		ds.getFodsState().setCurrentDatabase(name);
+		ds.notifyChangeEvent(new ActiveDatabaseChangedEvent(name, currentDBName));
 		return true;
 	}
 

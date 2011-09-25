@@ -2,9 +2,9 @@ package org.jsoftware.fods.log;
 
 import java.util.Properties;
 
-import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.client.ext.LoggerFactory;
+import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
 /**
  * Factory for {@link DefaultLoggerImpl}.
@@ -20,10 +20,10 @@ import org.jsoftware.fods.client.ext.LoggerFactory;
 public class DefaultLoggerFactory implements LoggerFactory {
 
 	public Logger getLogger(Properties properties) {
-		String fodsName = properties.getProperty("fodsName");
-		Boolean b = Boolean.valueOf(properties.getProperty("loggerDebugOn", "false"));
-		DefaultLoggerImpl logger = new DefaultLoggerImpl(fodsName);
-		logger.setDebug(b);
+		PropertiesUtil pu = new PropertiesUtil(properties);
+		DefaultLogger logger = new DefaultLogger(pu.getProperty("fodsName"));
+		logger.setDebug(Boolean.valueOf(pu.getProperty("loggerDebugOn")));
+
 		boolean console = true;
 		try {
 			Class.forName("org.slf4j.LoggerFactory");
@@ -35,17 +35,14 @@ public class DefaultLoggerFactory implements LoggerFactory {
 			console = false;
 			logger.addLogEventListener(new CommonsLoggingLogEventListener());
 		} catch (ClassNotFoundException e) {	}
-		if (console) {
-			logger.addLogEventListener(new ConsoleLogEventListener());
+		
+		if (Boolean.valueOf(properties.getProperty("loggerForceLogOnConsole"))) {
+			console = true;
 		}
+		logger.setLogOnConsole(console);
+		logger.setLogEvents(Boolean.valueOf(properties.getProperty("loggerLogEvents")));
+		
 		return logger;
 	}
 	
-}
-
-
-class ConsoleLogEventListener implements LogEventListener {
-	public void logEvent(LogLevel level, String message, Throwable throwable) {
-		System.out.println(level + ": " + message);
-	}
 }

@@ -14,7 +14,7 @@ public abstract class AbstractFodsEvent implements Serializable {
 		this.dbname = dbname;
 	}
 		
-	public String getDbname() {
+	public String getDbName() {
 		return dbname;
 	}
 	

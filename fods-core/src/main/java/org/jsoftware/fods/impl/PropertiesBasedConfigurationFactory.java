@@ -94,7 +94,7 @@ class DatabaseConfigurationImpl implements DatabaseConfiguration {
 	public DatabaseConfigurationImpl(String name) {
 		this.name = name;
 	}
-
+	
 	public ConnectionCreator getConnectionCreator() {
 		return connectionCreator;
 	}

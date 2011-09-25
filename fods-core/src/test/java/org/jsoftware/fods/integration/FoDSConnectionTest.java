@@ -8,7 +8,7 @@ import org.jsoftware.fods.AbstractDbTestTemplate;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class FoDSTest extends AbstractDbTestTemplate {
+public class FoDSConnectionTest extends AbstractDbTestTemplate {
 
 	@Test
 	public void testSwitch() throws Exception {

@@ -1,16 +1,18 @@
 package org.jsoftware.fods.event;
 
+import org.jsoftware.fods.client.ext.FodsDbStateStatus;
+
 
 /**
- * If there are no more {@link FodsDbState.}
+ * If there are no more {@link FodsDbStateStatus#VALID} databases.
  * @author szalik
  */
-public class NoMoreDataSourcesChangeEvent extends AbstractFodsEvent {
+public class NoMoreDatabasesEvent extends AbstractFodsEvent {
 
 	private static final long serialVersionUID = -3401080210630831351L;
 
 
-	public NoMoreDataSourcesChangeEvent() {
+	public NoMoreDatabasesEvent() {
 		super(null);
 	}
 

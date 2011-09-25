@@ -34,14 +34,15 @@ public class DefaultConfiguration implements Configuration {
 	public Selector getSelector() {
 		return selector;
 	}
-
+	
 	public void setSelector(Selector selector) {
 		this.selector = selector;
 	}
-
+	
 	public void setLogger(Logger logger) {
 		this.logger = logger;
 	}
+
 
 	public Logger getLogger() {
 		return logger;
@@ -89,9 +90,9 @@ public class DefaultConfiguration implements Configuration {
 		return Boolean.valueOf(getProperty("statsEnabled", "false"));
 	}
 
-	public ObjectName getMxBeanObjectName() {
+	public ObjectName getMxBeanObjectName(String sufix) {
 		if (Boolean.valueOf(getProperty("registerMxBean", "false"))) {
-			String str = "org.jsoftware.fods:type=ds-" + getFoDSName();
+			String str = "org.jsoftware.fods." + getFoDSName() + ":type=" + sufix;
 			try {
 				return new ObjectName(str);
 			} catch (Exception e) {

@@ -12,9 +12,9 @@ import javax.management.ObjectName;
 public interface Configuration {
 
 	Selector getSelector();
-
+	
 	Logger getLogger();
-
+	
 	String getFoDSName();
 
 	DatabaseConfiguration[] getDatabaseConfigurations();
@@ -29,10 +29,10 @@ public interface Configuration {
 
 	String getProperty(String key, Object defaultValue);
 
-	ObjectName getMxBeanObjectName();
+	ObjectName getMxBeanObjectName(String sufix);
 	
 	interface DatabaseConfiguration {
-
+		
 		ConnectionCreator getConnectionCreator();
 
 		Properties getConnectionProperties();

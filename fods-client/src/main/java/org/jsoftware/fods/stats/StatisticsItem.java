@@ -1,25 +1,24 @@
 package org.jsoftware.fods.stats;
 
+import java.io.Serializable;
+
+import org.jsoftware.fods.jmx.JMXStatistics;
+
 /**
  * FoDS statistic item.
+ * <p>Statistics for particular database.</p>
  * @author szalik
- *
  */
-public class StatisticsItem {
+public class StatisticsItem implements Serializable {
+	private static final long serialVersionUID = -2481298760422578331L;
 	private long get, release;
 	private int breakTimes;
-	private long breakTime;
-	
-	private long lastBreakTS = -1;
 	
 	public void addBreak() {
-		lastBreakTS = System.currentTimeMillis();
 		breakTimes++;
 	}
 	
 	public void addRecovery() {
-		breakTime = breakTime + System.currentTimeMillis() - lastBreakTS;
-		lastBreakTS = 0;
 	}
 	
 	public void addGet() {
@@ -28,12 +27,6 @@ public class StatisticsItem {
 	
 	public void addRelease() {
 		release++;
-	}
-	
-	
-	
-	public long getBreakTime() {
-		return breakTime;
 	}
 	
 	public int getBreakTimes() {
@@ -55,7 +48,10 @@ public class StatisticsItem {
 		out.append('/').append(release);
 		out.append(" (").append(get-release).append(")\n");
 		out.append("breakTimes:").append(breakTimes).append('\n');
-		out.append("breakTime:").append(breakTime/1000).append("s.\n");
 		return out.toString();
+	}
+	
+	public JMXStatistics createJMXStatistics(String myDbName) {
+		return new JMXStatistics(get, release, breakTimes, myDbName);
 	}
 }

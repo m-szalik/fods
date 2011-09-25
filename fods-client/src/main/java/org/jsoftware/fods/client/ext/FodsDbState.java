@@ -2,41 +2,18 @@ package org.jsoftware.fods.client.ext;
 
 
 /**
- * Single database state.
+ * Single database state 
  * @author szalik
  */
-public class FodsDbState {
-	
-	private long brokenTS;
-	private FodsDbStateStatus status = FodsDbStateStatus.VALID;
+public interface FodsDbState {
 	
 	/**
-	 * @return number of ms when last database error occurred.
+	 * @return current database {@link FodsDbStateStatus}
 	 */
-	public long getBrokenTime() {
-		if (status == FodsDbStateStatus.BROKEN) {
-			return System.currentTimeMillis() - brokenTS;
-		}
-		return -1;
-	}
+	FodsDbStateStatus getStatus();
 	
 	/**
-	 * <font color="red">Do not use this method.</font>
-	 * @param status
+	 * @return number of milliseconds when last database error occurred.
 	 */
-	public void setState(FodsDbStateStatus status) {
-		if (status != this.status && status == FodsDbStateStatus.BROKEN) {
-			brokenTS = System.currentTimeMillis();
-		}
-		this.status = status;
-	}
-	
-	/**
-	 * @return current database {@link STATE}
-	 */
-	public FodsDbStateStatus getStatus(){
-		return status;
-	}
-	
-	
+	long getBrokenTime();
 }

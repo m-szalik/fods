@@ -2,8 +2,10 @@ package org.jsoftware.fods.client.ext;
 
 
 
+
 /**
  * Database selection strategy.
+ * @see ManageableViaMXBean
  * @author szalik
  */
 public interface Selector {

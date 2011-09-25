@@ -9,15 +9,14 @@ import javax.sql.DataSource;
 
 import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
-import org.jsoftware.fods.client.ext.FodsState;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.client.ext.Selector;
 import org.jsoftware.fods.event.AbstractFodsEvent;
-import org.jsoftware.fods.event.DatabaseChangedChangeEvent;
+import org.jsoftware.fods.event.ActiveDatabaseChangedEvent;
 import org.jsoftware.fods.event.DatabaseFiledEvent;
-import org.jsoftware.fods.event.NoMoreDataSourcesChangeEvent;
+import org.jsoftware.fods.event.DatabaseStatusChangedEvent;
+import org.jsoftware.fods.event.NoMoreDatabasesEvent;
 import org.jsoftware.fods.event.RecoveryFailedEvent;
 import org.jsoftware.fods.event.RecoveryStartEvent;
 import org.jsoftware.fods.event.RecoverySucessEvent;
@@ -35,7 +34,7 @@ public class FODataSource implements DataSource {
 	private Configuration configuration;
 	private Statistics stats;
 	private ChangeEventsThread eventsSenderThread;
-	private FodsState fodsState;
+	private FodsStateImpl fodsState;
 
 	FODataSource(Configuration configuration) {
 		this.logger = configuration.getLogger();
@@ -48,14 +47,13 @@ public class FODataSource implements DataSource {
 		if (configuration.isEnableStats()) {
 			stats = new Statistics(configuration.getDatabaseNames());
 		}
-		this.fodsState = new FodsState(configuration.getDatabaseNames()); 
+		this.fodsState = new FodsStateImpl(configuration.getDatabaseNames()); 
 	}
 	
-	public FodsState getFodsState() {
+	public FodsStateImpl getFodsState() {
 		return fodsState;
 	}
 
-	
 	public Statistics getStatistics() {
 		return stats;
 	}
@@ -132,34 +130,46 @@ public class FODataSource implements DataSource {
 	private Connection connection() throws SQLException {
 		Selector selector = configuration.getSelector();
 		String dbname;
+		Connection connection;
 		do {
+			connection = null;
 			dbname = selector.select(fodsState);
 			if (dbname == null) break;
-			FodsDbState dbState = fodsState.getDbstate(dbname);
+			FodsDbStateImpl dbState = fodsState.getDbstate(dbname);
+			FodsDbStateStatus newStatus = dbState.getStatus();
 			try {
 				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 					notifyChangeEvent(new RecoveryStartEvent(dbname));
 				}
-				Connection con = test(dbname);
+				connection = test(dbname);
 				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 					notifyChangeEvent(new RecoverySucessEvent(dbname));
 				}
-				dbState.setState(FodsDbStateStatus.VALID);
-				if (! dbname.equals(fodsState.getCurrentDatabase())) {
-					notifyChangeEvent(new DatabaseChangedChangeEvent(dbname, fodsState.getCurrentDatabase()));
-					fodsState.setCurrentDatabase(dbname); 
-				}
-				return wrap(con, dbname);
+				newStatus = FodsDbStateStatus.VALID;
 			} catch (SQLException e) {
+				dbState.setLastException(e);
+				connection = null;
 				if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 					notifyChangeEvent(new RecoveryFailedEvent(dbname, e));
 				} else {
 					notifyChangeEvent(new DatabaseFiledEvent(dbname, e));
 				}
-				dbState.setState(FodsDbStateStatus.BROKEN); 
+				newStatus = FodsDbStateStatus.BROKEN;
+			}
+			
+			if (dbState.getStatus() != newStatus) {
+				notifyChangeEvent(new DatabaseStatusChangedEvent(dbname, dbState.getStatus(), newStatus));
+				dbState.setState(newStatus);
+			}
+			if (connection != null) {
+				if (! dbname.equals(fodsState.getCurrentDatabase())) {
+					notifyChangeEvent(new ActiveDatabaseChangedEvent(dbname, fodsState.getCurrentDatabase()));
+					fodsState.setCurrentDatabase(dbname); 
+				}
+				return wrap(connection, dbname);
 			}
 		} while (dbname != null);
-		notifyChangeEvent(new NoMoreDataSourcesChangeEvent());
+		notifyChangeEvent(new NoMoreDatabasesEvent());
 		throw new SQLException("No more databases avaialable.");
 	}
 
@@ -180,22 +190,22 @@ public class FODataSource implements DataSource {
 		}
 	}
 
-	private void notifyChangeEvent(AbstractFodsEvent event) {
+	public void notifyChangeEvent(AbstractFodsEvent event) {
 		if (eventsSenderThread != null) {	
 			eventsSenderThread.notifyChangeEvent(event);
 		}
 		if (stats != null) {
 			if (event instanceof RecoverySucessEvent) {
-				stats.getItem(event.getDbname()).addRecovery();
+				stats.getItem(event.getDbName()).addRecovery();
 			}
 			if (event instanceof DatabaseFiledEvent) {
-				stats.getItem(event.getDbname()).addBreak();
+				stats.getItem(event.getDbName()).addBreak();
 			}
 		}
+		logger.logEvent(event);
 	}
 
-	// ------------------ Methods for JDK6
-	// ---------------------------------------
+	// ------------------ Methods for JDK6 ---------------------------------------
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		throw new RuntimeException("Not supported.");
 	}

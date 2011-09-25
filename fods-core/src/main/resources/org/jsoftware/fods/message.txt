@@ -1,4 +1,5 @@
   FoDS - Fail over dataSource version ${project.version}
      DataSource name: %fodsName%
      Database selector: %databaseSelector%
+     Management bean at: %mxbeanObjectName% 
   For more details visit: http://jsoftware.org/fods 

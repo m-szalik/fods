@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 import org.hsqldb.jdbc.JDBCDriver;
 import org.hsqldb.server.Server;
 import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.impl.AbstractDataSourceFactory;
+import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
 import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -55,7 +55,7 @@ public abstract class AbstractDbTestTemplate {
 	}
 
 	protected DataSource getFoDS() throws IOException {
-		AbstractDataSourceFactory dsFactory = new AbstractDataSourceFactory() {
+		AbstractFoDataSourceFactory dsFactory = new AbstractFoDataSourceFactory() {
 			@Override
 			protected Configuration getConfiguration() throws IOException {
 				return configuration;

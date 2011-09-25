@@ -17,7 +17,7 @@ import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 
 import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.impl.AbstractDataSourceFactory;
+import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
 import org.jsoftware.fods.impl.FODataSource;
 import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
 
@@ -49,7 +49,7 @@ public class J2EEFODataSourceFactory implements ObjectFactory {
 				properties.setProperty(ra.getType(), ra.getContent().toString());
 			} // for
 
-			AbstractDataSourceFactory factory = new AbstractDataSourceFactory() {
+			AbstractFoDataSourceFactory factory = new AbstractFoDataSourceFactory() {
 				@Override
 				protected Configuration getConfiguration() throws IOException {
 					PropertiesBasedConfigurationFactory factory = new PropertiesBasedConfigurationFactory();

@@ -1,5 +1,6 @@
 package org.jsoftware.fods.impl;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 import org.jsoftware.fods.client.ext.FodsState;
+import org.jsoftware.fods.client.ext.ManageableViaMXBean;
 import org.jsoftware.fods.client.ext.Selector;
 
 
@@ -16,7 +18,7 @@ import org.jsoftware.fods.client.ext.Selector;
  * <p>You can specify databases order using <i>selectorSequence</i> configuration property.</p>
  * @author szalik
  */
-public class DefaultRoundRobinSelector implements Selector  {
+public class DefaultRoundRobinSelector implements Selector, ManageableViaMXBean {
 	private List<String> sequence;
 	private long recoveryTime = 1000 * 60 *10;
 	
@@ -79,6 +81,15 @@ public class DefaultRoundRobinSelector implements Selector  {
 			return true;
 		}
 		return false;
+	}
+
+
+	public Object getMXBeanInstance() {
+		return new DefaultRoundRobinSelectorMXBean() {
+			public List<String> getSequence() {
+				return Collections.unmodifiableList(sequence);
+			}
+		};
 	}
 
 }

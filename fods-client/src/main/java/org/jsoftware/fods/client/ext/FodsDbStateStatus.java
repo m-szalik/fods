@@ -1,8 +1,9 @@
 package org.jsoftware.fods.client.ext;
 
-import org.jsoftware.fods.jmx.FODataSourceConsoleMBean;
+import org.jsoftware.fods.jmx.FoDataSourceConsoleMXBean;
+
+
 /**
- * @see FodsDbState#getState()
  * @author szalik
  */
 public enum FodsDbStateStatus {
@@ -10,7 +11,7 @@ public enum FodsDbStateStatus {
 	/** Database is valid and working */
 		VALID, 
 		/** Database turnned off by fods administrator 
-		 * @see FODataSourceConsoleMBean
+		 * @see FoDataSourceConsoleMXBean
 		 */
 		DISCONNETED, 
 		/**

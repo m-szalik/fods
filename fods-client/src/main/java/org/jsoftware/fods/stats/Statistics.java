@@ -1,5 +1,6 @@
 package org.jsoftware.fods.stats;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +11,8 @@ import java.util.Map;
  * @author szalik
  *
  */
-public class Statistics {
+public class Statistics implements Serializable {
+	private static final long serialVersionUID = -9085526511590496972L;
 	private Map<String, StatisticsItem> statisticItems;
 	private long startTime;
 	
