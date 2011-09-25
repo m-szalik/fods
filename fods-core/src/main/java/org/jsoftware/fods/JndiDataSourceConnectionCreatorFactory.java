@@ -20,7 +20,7 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * <p>
  * Required configuration values:
  * <ul>
- * 	<li>jndiName - jndi name of {@link DataSource} to use</li>
+ * 	<li>jndiName - jndi name (in scope of &quote;java:/comp/env/&quote;) name of {@link DataSource} to use</li>
  * </ul>
  * </p>
  * @author szalik
