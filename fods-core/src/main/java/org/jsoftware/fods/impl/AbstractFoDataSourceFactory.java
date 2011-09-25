@@ -19,9 +19,9 @@ import org.jsoftware.fods.client.ext.ManageableViaMXBean;
 import org.jsoftware.fods.jmx.FoDataSourceConsole;
 
 /**
- * Factory of {@link FODataSource} object.
+ * Factory of {@link FoDataSource} object.
  * <p>
- * This is the only way to create {@link FODataSource} object.
+ * This is the only way to create {@link FoDataSource} object.
  * <p>
  * 
  * @author szalik
@@ -33,13 +33,14 @@ public abstract class AbstractFoDataSourceFactory {
 	public DataSource getObjectInstance() throws IOException {
 		Configuration configuration = getConfiguration();
 		ObjectName mxbeanObjectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
-		FODataSource ds = new FODataSource(configuration);
+		FoDataSource ds = new FoDataSource(configuration);
 
 		Map<String, Boolean> testResults = new HashMap<String, Boolean>();
 		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
 			Boolean b = ds.testDatabase(dbc.getDatabaseName());
-			if (b == null)
+			if (b == null) {
 				b = Boolean.FALSE;
+			}
 			testResults.put(dbc.getDatabaseName(), b);
 		}
 
@@ -52,8 +53,10 @@ public abstract class AbstractFoDataSourceFactory {
 			}
 		}
 		displayInfo(configuration, testResults);
+		ds.start();
 		return ds;
 	}
+	
 
 	protected abstract Configuration getConfiguration() throws IOException;
 
@@ -61,7 +64,7 @@ public abstract class AbstractFoDataSourceFactory {
 		// display information
 		boolean debug = configuration.getLogger().isDebugEnabled();
 		try {
-			InputStream ins = FODataSource.class.getResourceAsStream("/org/jsoftware/fods/message.txt");
+			InputStream ins = FoDataSource.class.getResourceAsStream("/org/jsoftware/fods/message.txt");
 			if (ins != null) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(ins));
 				StringBuilder out = new StringBuilder();
@@ -135,7 +138,7 @@ public abstract class AbstractFoDataSourceFactory {
 		}
 	}
 
-	private void registerMXBeanForDS(FODataSource ds, Configuration configuration, ObjectName objectName) {
+	private void registerMXBeanForDS(FoDataSource ds, Configuration configuration, ObjectName objectName) {
 		String dsName = configuration.getFoDSName();
 		try {
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();

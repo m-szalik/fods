@@ -12,7 +12,6 @@ import javax.sql.DataSource;
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
 import org.jsoftware.fods.client.ext.Displayable;
-import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
@@ -35,12 +34,11 @@ public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreator
 		try {
 			InitialContext initContext = new InitialContext();
 			Context envContext = (Context) initContext.lookup("java:/comp/env");
-			logger.info("Lookup for " + jndiName);
+			logger.debug("Lookup for " + jndiName);
 			DataSource dsin = (DataSource) envContext.lookup(jndiName);
-			logger.info(jndiName + " found");
+			logger.debug(jndiName + " found");
 			return new JndiDataSourceConnectionCreator(dsin);
 		} catch (NamingException e) {
-			logger.log(LogLevel.CRITICAL, "Error building datasources", e);
 			throw new RuntimeException("Error building datasources", e);
 		}
 
@@ -59,6 +57,12 @@ public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreator
 
 		public String asString(boolean addDebugInfo) {
 			return "JndiDataSourceConnectionCreator" + (addDebugInfo ? "(jndiName=" + jndiName + ")": "");
+		}
+
+		public void start() throws Exception {
+		}
+
+		public void stop() {	
 		}
 	}
 }

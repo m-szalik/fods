@@ -1,5 +1,7 @@
 package org.jsoftware.fods.impl;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,15 +31,16 @@ import org.jsoftware.fods.stats.StatisticsItem;
  * Fail over {@link DataSource} implementation.
  * @author szalik
  */
-public class FODataSource implements DataSource {
+public class FoDataSource implements DataSource, Closeable {
 	private Logger logger;
 	private PrintWriter printWriter;
 	private Configuration configuration;
 	private Statistics stats;
 	private ChangeEventsThread eventsSenderThread;
 	private FodsStateImpl fodsState;
+	private boolean active;
 
-	FODataSource(Configuration configuration) {
+	FoDataSource(Configuration configuration) {
 		this.logger = configuration.getLogger();
 		this.configuration = configuration;
 		this.printWriter = new PrintWriter(new LoggerWriter(logger));
@@ -132,11 +135,36 @@ public class FODataSource implements DataSource {
 		return b;
 	}
 	
+	public void start() {
+		for(Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
+			try {
+				dbc.getConnectionCreator().start();
+			} catch (Exception e) {
+				throw new RuntimeException("Error invoking start() of " + dbc.getConnectionCreator(), e);
+			}
+		}
+		active = true;
+	}
+	
+	public void stop() {
+		for(Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
+			try {
+				dbc.getConnectionCreator().stop();
+			} catch (Exception e) {	}
+		}
+		active = false;
+	}
+
+	public void close() throws IOException {
+		stop();
+	}
+	
 	/**
 	 * @return
 	 * @throws SQLException
 	 */
 	private Connection connection() throws SQLException {
+		if (! active) throw new SQLException("DataSource is not active / closed.");
 		Selector selector = configuration.getSelector();
 		String dbname;
 		Connection connection;

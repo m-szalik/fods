@@ -16,7 +16,7 @@ import org.jsoftware.fods.client.ext.Selector;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
 /**
- * Default implementation of {@link FODataSource}'s {@link Configuration}.
+ * Default implementation of {@link FoDataSource}'s {@link Configuration}.
  * @author szalik
  */
 public class DefaultConfiguration implements Configuration {

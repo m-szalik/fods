@@ -16,22 +16,22 @@ import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 import org.jsoftware.fods.event.AbstractFodsEvent;
 import org.jsoftware.fods.event.ActiveDatabaseChangedEvent;
-import org.jsoftware.fods.impl.FODataSource;
+import org.jsoftware.fods.impl.FoDataSource;
 import org.jsoftware.fods.impl.FodsDbStateImpl;
 import org.jsoftware.fods.stats.StatisticsItem;
 
 /**
  * JmxBean implementation of {@link FoDataSourceConsoleMBean} for
- * {@link FODataSource}.
+ * {@link FoDataSource}.
  * 
  * @author szalik
  */
 public class FoDataSourceConsole extends NotificationBroadcasterSupport implements NotificationEmitter, FoDataSourceConsoleMXBean, FodsEventListener {
-	private FODataSource ds;
+	private FoDataSource ds;
 	private long notificationSeq;
 	private Configuration configuration;
 
-	public FoDataSourceConsole(FODataSource ds, Configuration configuration) {
+	public FoDataSourceConsole(FoDataSource ds, Configuration configuration) {
 		this.ds = ds;
 		this.configuration = configuration;
 	}

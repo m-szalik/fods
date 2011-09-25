@@ -21,6 +21,10 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * <li>driverClassName - jdbc {@link Driver}</li>
  * <li><i>other jdbc connection properties</i></li>
  * </ul>
+ * Optional configuration values:
+ * <ul>
+ * <li>maxWait - login timeout</li>
+ * </ul>
  * </p>
  * 
  * @author szalik
@@ -37,6 +41,7 @@ public class SingleConnectionJdbcConnectionCreatorFactory implements ConnectionC
 		cc.dbName = dbname;
 		cc.properties = new Properties(properties);
 		cc.logger = logger;
+		cc.maxWait = Integer.valueOf(pu.getProperty("maxWait", "0"));
 		return cc;
 	}
 
@@ -47,15 +52,29 @@ public class SingleConnectionJdbcConnectionCreatorFactory implements ConnectionC
 		private String dbName, jdbcURI;
 		private Properties properties;
 		private Logger logger;
+		private int maxWait;
 
 		public String asString(boolean addDebugInfo) {
 			return "SingleConnectionJdbcConnection" + (addDebugInfo ? "(jdbcURI=" + jdbcURI + ")" : "");
 		}
 
 		public Connection getConnection() throws SQLException {
-			Connection con = DriverManager.getConnection(jdbcURI, properties);
-			logger.debug("New connection to \"" + dbName + "\" created.");
-			return con;
+			int timoeut = DriverManager.getLoginTimeout();
+			DriverManager.setLoginTimeout(maxWait);
+			try {
+				Connection con = DriverManager.getConnection(jdbcURI, properties);
+				logger.debug("New connection to \"" + dbName + "\" created.");
+				return con;
+			} finally {
+				DriverManager.setLoginTimeout(timoeut);
+			}
 		}
+
+		public void start() throws Exception {
+		}
+
+		public void stop() {
+		}
+		
 	}
 }

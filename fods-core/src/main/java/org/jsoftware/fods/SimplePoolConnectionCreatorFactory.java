@@ -64,7 +64,7 @@ public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFact
 
 }
 
-class SimplePoolConnectionCreator extends Thread implements ConnectionCreator, Displayable {
+class SimplePoolConnectionCreator implements ConnectionCreator, Displayable, Runnable {
 	private Logger logger;
 	private int maxWait;
 	private int maxActive;
@@ -76,9 +76,10 @@ class SimplePoolConnectionCreator extends Thread implements ConnectionCreator, D
 	private Properties connectionProperties;
 	private List<JdbcWrappedConnection> activeConnections;
 	private List<JdbcWrappedConnection> availableConnections;
+	private Thread thread;
+	private boolean active;
 
 	public SimplePoolConnectionCreator(String dbname, Logger logger, Properties properties) throws SQLException {
-		super(SimplePoolConnectionCreator.class.getSimpleName() + "-cleanupThread");
 		PropertiesUtil pu = new PropertiesUtil(properties, dbname);
 		this.logger = logger;
 		this.dbname = dbname;
@@ -86,36 +87,57 @@ class SimplePoolConnectionCreator extends Thread implements ConnectionCreator, D
 		this.maxActive = Integer.valueOf(pu.getProperty("maxActive", "8"));
 		this.maxIdle = Integer.valueOf(pu.getProperty("maxIdle", "1"));
 		this.minIdle = Integer.valueOf(pu.getProperty("minIdle", "0"));
-		this.maxWait = Integer.valueOf(pu.getProperty("maxWait", "-1"));
+		this.maxWait = Integer.valueOf(pu.getProperty("maxWait", "0"));
+		if (this.maxWait > 0) {
+			this.maxWait = 0;
+		}
 		if (maxIdle < minIdle) {
 			throw new IllegalArgumentException("maxIdle < minIdle");
 		}
 		this.jdbcURI = pu.getProperty("jdbcURI");
 		this.closeTimout = Integer.valueOf(pu.getProperty("closeTimeout", "3600000"));
-		if (maxWait >= 0) {
-			DriverManager.setLoginTimeout(maxWait);
-		}
-		this.activeConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
-		this.availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+		this.thread = new Thread(this, "SimplePoolConnection-cleaner");
+		this.thread.setDaemon(true);
+	}
+
+	public void start() throws Exception {
+		activeConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+		availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+		active = true;
 		for (int a = 0; a < this.minIdle; a++) {
 			this.availableConnections.add(createNewConnection());
 		}
-		setDaemon(true);
-		start();
+		thread.start();
+	}
+
+	public void stop() {
+		active = false;
+		synchronized (activeConnections) {
+			for (SimplePoolConnectionCreator.JdbcWrappedConnection con : activeConnections) {
+				con.realClose();
+			}
+		}
+		availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
 	}
 
 	private JdbcWrappedConnection createNewConnection() throws SQLException {
-		Connection con = DriverManager.getConnection(jdbcURI, connectionProperties);
-		JdbcWrappedConnection jdbcWrappedConnection = new JdbcWrappedConnection(con);
-		synchronized (activeConnections) {
-			if (activeConnections.size() == maxActive) {
-				con.close();
-				throw new SQLException("Can not create more connections to " + dbname + ". MaxActive is set to " + maxActive);
+		int maxLoginTimeout = DriverManager.getLoginTimeout();
+		DriverManager.setLoginTimeout(maxWait);
+		try {
+			Connection con = DriverManager.getConnection(jdbcURI, connectionProperties);
+			JdbcWrappedConnection jdbcWrappedConnection = new JdbcWrappedConnection(con);
+			synchronized (activeConnections) {
+				if (activeConnections.size() == maxActive) {
+					con.close();
+					throw new SQLException("Can not create more connections to " + dbname + ". MaxActive is set to " + maxActive);
+				}
+				activeConnections.add(jdbcWrappedConnection);
 			}
-			activeConnections.add(jdbcWrappedConnection);
+			logger.debug("New connection to \"" + dbname + "\" created for pool.");
+			return jdbcWrappedConnection;
+		} finally {
+			DriverManager.setLoginTimeout(maxLoginTimeout);
 		}
-		logger.debug("New connection to \"" + dbname + "\" created for pool.");
-		return jdbcWrappedConnection;
 	}
 
 	public Connection getConnection() throws SQLException {
@@ -154,11 +176,14 @@ class SimplePoolConnectionCreator extends Thread implements ConnectionCreator, D
 		}
 	}
 
-	@Override
 	public void run() {
 		try {
 			while (true) {
+				if (!active)
+					break;
 				Thread.sleep(closeTimout);
+				if (!active)
+					break;
 				long ts = System.currentTimeMillis() - closeTimout;
 				synchronized (activeConnections) {
 					for (JdbcWrappedConnection jc : activeConnections) {
@@ -187,7 +212,7 @@ class SimplePoolConnectionCreator extends Thread implements ConnectionCreator, D
 				}
 			}
 		} catch (InterruptedException e) {
-			logger.warn(getName() + " closing.");
+			logger.warn(Thread.currentThread().getName() + " closing.");
 		}
 	}
 

@@ -18,12 +18,12 @@ import javax.sql.DataSource;
 
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
-import org.jsoftware.fods.impl.FODataSource;
+import org.jsoftware.fods.impl.FoDataSource;
 import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
 
 /**
- * Factory of {@link FODataSource} object.
- * <p>Use this factory to place {@link FODataSource} into {@link InitialContext}.</p> 
+ * Factory of {@link FoDataSource} object.
+ * <p>Use this factory to place {@link FoDataSource} into {@link InitialContext}.</p> 
  * @author szalik
  */
 public class J2EEFODataSourceFactory implements ObjectFactory {
@@ -41,7 +41,17 @@ public class J2EEFODataSourceFactory implements ObjectFactory {
 				if (pl.getContent() instanceof InputStream) {
 					ins = (InputStream) pl.getContent();
 				}
-				ins = new FileInputStream(pl.getContent().toString());
+				ins = getClass().getResourceAsStream(pl.getContent().toString());
+				if (ins == null) {
+					try {
+						ins = new FileInputStream(pl.getContent().toString());
+					} catch (IOException e) {
+						ins = null;
+					}
+				}
+				if (ins == null) {
+					throw new IOException("Can not load foDS properties form " + pl.getContent());
+				}
 				properties.load(ins);
 			}
 			for (Enumeration<RefAddr> en = r.getAll(); en.hasMoreElements();) {
@@ -56,8 +66,8 @@ public class J2EEFODataSourceFactory implements ObjectFactory {
 					factory.setProperties(properties);
 					return factory.getConfiguration();
 				}
-				
 			};
+			
 			DataSource ds = factory.getObjectInstance();
 			return ds;
 		} else {

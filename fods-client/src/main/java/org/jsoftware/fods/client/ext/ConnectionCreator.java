@@ -12,4 +12,8 @@ public interface ConnectionCreator {
 
 	Connection getConnection() throws SQLException;
 	
+	void start() throws Exception;
+	
+	void stop();
+	
 }

@@ -5,14 +5,28 @@ import java.sql.SQLException;
 
 import org.jsoftware.fods.AbstractDbTestTemplate;
 import org.jsoftware.fods.client.ext.ConnectionCreator;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 
 public class SimplePoolConnectionCreatorFactoryTest extends AbstractDbTestTemplate {
-
+	private ConnectionCreator cc;
+	
+	@Before
+	public void before() throws Exception {
+		cc = configuration.getDatabaseConfigurationByName("db0").getConnectionCreator();
+		cc.start();
+	}
+	
+	@After
+	public void after() {
+		cc.stop();
+	}
+	
+	
 	@Test(expected=SQLException.class) 
-	public void getConnectionOutOfConnectionsTest() throws SQLException {
-		ConnectionCreator cc = configuration.getDatabaseConfigurationByName("db0").getConnectionCreator();
+	public void getConnectionOutOfConnectionsTest() throws Exception {
 		for(int i=0; i<10; i++) {
 			cc.getConnection();
 		}
@@ -20,7 +34,6 @@ public class SimplePoolConnectionCreatorFactoryTest extends AbstractDbTestTempla
 	
 	@Test
 	public void getConnection1() throws SQLException {
-		ConnectionCreator cc = configuration.getDatabaseConfigurationByName("db0").getConnectionCreator();
 		for(int i=0; i<10; i++) {
 			Connection connection = cc.getConnection();
 			connection.close();
