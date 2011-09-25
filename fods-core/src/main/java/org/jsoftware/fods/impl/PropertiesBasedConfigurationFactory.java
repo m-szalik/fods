@@ -1,6 +1,7 @@
 package org.jsoftware.fods.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -30,7 +31,10 @@ public class PropertiesBasedConfigurationFactory implements ConfigurationFactory
 	public void setProperties(Properties properties) {
 		Properties props = new Properties();
 		try {
-			props.load(getClass().getResourceAsStream("/defaultConfigurationBase.properties"));
+			String res = "/defaults.properties";
+			InputStream ins = getClass().getResourceAsStream(res);
+			if (ins == null) throw new IOException("Resource classpath::" + res + " not found.");
+			props.load(ins);
 		} catch (IOException e) {
 			throw new RuntimeException("Can not load default configuration values.", e);
 		}
