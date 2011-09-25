@@ -49,7 +49,7 @@ public interface FoDataSourceConsoleMXBean {
 	
 	/**
 	 * Databases statistics or <tt>null</tt> if statistics are disabled.
-	 * @return
+	 * @return statistics for all databases
 	 */
 	JMXStatistics[] getStatistics();
 	

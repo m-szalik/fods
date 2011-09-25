@@ -4,9 +4,10 @@ import java.util.Collection;
 import java.util.Properties;
 
 import javax.management.ObjectName;
+import javax.sql.DataSource;
 
 /**
- * Fods main configuration for single {@link FODataSource}
+ * Fods main configuration for single {@link DataSource}.
  * @author szalik
  */
 public interface Configuration {

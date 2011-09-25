@@ -1,9 +1,9 @@
 package org.jsoftware.fods.event;
 
-import org.jsoftware.fods.client.ext.FodsDbState;
+import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 
 /**
- * On database status changed to {@link FodsDbState.STATE#BROKEN}
+ * On database status changed to {@link FodsDbStateStatus#BROKEN}
  * @author szalik
  */
 public class DatabaseFiledEvent extends AbstractFodsEvent {

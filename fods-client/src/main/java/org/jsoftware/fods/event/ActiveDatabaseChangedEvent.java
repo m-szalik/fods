@@ -1,5 +1,7 @@
 package org.jsoftware.fods.event;
 
+import org.jsoftware.fods.jmx.FoDataSourceConsoleMXBean;
+
 /**
  * Invoked on active database changed. 
  * TODO add this event on {@link FoDataSourceConsoleMXBean#forceSetCurrentDatabaseName(String)}
