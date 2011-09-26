@@ -212,8 +212,8 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 		}
 		if (dbState.getStatus() != newStatus) {
 			notifyChangeEvent(new DatabaseStatusChangedEvent(dbname, dbState.getStatus(), newStatus));
-			dbState.setState(newStatus);
 		}
+		dbState.setState(newStatus);
 		if (connection != null) {
 			try {
 				dbState.setReadonly(connection.isReadOnly());
@@ -252,6 +252,10 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 			if (event instanceof DatabaseFiledEvent) {
 				stats.getItem(event.getDbName()).addBreak();
 			}
+		}
+		if (event instanceof DatabaseFiledEvent) {
+			DatabaseFiledEvent dbfEvent = (DatabaseFiledEvent) event;
+			logger.log(LogLevel.WARN, "Database " + event.getDbName() + " failed - " + dbfEvent.getReason(), dbfEvent.getReason());
 		}
 		logger.logEvent(event);
 	}
