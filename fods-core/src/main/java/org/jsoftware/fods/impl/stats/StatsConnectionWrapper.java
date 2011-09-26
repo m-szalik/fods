@@ -35,6 +35,7 @@ import java.util.Properties;
  * 
  * @author szalik
  */
+// TODO napisac junit
 public class StatsConnectionWrapper implements Connection {
 	private Connection connection;
 	private StatisticsItem statItem;
