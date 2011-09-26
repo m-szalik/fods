@@ -39,6 +39,7 @@ public abstract class AbstractFoDataSourceFactory {
 			registerMXBeanForDS(ds, configuration, mxbeanObjectName);
 			registerMXBeanFromFactory(configuration.getLogger(), configuration, "logger");
 			registerMXBeanFromFactory(configuration.getSelector(), configuration, "selector");
+			registerMXBeanFromFactory(configuration, configuration, "configuration");
 			for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
 				registerMXBeanFromFactory(dbc.getConnectionCreator(), configuration, "database-" + dbc.getDatabaseName());
 			}

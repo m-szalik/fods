@@ -12,6 +12,7 @@ import javax.management.ObjectName;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
+import org.jsoftware.fods.client.ext.ManageableViaMXBean;
 import org.jsoftware.fods.client.ext.Selector;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
@@ -19,7 +20,7 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * Default implementation of {@link FoDataSourceImpl}'s {@link Configuration}.
  * @author szalik
  */
-public class DefaultConfiguration implements Configuration {
+public class DefaultConfiguration implements Configuration, ManageableViaMXBean {
 	private Selector selector;
 	private Logger logger;
 	private String fodsName;
@@ -29,6 +30,11 @@ public class DefaultConfiguration implements Configuration {
 	public DefaultConfiguration(Properties main) {
 		pu = new PropertiesUtil(main);
 		fodsName = getProperty("fodsName");
+	}
+	
+	public Object getMXBeanInstance() {
+		// TODO todo
+		return null;
 	}
 
 	public Selector getSelector() {
@@ -101,4 +107,5 @@ public class DefaultConfiguration implements Configuration {
 		}
 		return null;
 	}
+
 }
