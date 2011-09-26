@@ -1,4 +1,4 @@
-package org.jsoftware.fods.impl;
+package org.jsoftware.fods.impl.stats;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -17,14 +17,12 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jsoftware.fods.stats.Statistics;
-import org.jsoftware.fods.stats.StatisticsItem;
 
 /**
  * {@link Connection} wrapper collecting fods's {@link Statistics} informations.
  * @author szalik
  */
-class StatsConnectionWrapper implements Connection {
+public class StatsConnectionWrapper implements Connection {
 	private Connection connection;
 	private StatisticsItem statisticsItem;
 

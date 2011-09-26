@@ -23,9 +23,10 @@ import org.jsoftware.fods.event.NoMoreDatabasesEvent;
 import org.jsoftware.fods.event.RecoveryFailedEvent;
 import org.jsoftware.fods.event.RecoveryStartEvent;
 import org.jsoftware.fods.event.RecoverySucessEvent;
+import org.jsoftware.fods.impl.stats.Statistics;
+import org.jsoftware.fods.impl.stats.StatisticsItem;
+import org.jsoftware.fods.impl.stats.StatsConnectionWrapper;
 import org.jsoftware.fods.log.LoggerWriter;
-import org.jsoftware.fods.stats.Statistics;
-import org.jsoftware.fods.stats.StatisticsItem;
 
 /**
  * Fail over {@link DataSource} implementation.

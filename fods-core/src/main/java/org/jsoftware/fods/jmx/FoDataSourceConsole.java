@@ -18,7 +18,7 @@ import org.jsoftware.fods.event.AbstractFodsEvent;
 import org.jsoftware.fods.event.ActiveDatabaseChangedEvent;
 import org.jsoftware.fods.impl.FoDataSourceImpl;
 import org.jsoftware.fods.impl.FodsDbStateImpl;
-import org.jsoftware.fods.stats.StatisticsItem;
+import org.jsoftware.fods.impl.stats.StatisticsItem;
 
 /**
  * JmxBean implementation of {@link FoDataSourceConsoleMBean} for

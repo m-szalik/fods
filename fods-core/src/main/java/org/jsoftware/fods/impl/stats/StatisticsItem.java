@@ -1,4 +1,4 @@
-package org.jsoftware.fods.stats;
+package org.jsoftware.fods.impl.stats;
 
 import java.io.Serializable;
 
