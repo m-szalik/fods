@@ -19,6 +19,9 @@ public class RoundRobinOnFailSelectorFactory implements SelectorFactory {
 				String str = fodsState.getCurrentDatabase();
 				if (str == null) {
 					str = next(fodsState);
+					if (str == null) {
+						return null;
+					}
 				}
 				if (isValid(fodsState.getDbstate(str))) {
 					return str;

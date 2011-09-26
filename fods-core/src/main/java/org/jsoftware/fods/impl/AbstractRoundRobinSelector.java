@@ -64,26 +64,31 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 	}
 
 	protected String next(FodsState fodsState) {
-		int ta = 0;
-		String str = last;
-		if (str == null) {
-			str = sequenceList.get(0);
+		int ta = 0, i; String str;
+		int size = sequenceList.size();
+		if (last == null) {
+			i = 0;
+		} else {
+			i = sequenceList.indexOf(last) +1;
 		}
-		FodsDbState dbstate = fodsState.getDbstate(str);
-		while (!isValid(dbstate)) {
-			int i = sequenceList.indexOf(str);
-			if (i >= sequenceList.size()) {
+		do {
+			if (i == size) {
 				i = 0;
+			}
+			ta++;
+			str = sequenceList.get(i);
+			FodsDbState fodsdbState = fodsState.getDbstate(str);
+			if (isValid(fodsdbState)) {
+				break;
 			} else {
 				i++;
 			}
-			str = sequenceList.get(i);
-			ta++;
-			if (ta > sequenceList.size()) { // no more valid databases
+			if (ta > size) {
 				str = null;
 				break;
 			}
-		}
+		} while(true);
+		last = str;
 		return str;
 	}
 
