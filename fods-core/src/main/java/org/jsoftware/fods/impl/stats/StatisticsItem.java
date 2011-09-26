@@ -11,8 +11,10 @@ import org.jsoftware.fods.jmx.JMXStatistics;
  */
 public class StatisticsItem implements Serializable {
 	private static final long serialVersionUID = -2481298760422578331L;
-	private long get, release;
-	private int breakTimes;
+	long get, release;
+	int breakTimes;
+	long executedQueries, executedSelectQueries;
+	
 	
 	public void addBreak() {
 		breakTimes++;
@@ -20,26 +22,7 @@ public class StatisticsItem implements Serializable {
 	
 	public void addRecovery() {
 	}
-	
-	public void addGet() {
-		get++;
-	}
-	
-	public void addRelease() {
-		release++;
-	}
-	
-	public int getBreakTimes() {
-		return breakTimes;
-	}
-	
-	public long getGet() {
-		return get;
-	}
-	
-	public long getRelease() {
-		return release;
-	}
+		
 	
 	@Override
 	public String toString() {
@@ -52,6 +35,6 @@ public class StatisticsItem implements Serializable {
 	}
 	
 	public JMXStatistics createJMXStatistics(String myDbName) {
-		return new JMXStatistics(get, release, breakTimes, myDbName);
+		return new JMXStatistics(get, release, breakTimes, executedQueries, executedSelectQueries, myDbName);
 	}
 }

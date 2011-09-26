@@ -7,9 +7,10 @@ public class JMXStatistics implements Serializable {
 	private long get, release;
 	private int breakTimes;
 	private String dbName;
+	private long executedQueries, executedSelectQueries;
 
-	@ConstructorProperties({ "get", "release", "breakTimes", "dbName" })
-	public JMXStatistics(long get, long release, int breakTimes, String dbName) {
+	@ConstructorProperties({ "get", "release", "breakTimes","executedQueries", "executedSelectQueries", "dbName" })
+	public JMXStatistics(long get, long release, int breakTimes, long executedQueries, long executedSelectQueries, String dbName) {
 		super();
 		this.get = get;
 		this.release = release;
@@ -32,7 +33,14 @@ public class JMXStatistics implements Serializable {
 	public String getDbName() {
 		return dbName;
 	}
-
+	
+	public long getExecutedQueries() {
+		return executedQueries;
+	}
+	
+	public long getExecutedSelectQueries() {
+		return executedSelectQueries;
+	}
 
 	private static final long serialVersionUID = -1585112927126973734L;
 
