@@ -33,7 +33,7 @@ public interface Configuration {
 
 	ObjectName getMxBeanObjectName(String sufix);
 	
-	long getMinRecoveryTime();
+
 	
 	interface DatabaseConfiguration {
 		

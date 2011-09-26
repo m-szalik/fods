@@ -10,6 +10,7 @@ import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 import org.jsoftware.fods.client.ext.FodsState;
 import org.jsoftware.fods.client.ext.ManageableViaMXBean;
 import org.jsoftware.fods.client.ext.Selector;
+import org.jsoftware.fods.impl.utils.RequiredPropertyMissing;
 
 
 /**
@@ -20,11 +21,18 @@ import org.jsoftware.fods.client.ext.Selector;
  */
 public class DefaultRoundRobinSelector implements Selector, ManageableViaMXBean {
 	private List<String> sequence;
-	private Configuration configuration;
+	private long recoveryTime;
+	
 	
 	public DefaultRoundRobinSelector(Configuration configuration) {
-		this.configuration = configuration;
 		this.sequence = new LinkedList<String>();
+		String str = configuration.getProperty("selectorMinRecoveryTime");
+		if (str != null) {
+			recoveryTime = Long.valueOf(str);
+		} else {
+			new RequiredPropertyMissing("selectorMinRecoveryTime");
+		}
+		
 		String selectorSeq = configuration.getProperty("selectorSequence", null);
 		if (selectorSeq != null) {
 			for(String s : selectorSeq.split(",")) {
@@ -73,7 +81,7 @@ public class DefaultRoundRobinSelector implements Selector, ManageableViaMXBean 
 		if (fodsdbState.getStatus() == FodsDbStateStatus.VALID) {
 			return true;
 		}
-		if (fodsdbState.getStatus() == FodsDbStateStatus.BROKEN && fodsdbState.getBrokenTime() >= configuration.getMinRecoveryTime()) {
+		if (fodsdbState.getStatus() == FodsDbStateStatus.BROKEN && fodsdbState.getBrokenTime() >= recoveryTime) {
 			return true;
 		}
 		return false;
