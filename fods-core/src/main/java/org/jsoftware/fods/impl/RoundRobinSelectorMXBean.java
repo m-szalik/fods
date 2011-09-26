@@ -4,10 +4,10 @@ import java.util.List;
 
 
 /**
- * MxBean for {@link DefaultRoundRobinSelector}
+ * MxBean for {@link AbstractRoundRobinSelector}
  * @author szalik
  */
-public interface DefaultRoundRobinSelectorMXBean {
+public interface RoundRobinSelectorMXBean {
 
 	List<String> getSequence();
 	

@@ -1,19 +1,12 @@
 package org.jsoftware.fods;
 
-import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.Selector;
-import org.jsoftware.fods.client.ext.SelectorFactory;
-import org.jsoftware.fods.impl.DefaultRoundRobinSelector;
 
 /**
- * Factory for {@link DefaultRoundRobinSelector}.
- * @see DefaultRoundRobinSelector
+ * Factory for default {@link Selector}.
+ * @see RoundRobinOnFailSelectorFactory
  * @author szalik
  */
-public class DefaultSelectorFactory implements SelectorFactory {
+public class DefaultSelectorFactory extends RoundRobinOnFailSelectorFactory {
 	
-	public Selector getSelector(Configuration configuration) {
-		return new DefaultRoundRobinSelector(configuration);
-	}
-
 }
