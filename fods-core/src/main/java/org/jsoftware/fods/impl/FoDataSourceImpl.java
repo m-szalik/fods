@@ -229,7 +229,7 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 		Connection connection;
 		if (configuration.isEnableStats()) {
 			StatisticsItem statisticsItem = stats.getItem(dbName);
-			connection = new StatsConnectionWrapper(statisticsItem, con);
+			connection = new StatsConnectionWrapper(statisticsItem, con, configuration.getLogLongSqls(), logger, dbName);
 		} else {
 			connection = con;
 		}

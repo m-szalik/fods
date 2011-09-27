@@ -1,6 +1,8 @@
 package org.jsoftware.fods.impl.utils;
 
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Helps to read {@link Properties}.
@@ -75,6 +77,16 @@ public class PropertiesUtil {
 				throw new RuntimeException("Object can not be created, className=" + className, e);
 			}
 		}
+	}
+
+	public Set<String> getPropertyKeys() {
+		HashSet<String> keys = new HashSet<String>();
+		for(Object o : properties.keySet()) {
+			if (o != null) {
+				keys.add(o.toString());
+			}
+		}
+		return keys;
 	}
 
 }

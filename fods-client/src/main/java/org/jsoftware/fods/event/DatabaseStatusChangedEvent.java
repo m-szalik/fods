@@ -1,11 +1,9 @@
 package org.jsoftware.fods.event;
 
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
-import org.jsoftware.fods.jmx.FoDataSourceConsoleMXBean;
 
 /**
  * Invoked on database {@link FodsDbStateStatus} changed.
- * TODO add this event on {@link FoDataSourceConsoleMXBean#forceSetCurrentDatabaseName(String)} 
  * @author szalik
  */
 public class DatabaseStatusChangedEvent extends AbstractFodsEvent {

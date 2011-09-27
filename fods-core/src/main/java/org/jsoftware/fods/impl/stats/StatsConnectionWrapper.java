@@ -1,871 +1,305 @@
 package org.jsoftware.fods.impl.stats;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.net.URL;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.Date;
 import java.sql.NClob;
-import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jsoftware.fods.client.ext.Logger;
+
 /**
  * {@link Connection} wrapper collecting fods's {@link Statistics} informations.
- * 
  * @author szalik
  */
-// TODO napisac junit
 public class StatsConnectionWrapper implements Connection {
+	private static final String NOT_SUPPORTED = "Not supported by fods.";
 	private Connection connection;
 	private StatisticsItem statItem;
+	private int logSQL;
+	private Logger logger;
+	private String dbName;
 
-	public StatsConnectionWrapper(StatisticsItem statisticsItem, Connection conn) {
+	public StatsConnectionWrapper(StatisticsItem statisticsItem, Connection conn, int logLongSQLs, Logger logger, String dbName) {
 		this.statItem = statisticsItem;
 		this.connection = conn;
 		this.statItem.get++;
+		this.logSQL = logLongSQLs;
+		this.logger = logger;
+		this.dbName = dbName;
 	}
+
 	public void clearWarnings() throws SQLException {
 		connection.clearWarnings();
 	}
+
 	public void close() throws SQLException {
 		statItem.release++;
 		connection.close();
 	}
+
 	public void commit() throws SQLException {
 		connection.commit();
 	}
+
 	public Statement createStatement() throws SQLException {
-		return new StatsStatementWrapper<Statement>(connection.createStatement());
+		return createStatementProxy(connection.createStatement(), Statement.class, null);
 	}
+
 	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		return new StatsStatementWrapper<Statement>(connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
+		return createStatementProxy(connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability), Statement.class, null);
 	}
+
 	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
-		return new StatsStatementWrapper<Statement>(connection.createStatement(resultSetType, resultSetConcurrency));
+		return createStatementProxy(connection.createStatement(resultSetType, resultSetConcurrency), Statement.class, null);
 	}
+
 	public boolean getAutoCommit() throws SQLException {
 		return connection.getAutoCommit();
 	}
+
 	public String getCatalog() throws SQLException {
 		return connection.getCatalog();
 	}
+
 	public int getHoldability() throws SQLException {
 		return connection.getHoldability();
 	}
+
 	public DatabaseMetaData getMetaData() throws SQLException {
 		return connection.getMetaData();
 	}
+
 	public int getTransactionIsolation() throws SQLException {
 		return connection.getTransactionIsolation();
 	}
+
 	public Map<String, Class<?>> getTypeMap() throws SQLException {
 		return connection.getTypeMap();
 	}
+
 	public SQLWarning getWarnings() throws SQLException {
 		return connection.getWarnings();
 	}
+
 	public boolean isClosed() throws SQLException {
 		return connection.isClosed();
 	}
+
 	public boolean isReadOnly() throws SQLException {
 		return connection.isReadOnly();
 	}
+
 	public String nativeSQL(String sql) throws SQLException {
-		return connection.nativeSQL(sql);
+		long ts1 = System.currentTimeMillis();
+		try {
+			return connection.nativeSQL(sql);
+		} finally {
+			logSQL(sql, (int) (System.currentTimeMillis() - ts1), false, 1);
+		}
 	}
+
 	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		return new StatsCallableStatementWrapper(connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability));
+		return createStatementProxy(connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability), CallableStatement.class, sql);
 	}
+
 	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		return new StatsCallableStatementWrapper(connection.prepareCall(sql, resultSetType, resultSetConcurrency));
+		return createStatementProxy(connection.prepareCall(sql, resultSetType, resultSetConcurrency), CallableStatement.class, sql);
 	}
+
 	public CallableStatement prepareCall(String sql) throws SQLException {
-		return new StatsCallableStatementWrapper(connection.prepareCall(sql));
+		return createStatementProxy(connection.prepareCall(sql), CallableStatement.class, sql);
 	}
+
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		return new StatsPreparedStatementWrapper<PreparedStatement>(connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability));
+		return createStatementProxy(connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability), PreparedStatement.class, sql);
 	}
+
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		return new StatsPreparedStatementWrapper<PreparedStatement>(connection.prepareStatement(sql, resultSetType, resultSetConcurrency));
+		return createStatementProxy(connection.prepareStatement(sql, resultSetConcurrency, resultSetConcurrency), PreparedStatement.class, sql);
 	}
+
 	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
-		return new StatsPreparedStatementWrapper<PreparedStatement>(connection.prepareStatement(sql, autoGeneratedKeys));
+		return createStatementProxy(connection.prepareStatement(sql, autoGeneratedKeys), PreparedStatement.class, sql);
 	}
+
 	public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
-		return new StatsPreparedStatementWrapper<PreparedStatement>(connection.prepareStatement(sql, columnIndexes));
+		return createStatementProxy(connection.prepareStatement(sql, columnIndexes), PreparedStatement.class, sql);
 	}
+
 	public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
-		return new StatsPreparedStatementWrapper<PreparedStatement>(connection.prepareStatement(sql, columnNames));
+		return createStatementProxy(connection.prepareStatement(sql, columnNames), PreparedStatement.class, sql);
 	}
+
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		return new StatsPreparedStatementWrapper<PreparedStatement>(connection.prepareStatement(sql));
+		return createStatementProxy(connection.prepareStatement(sql), PreparedStatement.class, sql);
 	}
+
 	public void releaseSavepoint(Savepoint savepoint) throws SQLException {
 		connection.releaseSavepoint(savepoint);
 	}
+
 	public void rollback() throws SQLException {
 		connection.rollback();
 	}
+
 	public void rollback(Savepoint savepoint) throws SQLException {
 		connection.rollback(savepoint);
 	}
+
 	public void setAutoCommit(boolean autoCommit) throws SQLException {
 		connection.setAutoCommit(autoCommit);
 	}
+
 	public void setCatalog(String catalog) throws SQLException {
 		connection.setCatalog(catalog);
 	}
+
 	public void setHoldability(int holdability) throws SQLException {
 		connection.setHoldability(holdability);
 	}
+
 	public void setReadOnly(boolean readOnly) throws SQLException {
 		connection.setReadOnly(readOnly);
 	}
+
 	public Savepoint setSavepoint() throws SQLException {
 		return connection.setSavepoint();
 	}
+
 	public Savepoint setSavepoint(String name) throws SQLException {
 		return connection.setSavepoint(name);
 	}
+
 	public void setTransactionIsolation(int level) throws SQLException {
 		connection.setTransactionIsolation(level);
 	}
+
 	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
 		connection.setTypeMap(map);
 	}
+
 	// ------------------ Methods for JDK6 ------------------------------------
 	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public Blob createBlob() throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public Clob createClob() throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public NClob createNClob() throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public SQLXML createSQLXML() throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public Properties getClientInfo() throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public String getClientInfo(String name) throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public boolean isValid(int timeout) throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public void setClientInfo(Properties properties) {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public void setClientInfo(String name, String value) {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
+
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		throw new RuntimeException("Not supported.");
-	}
-	
-	
-	/**
-	 * @author szalik
-	 * @param <E>
-	 */
-	class StatsStatementWrapper<E extends Statement> implements Statement {
-		protected E stm;
-		private int batch;
-
-		public StatsStatementWrapper(E statement) {
-			this.stm = statement;
-		}
-		public ResultSet executeQuery(String sql) throws SQLException {
-			statItem.executedQueries++;
-			return stm.executeQuery(sql);
-		}
-		public <T> T unwrap(Class<T> iface) throws SQLException {
-			return stm.unwrap(iface);
-		}
-		public int executeUpdate(String sql) throws SQLException {
-			return stm.executeUpdate(sql);
-		}
-		public boolean isWrapperFor(Class<?> iface) throws SQLException {
-			return stm.isWrapperFor(iface);
-		}
-		public void close() throws SQLException {
-			stm.close();
-		}
-		public int getMaxFieldSize() throws SQLException {
-			return stm.getMaxFieldSize();
-		}
-		public void setMaxFieldSize(int max) throws SQLException {
-			stm.setMaxFieldSize(max);
-		}
-		public int getMaxRows() throws SQLException {
-			return stm.getMaxRows();
-		}
-		public void setMaxRows(int max) throws SQLException {
-			stm.setMaxRows(max);
-		}
-		public void setEscapeProcessing(boolean enable) throws SQLException {
-			stm.setEscapeProcessing(enable);
-		}
-		public int getQueryTimeout() throws SQLException {
-			return stm.getQueryTimeout();
-		}
-		public void setQueryTimeout(int seconds) throws SQLException {
-			stm.setQueryTimeout(seconds);
-		}
-		public void cancel() throws SQLException {
-			stm.cancel();
-		}
-		public SQLWarning getWarnings() throws SQLException {
-			return stm.getWarnings();
-		}
-		public void clearWarnings() throws SQLException {
-			stm.clearWarnings();
-		}
-		public void setCursorName(String name) throws SQLException {
-			stm.setCursorName(name);
-		}
-		public boolean execute(String sql) throws SQLException {
-			statItem.executedQueries++;
-			return stm.execute(sql);
-		}
-		public ResultSet getResultSet() throws SQLException {
-			return stm.getResultSet();
-		}
-		public int getUpdateCount() throws SQLException {
-			return stm.getUpdateCount();
-		}
-		public boolean getMoreResults() throws SQLException {
-			return stm.getMoreResults();
-		}
-		public void setFetchDirection(int direction) throws SQLException {
-			stm.setFetchDirection(direction);
-		}
-		public int getFetchDirection() throws SQLException {
-			return stm.getFetchDirection();
-		}
-		public void setFetchSize(int rows) throws SQLException {
-			stm.setFetchSize(rows);
-		}
-		public int getFetchSize() throws SQLException {
-			return stm.getFetchSize();
-		}
-		public int getResultSetConcurrency() throws SQLException {
-			return stm.getResultSetConcurrency();
-		}
-		public int getResultSetType() throws SQLException {
-			return stm.getResultSetType();
-		}
-		public void addBatch(String sql) throws SQLException {
-			batch++;
-			stm.addBatch(sql);
-		}
-		public void clearBatch() throws SQLException {
-			batch = 0;
-			stm.clearBatch();
-		}
-		public int[] executeBatch() throws SQLException {
-			statItem.executedQueries += batch;
-			batch = 0;
-			return stm.executeBatch();
-		}
-		public Connection getConnection() throws SQLException {
-			return StatsConnectionWrapper.this;
-		}
-		public boolean getMoreResults(int current) throws SQLException {
-			return stm.getMoreResults(current);
-		}
-		public ResultSet getGeneratedKeys() throws SQLException {
-			return stm.getGeneratedKeys();
-		}
-		public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException {
-			statItem.executedQueries++;
-			return stm.executeUpdate(sql, autoGeneratedKeys);
-		}
-		public int executeUpdate(String sql, int[] columnIndexes) throws SQLException {
-			statItem.executedQueries++;
-			return stm.executeUpdate(sql, columnIndexes);
-		}
-		public int executeUpdate(String sql, String[] columnNames) throws SQLException {
-			statItem.executedQueries++;
-			return stm.executeUpdate(sql, columnNames);
-		}
-		public boolean execute(String sql, int autoGeneratedKeys) throws SQLException {
-			statItem.executedQueries++;
-			return stm.execute(sql, autoGeneratedKeys);
-		}
-		public boolean execute(String sql, int[] columnIndexes) throws SQLException {
-			statItem.executedQueries++;
-			return stm.execute(sql, columnIndexes);
-		}
-		public boolean execute(String sql, String[] columnNames) throws SQLException {
-			statItem.executedQueries++;
-			return stm.execute(sql, columnNames);
-		}
-		public int getResultSetHoldability() throws SQLException {
-			return stm.getResultSetHoldability();
-		}
-		public boolean isClosed() throws SQLException {
-			return stm.isClosed();
-		}
-		public void setPoolable(boolean poolable) throws SQLException {
-			stm.setPoolable(poolable);
-		}
-		public boolean isPoolable() throws SQLException {
-			return stm.isPoolable();
-		}
-	}
-	
-	
-	/**
-	 * @author szalik
-	 * @param <W>
-	 */
-	class StatsPreparedStatementWrapper<W extends PreparedStatement> extends StatsStatementWrapper<W> implements PreparedStatement {
-		public StatsPreparedStatementWrapper(W statement) {
-			super(statement);
-		}
-		public ResultSet executeQuery() throws SQLException {
-			return stm.executeQuery();
-		}
-		public int executeUpdate() throws SQLException {
-			return stm.executeUpdate();
-		}
-		public void setNull(int parameterIndex, int sqlType) throws SQLException {
-			stm.setNull(parameterIndex, sqlType);
-		}
-		public void setBoolean(int parameterIndex, boolean x) throws SQLException {
-			stm.setBoolean(parameterIndex, x);
-		}
-		public void setByte(int parameterIndex, byte x) throws SQLException {
-			stm.setByte(parameterIndex, x);
-		}
-		public void setShort(int parameterIndex, short x) throws SQLException {
-			stm.setShort(parameterIndex, x);
-		}
-		public void setInt(int parameterIndex, int x) throws SQLException {
-			stm.setInt(parameterIndex, x);
-		}
-		public void setLong(int parameterIndex, long x) throws SQLException {
-			stm.setLong(parameterIndex, x);
-		}
-		public void setFloat(int parameterIndex, float x) throws SQLException {
-			stm.setFloat(parameterIndex, x);
-		}
-		public void setDouble(int parameterIndex, double x) throws SQLException {
-			stm.setDouble(parameterIndex, x);
-		}
-		public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException {
-			stm.setBigDecimal(parameterIndex, x);
-		}
-		public void setString(int parameterIndex, String x) throws SQLException {
-			stm.setString(parameterIndex, x);
-		}
-		public void setBytes(int parameterIndex, byte[] x) throws SQLException {
-			stm.setBytes(parameterIndex, x);
-		}
-		public void setDate(int parameterIndex, Date x) throws SQLException {
-			stm.setDate(parameterIndex, x);
-		}
-		public void setTime(int parameterIndex, Time x) throws SQLException {
-			stm.setTime(parameterIndex, x);
-		}
-		public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
-			stm.setTimestamp(parameterIndex, x);
-		}
-		public void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException {
-			stm.setAsciiStream(parameterIndex, x, length);
-		}
-		@SuppressWarnings("deprecation")
-		public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
-			stm.setUnicodeStream(parameterIndex, x, length);
-		}
-		public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException {
-			stm.setBinaryStream(parameterIndex, x, length);
-		}
-		public void clearParameters() throws SQLException {
-			stm.clearParameters();
-		}
-		public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
-			stm.setObject(parameterIndex, x, targetSqlType);
-		}
-		public void setObject(int parameterIndex, Object x) throws SQLException {
-			stm.setObject(parameterIndex, x);
-		}
-		public boolean execute() throws SQLException {
-			return stm.execute();
-		}
-		public void addBatch() throws SQLException {
-			stm.addBatch();
-		}
-		public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
-			stm.setCharacterStream(parameterIndex, reader, length);
-		}
-		public void setRef(int parameterIndex, Ref x) throws SQLException {
-			stm.setRef(parameterIndex, x);
-		}
-		public void setBlob(int parameterIndex, Blob x) throws SQLException {
-			stm.setBlob(parameterIndex, x);
-		}
-		public void setClob(int parameterIndex, Clob x) throws SQLException {
-			stm.setClob(parameterIndex, x);
-		}
-		public void setArray(int parameterIndex, Array x) throws SQLException {
-			stm.setArray(parameterIndex, x);
-		}
-		public ResultSetMetaData getMetaData() throws SQLException {
-			return stm.getMetaData();
-		}
-		public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException {
-			stm.setDate(parameterIndex, x, cal);
-		}
-		public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException {
-			stm.setTime(parameterIndex, x, cal);
-		}
-		public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
-			stm.setTimestamp(parameterIndex, x, cal);
-		}
-		public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException {
-			stm.setNull(parameterIndex, sqlType, typeName);
-		}
-		public void setURL(int parameterIndex, URL x) throws SQLException {
-			stm.setURL(parameterIndex, x);
-		}
-		public ParameterMetaData getParameterMetaData() throws SQLException {
-			return stm.getParameterMetaData();
-		}
-		public void setRowId(int parameterIndex, RowId x) throws SQLException {
-			stm.setRowId(parameterIndex, x);
-		}
-		public void setNString(int parameterIndex, String value) throws SQLException {
-			stm.setNString(parameterIndex, value);
-		}
-		public void setNCharacterStream(int parameterIndex, Reader value, long length) throws SQLException {
-			stm.setNCharacterStream(parameterIndex, value, length);
-		}
-		public void setNClob(int parameterIndex, NClob value) throws SQLException {
-			stm.setNClob(parameterIndex, value);
-		}
-		public void setClob(int parameterIndex, Reader reader, long length) throws SQLException {
-			stm.setClob(parameterIndex, reader, length);
-		}
-		public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException {
-			stm.setBlob(parameterIndex, inputStream, length);
-		}
-		public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException {
-			stm.setNClob(parameterIndex, reader, length);
-		}
-		public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException {
-			stm.setSQLXML(parameterIndex, xmlObject);
-		}
-		public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) throws SQLException {
-			stm.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
-		}
-		public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
-			stm.setAsciiStream(parameterIndex, x, length);
-		}
-		public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {
-			stm.setBinaryStream(parameterIndex, x, length);
-		}
-		public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
-			stm.setCharacterStream(parameterIndex, reader, length);
-		}
-		public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException {
-			stm.setAsciiStream(parameterIndex, x);
-		}
-		public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException {
-			stm.setBinaryStream(parameterIndex, x);
-		}
-		public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException {
-			stm.setCharacterStream(parameterIndex, reader);
-		}
-		public void setNCharacterStream(int parameterIndex, Reader value) throws SQLException {
-			stm.setNCharacterStream(parameterIndex, value);
-		}
-		public void setClob(int parameterIndex, Reader reader) throws SQLException {
-			stm.setClob(parameterIndex, reader);
-		}
-		public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
-			stm.setBlob(parameterIndex, inputStream);
-		}
-		public void setNClob(int parameterIndex, Reader reader) throws SQLException {
-			stm.setNClob(parameterIndex, reader);
-		}
+		throw new RuntimeException(NOT_SUPPORTED);
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T> T createStatementProxy(final T target, Class<T> interfClass, final String sqlConstr) {
+		InvocationHandler h = new InvocationHandler() {
+			private int batches;
 
-	
-	/**
-	 * @author szalik
-	 */
-	class StatsCallableStatementWrapper extends StatsPreparedStatementWrapper<CallableStatement> implements CallableStatement {
-		public StatsCallableStatementWrapper(CallableStatement statement) {
-			super(statement);
-		}
-		public void registerOutParameter(int parameterIndex, int sqlType) throws SQLException {
-			stm.registerOutParameter(parameterIndex, sqlType);
-		}
-		public void registerOutParameter(int parameterIndex, int sqlType, int scale) throws SQLException {
-			stm.registerOutParameter(parameterIndex, sqlType, scale);
-		}
-		public boolean wasNull() throws SQLException {
-			return stm.wasNull();
-		}
-		public String getString(int parameterIndex) throws SQLException {
-			return stm.getString(parameterIndex);
-		}
-		public boolean getBoolean(int parameterIndex) throws SQLException {
-			return stm.getBoolean(parameterIndex);
-		}
-		public byte getByte(int parameterIndex) throws SQLException {
-			return stm.getByte(parameterIndex);
-		}
-		public short getShort(int parameterIndex) throws SQLException {
-			return stm.getShort(parameterIndex);
-		}
-		public int getInt(int parameterIndex) throws SQLException {
-			return stm.getInt(parameterIndex);
-		}
-		public long getLong(int parameterIndex) throws SQLException {
-			return stm.getLong(parameterIndex);
-		}
-		public float getFloat(int parameterIndex) throws SQLException {
-			return stm.getFloat(parameterIndex);
-		}
-		public double getDouble(int parameterIndex) throws SQLException {
-			return stm.getDouble(parameterIndex);
-		}
-		@SuppressWarnings("deprecation")
-		public BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException {
-			return stm.getBigDecimal(parameterIndex, scale);
-		}
-		public byte[] getBytes(int parameterIndex) throws SQLException {
-			return stm.getBytes(parameterIndex);
-		}
-		public Date getDate(int parameterIndex) throws SQLException {
-			return stm.getDate(parameterIndex);
-		}
-		public Time getTime(int parameterIndex) throws SQLException {
-			return stm.getTime(parameterIndex);
-		}
-		public Timestamp getTimestamp(int parameterIndex) throws SQLException {
-			return stm.getTimestamp(parameterIndex);
-		}
-		public Object getObject(int parameterIndex) throws SQLException {
-			return stm.getObject(parameterIndex);
-		}
-		public BigDecimal getBigDecimal(int parameterIndex) throws SQLException {
-			return stm.getBigDecimal(parameterIndex);
-		}
-		public Object getObject(int parameterIndex, Map<String, Class<?>> map) throws SQLException {
-			return stm.getObject(parameterIndex, map);
-		}
-		public Ref getRef(int parameterIndex) throws SQLException {
-			return stm.getRef(parameterIndex);
-		}
-		public Blob getBlob(int parameterIndex) throws SQLException {
-			return stm.getBlob(parameterIndex);
-		}
-		public Clob getClob(int parameterIndex) throws SQLException {
-			return stm.getClob(parameterIndex);
-		}
-		public Array getArray(int parameterIndex) throws SQLException {
-			return stm.getArray(parameterIndex);
-		}
-		public Date getDate(int parameterIndex, Calendar cal) throws SQLException {
-			return stm.getDate(parameterIndex, cal);
-		}
-		public Time getTime(int parameterIndex, Calendar cal) throws SQLException {
-			return stm.getTime(parameterIndex, cal);
-		}
-		public Timestamp getTimestamp(int parameterIndex, Calendar cal) throws SQLException {
-			return stm.getTimestamp(parameterIndex, cal);
-		}
-		public void registerOutParameter(int parameterIndex, int sqlType, String typeName) throws SQLException {
-			stm.registerOutParameter(parameterIndex, sqlType, typeName);
-		}
-		public void registerOutParameter(String parameterName, int sqlType) throws SQLException {
-			stm.registerOutParameter(parameterName, sqlType);
-		}
-		public void registerOutParameter(String parameterName, int sqlType, int scale) throws SQLException {
-			stm.registerOutParameter(parameterName, sqlType, scale);
-		}
-		public void registerOutParameter(String parameterName, int sqlType, String typeName) throws SQLException {
-			stm.registerOutParameter(parameterName, sqlType, typeName);
-		}
-		public URL getURL(int parameterIndex) throws SQLException {
-			return stm.getURL(parameterIndex);
-		}
-		public void setURL(String parameterName, URL val) throws SQLException {
-			stm.setURL(parameterName, val);
-		}
-		public void setNull(String parameterName, int sqlType) throws SQLException {
-			stm.setNull(parameterName, sqlType);
-		}
-		public void setBoolean(String parameterName, boolean x) throws SQLException {
-			stm.setBoolean(parameterName, x);
-		}
-		public void setByte(String parameterName, byte x) throws SQLException {
-			stm.setByte(parameterName, x);
-		}
-		public void setShort(String parameterName, short x) throws SQLException {
-			stm.setShort(parameterName, x);
-		}
-		public void setInt(String parameterName, int x) throws SQLException {
-			stm.setInt(parameterName, x);
-		}
-		public void setLong(String parameterName, long x) throws SQLException {
-			stm.setLong(parameterName, x);
-		}
-		public void setFloat(String parameterName, float x) throws SQLException {
-			stm.setFloat(parameterName, x);
-		}
-		public void setDouble(String parameterName, double x) throws SQLException {
-			stm.setDouble(parameterName, x);
-		}
-		public void setBigDecimal(String parameterName, BigDecimal x) throws SQLException {
-			stm.setBigDecimal(parameterName, x);
-		}
-		public void setString(String parameterName, String x) throws SQLException {
-			stm.setString(parameterName, x);
-		}
-		public void setBytes(String parameterName, byte[] x) throws SQLException {
-			stm.setBytes(parameterName, x);
-		}
-		public void setDate(String parameterName, Date x) throws SQLException {
-			stm.setDate(parameterName, x);
-		}
-		public void setTime(String parameterName, Time x) throws SQLException {
-			stm.setTime(parameterName, x);
-		}
-		public void setTimestamp(String parameterName, Timestamp x) throws SQLException {
-			stm.setTimestamp(parameterName, x);
-		}
-		public void setAsciiStream(String parameterName, InputStream x, int length) throws SQLException {
-			stm.setAsciiStream(parameterName, x, length);
-		}
-		public void setBinaryStream(String parameterName, InputStream x, int length) throws SQLException {
-			stm.setBinaryStream(parameterName, x, length);
-		}
-		public void setObject(String parameterName, Object x, int targetSqlType, int scale) throws SQLException {
-			stm.setObject(parameterName, x, targetSqlType, scale);
-		}
-		public void setObject(String parameterName, Object x, int targetSqlType) throws SQLException {
-			stm.setObject(parameterName, x, targetSqlType);
-		}
-		public void setObject(String parameterName, Object x) throws SQLException {
-			stm.setObject(parameterName, x);
-		}
-		public void setCharacterStream(String parameterName, Reader reader, int length) throws SQLException {
-			stm.setCharacterStream(parameterName, reader, length);
-		}
-		public void setDate(String parameterName, Date x, Calendar cal) throws SQLException {
-			stm.setDate(parameterName, x, cal);
-		}
-		public void setTime(String parameterName, Time x, Calendar cal) throws SQLException {
-			stm.setTime(parameterName, x, cal);
-		}
-		public void setTimestamp(String parameterName, Timestamp x, Calendar cal) throws SQLException {
-			stm.setTimestamp(parameterName, x, cal);
-		}
-		public void setNull(String parameterName, int sqlType, String typeName) throws SQLException {
-			stm.setNull(parameterName, sqlType, typeName);
-		}
-		public String getString(String parameterName) throws SQLException {
-			return stm.getString(parameterName);
-		}
-		public boolean getBoolean(String parameterName) throws SQLException {
-			return stm.getBoolean(parameterName);
-		}
-		public byte getByte(String parameterName) throws SQLException {
-			return stm.getByte(parameterName);
-		}
-		public short getShort(String parameterName) throws SQLException {
-			return stm.getShort(parameterName);
-		}
-		public int getInt(String parameterName) throws SQLException {
-			return stm.getInt(parameterName);
-		}
-		public long getLong(String parameterName) throws SQLException {
-			return stm.getLong(parameterName);
-		}
-		public float getFloat(String parameterName) throws SQLException {
-			return stm.getFloat(parameterName);
-		}
-		public double getDouble(String parameterName) throws SQLException {
-			return stm.getDouble(parameterName);
-		}
-		public byte[] getBytes(String parameterName) throws SQLException {
-			return stm.getBytes(parameterName);
-		}
-		public Date getDate(String parameterName) throws SQLException {
-			return stm.getDate(parameterName);
-		}
-		public Time getTime(String parameterName) throws SQLException {
-			return stm.getTime(parameterName);
-		}
-		public Timestamp getTimestamp(String parameterName) throws SQLException {
-			return stm.getTimestamp(parameterName);
-		}
-		public Object getObject(String parameterName) throws SQLException {
-			return stm.getObject(parameterName);
-		}
-		public BigDecimal getBigDecimal(String parameterName) throws SQLException {
-			return stm.getBigDecimal(parameterName);
-		}
-		public Object getObject(String parameterName, Map<String, Class<?>> map) throws SQLException {
-			return stm.getObject(parameterName, map);
-		}
-		public Ref getRef(String parameterName) throws SQLException {
-			return stm.getRef(parameterName);
-		}
-		public Blob getBlob(String parameterName) throws SQLException {
-			return stm.getBlob(parameterName);
-		}
-		public Clob getClob(String parameterName) throws SQLException {
-			return stm.getClob(parameterName);
-		}
-		public Array getArray(String parameterName) throws SQLException {
-			return stm.getArray(parameterName);
-		}
-		public Date getDate(String parameterName, Calendar cal) throws SQLException {
-			return stm.getDate(parameterName, cal);
-		}
-		public Time getTime(String parameterName, Calendar cal) throws SQLException {
-			return stm.getTime(parameterName, cal);
-		}
-		public Timestamp getTimestamp(String parameterName, Calendar cal) throws SQLException {
-			return stm.getTimestamp(parameterName, cal);
-		}
-		public URL getURL(String parameterName) throws SQLException {
-			return stm.getURL(parameterName);
-		}
-		public RowId getRowId(int parameterIndex) throws SQLException {
-			return stm.getRowId(parameterIndex);
-		}
-		public RowId getRowId(String parameterName) throws SQLException {
-			return stm.getRowId(parameterName);
-		}
-		public void setRowId(String parameterName, RowId x) throws SQLException {
-			stm.setRowId(parameterName, x);
-		}
-		public void setNString(String parameterName, String value) throws SQLException {
-			stm.setNString(parameterName, value);
-		}
-		public void setNCharacterStream(String parameterName, Reader value, long length) throws SQLException {
-			stm.setNCharacterStream(parameterName, value, length);
-		}
-		public void setNClob(String parameterName, NClob value) throws SQLException {
-			stm.setNClob(parameterName, value);
-		}
-		public void setClob(String parameterName, Reader reader, long length) throws SQLException {
-			stm.setClob(parameterName, reader, length);
-		}
-		public void setBlob(String parameterName, InputStream inputStream, long length) throws SQLException {
-			stm.setBlob(parameterName, inputStream, length);
-		}
-		public void setNClob(String parameterName, Reader reader, long length) throws SQLException {
-			stm.setNClob(parameterName, reader, length);
-		}
-		public NClob getNClob(int parameterIndex) throws SQLException {
-			return stm.getNClob(parameterIndex);
-		}
-		public NClob getNClob(String parameterName) throws SQLException {
-			return stm.getNClob(parameterName);
-		}
-		public void setSQLXML(String parameterName, SQLXML xmlObject) throws SQLException {
-			stm.setSQLXML(parameterName, xmlObject);
-		}
-		public SQLXML getSQLXML(int parameterIndex) throws SQLException {
-			return stm.getSQLXML(parameterIndex);
-		}
-		public SQLXML getSQLXML(String parameterName) throws SQLException {
-			return stm.getSQLXML(parameterName);
-		}
-		public String getNString(int parameterIndex) throws SQLException {
-			return stm.getNString(parameterIndex);
-		}
-		public String getNString(String parameterName) throws SQLException {
-			return stm.getNString(parameterName);
-		}
-		public Reader getNCharacterStream(int parameterIndex) throws SQLException {
-			return stm.getNCharacterStream(parameterIndex);
-		}
-		public Reader getNCharacterStream(String parameterName) throws SQLException {
-			return stm.getNCharacterStream(parameterName);
-		}
-		public Reader getCharacterStream(int parameterIndex) throws SQLException {
-			return stm.getCharacterStream(parameterIndex);
-		}
-		public Reader getCharacterStream(String parameterName) throws SQLException {
-			return stm.getCharacterStream(parameterName);
-		}
-		public void setBlob(String parameterName, Blob x) throws SQLException {
-			stm.setBlob(parameterName, x);
-		}
-		public void setClob(String parameterName, Clob x) throws SQLException {
-			stm.setClob(parameterName, x);
-		}
-		public void setAsciiStream(String parameterName, InputStream x, long length) throws SQLException {
-			stm.setAsciiStream(parameterName, x, length);
-		}
-		public void setBinaryStream(String parameterName, InputStream x, long length) throws SQLException {
-			stm.setBinaryStream(parameterName, x, length);
-		}
-		public void setCharacterStream(String parameterName, Reader reader, long length) throws SQLException {
-			stm.setCharacterStream(parameterName, reader, length);
-		}
-		public void setAsciiStream(String parameterName, InputStream x) throws SQLException {
-			stm.setAsciiStream(parameterName, x);
-		}
-		public void setBinaryStream(String parameterName, InputStream x) throws SQLException {
-			stm.setBinaryStream(parameterName, x);
-		}
-		public void setCharacterStream(String parameterName, Reader reader) throws SQLException {
-			stm.setCharacterStream(parameterName, reader);
-		}
-		public void setNCharacterStream(String parameterName, Reader value) throws SQLException {
-			stm.setNCharacterStream(parameterName, value);
-		}
-		public void setClob(String parameterName, Reader reader) throws SQLException {
-			stm.setClob(parameterName, reader);
-		}
-		public void setBlob(String parameterName, InputStream inputStream) throws SQLException {
-			stm.setBlob(parameterName, inputStream);
-		}
-		public void setNClob(String parameterName, Reader reader) throws SQLException {
-			stm.setNClob(parameterName, reader);
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				String methodName = method.getName();
+				String sql = sqlConstr;
+				long ts1 = System.currentTimeMillis();
+				int q = 0;
+				try {
+					if (methodName.equals("executeQuery") || methodName.equals("execute")) {
+						q = 1;
+					}
+					if (methodName.equals("executeBatch")) {
+						q = batches;
+						sql = "[batch " + batches + "]";
+						batches = 0;
+					}
+					if (methodName.equals("addBatch")) {
+						batches++;
+					}
+					if (methodName.equals("clearBatch")) {
+						batches = 0;
+					}
+					if (methodName.equals("getConnection")) {
+						return StatsConnectionWrapper.this;
+					}
+					return method.invoke(target, args);
+				} finally {
+					if (q > 0) {
+						int tms = (int) (System.currentTimeMillis() - ts1);
+						if (args != null && args.length > 0 && args[0] instanceof CharSequence) {
+							sql = args[0].toString();
+						}
+						logSQL(sql, tms, methodName.endsWith("Query"), q);
+					}
+				}
+			}
+		};
+
+		return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { interfClass }, h);
+	}
+
+	private void logSQL(String sql, int timems, boolean selectQuery, int statements) {
+		if (selectQuery) {
+			statItem.executedSelectQueries += statements;
+			statItem.executedSelectTime += timems;
+		} else {
+			statItem.executedQueries += statements;
+			statItem.executedTime += timems;
+		}
+		if (logSQL >= 0 && timems >= logSQL) {
+			logger.info("Long sql query: " + (sql == null ? "-" : "\"" + sql + "\"") + " on " + dbName + " in " + timems + "ms.");
 		}
 	}
 

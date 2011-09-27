@@ -20,7 +20,7 @@ public interface FoDataSourceConsoleMXBean {
 	String getFodsName();
 	
 	/**
-	 * @return get name of current database
+	 * @return get name of current database, <tt>null</tt> means not set. 
 	 */
 	String getCurrentDatabaseName();	
 	
@@ -40,9 +40,9 @@ public interface FoDataSourceConsoleMXBean {
 	/**
 	 * Test single database
 	 * @param dbName
-	 * @return test result, if <tt>null</tt> no database found
+	 * @return test result
 	 */
-	Boolean test(String dbName);
+	boolean test(String dbName);
 	
 	/**
 	 * @return all database names

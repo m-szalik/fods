@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 import javax.management.MBeanNotificationInfo;
 import javax.management.NotificationBroadcasterSupport;
@@ -59,7 +60,7 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 		return sw.toString();
 	}
 
-	public Boolean test(String dbName) {
+	public boolean test(String dbName) {
 		return ds.testDatabase(dbName);
 	}
 
@@ -78,7 +79,7 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 	private boolean turnInternal(String dbName, boolean b) {
 		FodsDbStateImpl dbs = ds.getFodsState().getDbstate(dbName);
 		if (dbs == null) {
-			return false;
+			thrownodb(dbName);
 		}
 		if ((b && dbs.getStatus() != FodsDbStateStatus.DISCONNETED) || (!b && dbs.getStatus() == FodsDbStateStatus.DISCONNETED)) {
 			return false;
@@ -87,10 +88,12 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 		return true;
 	}
 
+	
 	public JMXFodsDbState getCurrentDatabaseState(String dbName) {
 		FodsDbStateImpl dbs = ds.getFodsState().getDbstate(dbName);
-		if (dbs == null)
-			return null;
+		if (dbs == null) {
+			thrownodb(dbName);
+		}
 		long bt = dbs.getBrokenTime();
 		Throwable reason = bt > 0 ? dbs.getLastException() : null;
 		return new JMXFodsDbState(dbName, dbs.getStatus().name(), reason, bt > 0 ? bt : null, dbs.isReadOnly());
@@ -120,7 +123,7 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 
 	public boolean forceSetCurrentDatabaseName(String name) {
 		if (configuration.getDatabaseConfigurationByName(name) == null) {
-			return false;
+			thrownodb(name);
 		}
 		String currentDBName = getCurrentDatabaseName();
 		if (name.equals(currentDBName)) {
@@ -140,6 +143,10 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 	public MBeanNotificationInfo[] getNotificationInfo() {
 		MBeanNotificationInfo mbni1 = new MBeanNotificationInfo(new String[] { EventNotification.NTYPE }, EventNotification.class.getName(), "DataSource event");
 		return new MBeanNotificationInfo[] { mbni1 };
+	}
+
+	private void thrownodb(String dbName) throws NoSuchElementException {
+		throw new NoSuchElementException("No database named \"" + dbName + "\"");
 	}
 
 }

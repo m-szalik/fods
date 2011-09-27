@@ -5,17 +5,32 @@ import java.io.Serializable;
 
 public class JMXStatistics implements Serializable {
 	private long get, release;
-	private int breakTimes;
+	private int breakTimes, recoveryTimes;
 	private String dbName;
 	private long executedQueries, executedSelectQueries;
+	private double avrSelectQueryTimeMs, avrQueryTimeMs;
 
-	@ConstructorProperties({ "get", "release", "breakTimes","executedQueries", "executedSelectQueries", "dbName" })
-	public JMXStatistics(long get, long release, int breakTimes, long executedQueries, long executedSelectQueries, String dbName) {
+	@ConstructorProperties({ "get", "release", "breakTimes", "recoveryTimes", "executedQueries", "executedSelectQueries", "dbName", "avrSelectQueryTimeMs", "avrQueryTimeMs"})
+	public JMXStatistics(long get, long release, int breakTimes, int recoveryTimes, long executedQueries, long executedSelectQueries, String dbName, double avrSelectQyeryMS, double avrQyeryMS) {
 		super();
 		this.get = get;
 		this.release = release;
 		this.breakTimes = breakTimes;
 		this.dbName = dbName;
+		this.avrQueryTimeMs = avrQyeryMS;
+		this.avrSelectQueryTimeMs = avrSelectQyeryMS;
+	}
+	
+	public double getAvrQueryTimeMs() {
+		return avrQueryTimeMs;
+	}
+	
+	public double getAvrSelectQueryTimeMs() {
+		return avrSelectQueryTimeMs;
+	}
+	
+	public int getRecoveryTimes() {
+		return recoveryTimes;
 	}
 
 	public long getGet() {

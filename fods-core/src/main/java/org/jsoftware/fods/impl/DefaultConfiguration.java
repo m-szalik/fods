@@ -2,7 +2,9 @@ package org.jsoftware.fods.impl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -26,17 +28,32 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 	private String fodsName;
 	private DatabaseConfiguration[] databases;
 	private PropertiesUtil pu;
+	private int logLongSqls;
 
 	public DefaultConfiguration(Properties main) {
 		pu = new PropertiesUtil(main);
 		fodsName = getProperty("fodsName");
+		logLongSqls = Integer.valueOf(getProperty("logSQLsLongerThen"));
 	}
 	
 	public Object getMXBeanInstance() {
-		// TODO todo
-		return null;
+		return new DefaultConfigurationMXBean() {	
+			@Override
+			public Map<String, String> getGlobalConfigurationValues() {
+				Map<String,String> map = new HashMap<String,String>();
+				for(String key : pu.getPropertyKeys()) {
+					map.put(key, pu.getProperty(key, null));
+				}
+				return map;
+			}
+		};
 	}
 
+	@Override
+	public int getLogLongSqls() {
+		return logLongSqls;
+	}
+	
 	public Selector getSelector() {
 		return selector;
 	}

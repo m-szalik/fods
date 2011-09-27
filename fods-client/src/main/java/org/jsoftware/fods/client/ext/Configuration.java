@@ -33,6 +33,7 @@ public interface Configuration {
 
 	ObjectName getMxBeanObjectName(String sufix);
 	
+	int getLogLongSqls();
 
 	
 	interface DatabaseConfiguration {

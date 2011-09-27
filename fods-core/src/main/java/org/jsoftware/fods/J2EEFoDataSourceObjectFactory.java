@@ -25,7 +25,9 @@ import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
  * Factory of {@link FoDataSourceImpl} object.
  * <p>Use this factory to place {@link FoDataSourceImpl} into {@link InitialContext}.</p> 
  * @author szalik
+ * @deprecated use {@link FoDataSource} instead.
  */
+@Deprecated
 public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {

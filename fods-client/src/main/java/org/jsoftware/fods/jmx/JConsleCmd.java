@@ -17,11 +17,12 @@ import javax.management.remote.JMXServiceURL;
 
 /**
  * Simple CommandLine JConsole 
+ * <p>
+ * More advanced Java console can be found at <a href="http://jsoftware.org/tjconsole">www.jsoftware.org/tjconsole</a>.
+ * </p>
  * @author szalik
- * DO NOT USE
- * FIXME dostosowac do wersj 4.0
  */
-class JConsleCmd {
+public class JConsleCmd {
 	private JMXServiceURL serviceURL;
 	private MBeanServerConnection mbc;
 	private ObjectName beanName;
