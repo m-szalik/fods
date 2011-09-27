@@ -28,7 +28,9 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * </ul>
  * </p>
  * @author szalik
+ * @deprecated do not use because of jndi binding order. Target {@link DataSource} may be not available for {@link JndiDataSourceConnectionCreator}.
  */
+@Deprecated
 public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreatorFactory {
 	private String jndiName;
 	private String dbName;
