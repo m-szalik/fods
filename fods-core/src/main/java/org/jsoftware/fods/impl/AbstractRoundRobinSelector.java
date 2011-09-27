@@ -22,7 +22,7 @@ import org.jsoftware.fods.impl.utils.RequiredPropertyMissing;
 public abstract class AbstractRoundRobinSelector implements Selector, ManageableViaMXBean, Displayable {
 	protected List<String> sequenceList;
 	protected long recoveryTime;
-	private String last, selectorName;
+	private String selectorName;
 
 	public AbstractRoundRobinSelector(String selectorName, Configuration configuration) {
 		this.selectorName = selectorName.endsWith("Selector") ? selectorName : selectorName + "Selector";
@@ -64,7 +64,9 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 	}
 
 	protected String next(FodsState fodsState) {
-		int ta = 0, i; String str;
+		int ta = 0, i; 
+		String str;
+		String last = fodsState.getCurrentDatabase();
 		int size = sequenceList.size();
 		if (last == null) {
 			i = 0;
