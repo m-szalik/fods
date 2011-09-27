@@ -61,7 +61,7 @@ public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreator
 						logger.debug("Can not find jndi object \"" + fullJndiName() + "\" for database \"" + dbName + "\". Tries left: " + lazy);
 					}
 				} 
-				if (ds != null) {
+				if (ds == null) {
 					throw new SQLException("JndiName \"" + fullJndiName() + " not found for database \"" + dbName + "\". " + (lazy == 0 ? "ConnectionCreator is inactive." : "Please wait."));
 				}
 			}
