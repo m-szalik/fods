@@ -8,9 +8,7 @@ import java.util.Properties;
 
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
-import org.jsoftware.fods.client.ext.Displayable;
 import org.jsoftware.fods.client.ext.Logger;
-import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
 /**
  * Creates {@link ConnectionCreator} that uses pool of {@link Connection}s.
@@ -24,6 +22,7 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * Optional configuration values:
  * <ul>
  * <li>maxWait - login timeout</li>
+ * <li>setReadOnly=true - set connection as read only</li>
  * </ul>
  * </p>
  * 
@@ -32,48 +31,25 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
 public class SingleConnectionJdbcConnectionCreatorFactory implements ConnectionCreatorFactory {
 
 	public ConnectionCreator getConnectionCreator(final String dbname, final Logger logger, final Properties properties) {
-		PropertiesUtil pu = new PropertiesUtil(properties, dbname);
-		final String url = pu.getProperty("jdbcURI");
-		pu.loadDriver("driverClassName");
-
-		SingleConnectionJdbcConnection cc = new SingleConnectionJdbcConnection();
-		cc.jdbcURI = url;
-		cc.dbName = dbname;
-		cc.properties = new Properties(properties);
-		cc.logger = logger;
-		cc.maxWait = Integer.valueOf(pu.getProperty("maxWait", "0"));
-		return cc;
+		return new SingleConnectionJdbcConnectionCreator(dbname, logger, properties);
 	}
 
 	/**
 	 * @author szalik
 	 */
-	class SingleConnectionJdbcConnection implements ConnectionCreator, Displayable {
-		private String dbName, jdbcURI;
-		private Properties properties;
-		private Logger logger;
-		private int maxWait;
-
-		public String asString(boolean addDebugInfo) {
-			return "SingleConnectionJdbcConnection" + (addDebugInfo ? "(jdbcURI=" + jdbcURI + ")" : "");
+	class SingleConnectionJdbcConnectionCreator extends AbstractDriverManagerJdbcConnectionCreatorBase {
+		public SingleConnectionJdbcConnectionCreator(String dbname, Logger logger, Properties properties) {
+			super(dbname, logger, properties);
 		}
 
-		public Connection getConnection() throws SQLException {
-			int timoeut = DriverManager.getLoginTimeout();
-			DriverManager.setLoginTimeout(maxWait);
-			try {
-				Connection con = DriverManager.getConnection(jdbcURI, properties);
-				logger.debug("New connection to \"" + dbName + "\" created.");
-				return con;
-			} finally {
-				DriverManager.setLoginTimeout(timoeut);
-			}
+		protected String getConnectionCreatorName() {
+			return "SingleConnectionJdbcConnection";
 		}
-
-		public void start() throws Exception {
-		}
-
-		public void stop() {
+	
+		protected Connection createConnection() throws SQLException {
+			Connection con = DriverManager.getConnection(jdbcURI, connectionProperties);
+			logger.debug("New connection to \"" + dbname + "\" created.");
+			return con;
 		}
 		
 	}

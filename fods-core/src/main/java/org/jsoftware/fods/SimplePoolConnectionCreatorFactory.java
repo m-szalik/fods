@@ -23,7 +23,6 @@ import java.util.Properties;
 
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
-import org.jsoftware.fods.client.ext.Displayable;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
@@ -42,8 +41,8 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * <li>maxActive - maximal active connections</li>
  * <li>maxIdle - maximal idle connections</li>
  * <li>minWait - minimal idle connections</li>
- * <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be
- * forced to close</li>
+ * <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be forced to close</li>
+ * <li>setReadOnly=true - set connection as read only</li>
  * </ul>
  * </p>
  * 
@@ -52,8 +51,6 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
 public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFactory {
 
 	public ConnectionCreator getConnectionCreator(String dbName, Logger logger, Properties properties) {
-		PropertiesUtil pu = new PropertiesUtil(properties, dbName);
-		pu.loadDriver("driverClassName");
 		try {
 			SimplePoolConnectionCreator creator = new SimplePoolConnectionCreator(dbName, logger, properties);
 			return creator;
@@ -64,54 +61,44 @@ public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFact
 
 }
 
-class SimplePoolConnectionCreator implements ConnectionCreator, Displayable, Runnable {
-	private Logger logger;
-	private int maxWait;
+class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCreatorBase implements Runnable {
 	private int maxActive;
 	private int maxIdle;
 	private int minIdle;
 	private long closeTimout;
-	private int usageCounter = 0;
-	private String dbname, jdbcURI;
-	private Properties connectionProperties;
 	private List<JdbcWrappedConnection> activeConnections;
 	private List<JdbcWrappedConnection> availableConnections;
 	private Thread thread;
-	private boolean active;
 
-	public SimplePoolConnectionCreator(String dbname, Logger logger, Properties properties) throws SQLException {
+
+	public SimplePoolConnectionCreator(String dbname, Logger logger, Properties properties) {
+		super(dbname, logger, properties);
 		PropertiesUtil pu = new PropertiesUtil(properties, dbname);
-		this.logger = logger;
-		this.dbname = dbname;
-		this.connectionProperties = properties;
 		this.maxActive = Integer.valueOf(pu.getProperty("maxActive", "8"));
 		this.maxIdle = Integer.valueOf(pu.getProperty("maxIdle", "1"));
 		this.minIdle = Integer.valueOf(pu.getProperty("minIdle", "0"));
-		this.maxWait = Integer.valueOf(pu.getProperty("maxWait", "0"));
-		if (this.maxWait > 0) {
-			this.maxWait = 0;
-		}
 		if (maxIdle < minIdle) {
 			throw new IllegalArgumentException("maxIdle < minIdle");
 		}
-		this.jdbcURI = pu.getProperty("jdbcURI");
 		this.closeTimout = Integer.valueOf(pu.getProperty("closeTimeout", "3600000"));
-		this.thread = new Thread(this, "SimplePoolConnection-cleaner");
+		this.thread = new Thread(this, getConnectionCreatorName() + "-cleaner");
 		this.thread.setDaemon(true);
 	}
 
+	
 	public void start() throws Exception {
 		activeConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
 		availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
-		active = true;
 		for (int a = 0; a < this.minIdle; a++) {
 			this.availableConnections.add(createNewConnection());
 		}
 		thread.start();
+		super.start();
 	}
 
+	
 	public void stop() {
-		active = false;
+		super.stop();
 		synchronized (activeConnections) {
 			for (SimplePoolConnectionCreator.JdbcWrappedConnection con : activeConnections) {
 				con.realClose();
@@ -120,6 +107,31 @@ class SimplePoolConnectionCreator implements ConnectionCreator, Displayable, Run
 		availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
 	}
 
+		
+	protected Connection createConnection() throws SQLException {
+		JdbcWrappedConnection con = null;
+		synchronized (availableConnections) {
+			if (!availableConnections.isEmpty()) {
+				con = availableConnections.remove(0);
+			}
+		}
+		if (con != null && con.isClosed()) {
+			abandon(con);
+			con = createNewConnection();
+		}
+		if (con == null) {
+			con = createNewConnection();
+		}
+		con.ts = System.currentTimeMillis();
+		return con;
+	}
+	
+	
+	protected String getConnectionCreatorName() {
+		return "SimplePoolConnectionCreator";
+	}
+	
+	
 	private JdbcWrappedConnection createNewConnection() throws SQLException {
 		int maxLoginTimeout = DriverManager.getLoginTimeout();
 		DriverManager.setLoginTimeout(maxWait);
@@ -140,25 +152,7 @@ class SimplePoolConnectionCreator implements ConnectionCreator, Displayable, Run
 		}
 	}
 
-	public Connection getConnection() throws SQLException {
-		JdbcWrappedConnection con = null;
-		synchronized (availableConnections) {
-			if (!availableConnections.isEmpty()) {
-				con = availableConnections.remove(0);
-			}
-		}
-		if (con != null && con.isClosed()) {
-			abandon(con);
-			con = createNewConnection();
-		}
-		if (con == null) {
-			con = createNewConnection();
-		}
-		usageCounter++;
-		con.ts = System.currentTimeMillis();
-		return con;
-	}
-
+	
 	private void abandon(JdbcWrappedConnection con) {
 		synchronized (activeConnections) {
 			activeConnections.remove(con);
@@ -179,10 +173,10 @@ class SimplePoolConnectionCreator implements ConnectionCreator, Displayable, Run
 	public void run() {
 		try {
 			while (true) {
-				if (!active)
+				if (! isConnectorCreatorActive())
 					break;
 				Thread.sleep(closeTimout);
-				if (!active)
+				if (! isConnectorCreatorActive())
 					break;
 				long ts = System.currentTimeMillis() - closeTimout;
 				synchronized (activeConnections) {
@@ -431,10 +425,6 @@ class SimplePoolConnectionCreator implements ConnectionCreator, Displayable, Run
 		public <T> T unwrap(Class<T> iface) throws SQLException {
 			throw new RuntimeException("Not supported.");
 		}
-	}
-
-	public String asString(boolean addDebugInfo) {
-		return "SimplePoolConnectionCreator" + (addDebugInfo ? "(jdbcURI=" + jdbcURI + ")" : "");
 	}
 
 }
