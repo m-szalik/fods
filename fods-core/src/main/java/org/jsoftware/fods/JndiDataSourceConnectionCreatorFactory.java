@@ -25,6 +25,7 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * </p>
  * @author szalik
  */
+// TODO dodac opoznione ładownie DataSource'a z jdni.
 public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreatorFactory {
 	private String jndiName;
 	

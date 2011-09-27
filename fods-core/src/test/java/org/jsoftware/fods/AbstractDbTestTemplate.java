@@ -2,6 +2,7 @@ package org.jsoftware.fods;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,6 +23,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 public abstract class AbstractDbTestTemplate {
+	private static final String TEST_CONFIGURATION_PROPERTIES = "testConfiguration.properties";
 	private DBHolder[] dbs = new DBHolder[] { new DBHolder(0), new DBHolder(1) };
 	protected Configuration configuration;
 
@@ -49,7 +51,17 @@ public abstract class AbstractDbTestTemplate {
 	public void prepareFODS() throws SQLException, IOException {
 		PropertiesBasedConfigurationFactory propertiesConfigurationFactory = new PropertiesBasedConfigurationFactory();
 		Properties properties = new Properties();
-		properties.load(getClass().getResourceAsStream("testConfiguration.properties"));
+		int i=4; String name = TEST_CONFIGURATION_PROPERTIES;
+		InputStream ins;
+		do {
+			ins = getClass().getResourceAsStream(name);
+			i--;
+			name = "../" + name;
+		} while(i > 0 && ins == null);
+		if (ins == null) {
+			throw new IOException("Can not load " + TEST_CONFIGURATION_PROPERTIES);
+		}
+		properties.load(ins);
 		propertiesConfigurationFactory.setProperties(properties);
 		configuration = propertiesConfigurationFactory.getConfiguration();
 	}
