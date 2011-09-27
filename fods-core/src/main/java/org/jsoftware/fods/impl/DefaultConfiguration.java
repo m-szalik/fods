@@ -114,7 +114,7 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 	}
 
 	public ObjectName getMxBeanObjectName(String sufix) {
-		if (Boolean.valueOf(getProperty("registerMxBean", "false"))) {
+		if (Boolean.valueOf(getProperty("registerMXBeans", "false"))) {
 			String str = "org.jsoftware.fods." + getFoDSName() + ":type=" + sufix;
 			try {
 				return new ObjectName(str);

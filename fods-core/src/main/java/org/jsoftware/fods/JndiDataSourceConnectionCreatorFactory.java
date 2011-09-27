@@ -22,37 +22,49 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * <ul>
  * 	<li>jndiName - jndi name (in scope of &quote;java:/comp/env/&quote;) name of {@link DataSource} to use</li>
  * </ul>
+ * Optional configuration values:
+ * <ul>
+ * 	<li>lazyTries</li>
+ * </ul>
  * </p>
  * @author szalik
  */
-// TODO dodac opoznione ładownie DataSource'a z jdni.
 public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreatorFactory {
 	private String jndiName;
+	private String dbName;
 	
 	public ConnectionCreator getConnectionCreator(String dbName, Logger logger, Properties properties) {
 		PropertiesUtil pu = new PropertiesUtil(properties, dbName);
-		jndiName = pu.getProperty("jndiName");
-		try {
-			InitialContext initContext = new InitialContext();
-			Context envContext = (Context) initContext.lookup("java:/comp/env");
-			logger.debug("Lookup for " + jndiName);
-			DataSource dsin = (DataSource) envContext.lookup(jndiName);
-			logger.debug(jndiName + " found");
-			return new JndiDataSourceConnectionCreator(dsin);
-		} catch (NamingException e) {
-			throw new RuntimeException("Error building datasources", e);
-		}
-
+		this.jndiName = pu.getProperty("jndiName");
+		this.dbName = dbName;
+		int lazy = Integer.valueOf(pu.getProperty("lazyTries", "2"));
+		return new JndiDataSourceConnectionCreator(logger, lazy);
 	}
+	
 
 	class JndiDataSourceConnectionCreator implements ConnectionCreator, Displayable {
+		private static final String JAVA_COMP_ENV = "java:/comp/env";
+		private Logger logger;
 		private DataSource ds;
+		private int lazy;
 		
-		public JndiDataSourceConnectionCreator(DataSource dsin) {
-			this.ds = dsin;
+		public JndiDataSourceConnectionCreator(Logger logger, int lazy) {
+			this.logger = logger;
+			this.lazy = lazy;
 		}
 		
 		public Connection getConnection() throws SQLException {
+			if (ds == null) {
+				if (lazy > 0) {
+					lazy--;
+					if (! loolup()) {
+						logger.debug("Can not find jndi object \"" + fullJndiName() + "\" for database \"" + dbName + "\". Tries left: " + lazy);
+					}
+				} 
+				if (ds != null) {
+					throw new SQLException("JndiName \"" + fullJndiName() + " not found for database \"" + dbName + "\". " + (lazy == 0 ? "ConnectionCreator is inactive." : "Please wait."));
+				}
+			}
 			return ds.getConnection();
 		}
 
@@ -61,9 +73,30 @@ public class JndiDataSourceConnectionCreatorFactory implements ConnectionCreator
 		}
 
 		public void start() throws Exception {
+			loolup();
 		}
 
-		public void stop() {	
+		public void stop() {
+		}
+		
+		
+		private String fullJndiName() {
+			return JAVA_COMP_ENV + "/" + jndiName;
+		}
+		
+		private synchronized boolean loolup() {
+			try {
+				InitialContext initContext = new InitialContext();
+				Context envContext = (Context) initContext.lookup(JAVA_COMP_ENV);
+				logger.debug("Lookup for \"" + jndiName + "\" for databse \"" + dbName + "\".");
+				DataSource dataSource = (DataSource) envContext.lookup(jndiName);
+				logger.debug("Jndi object \"" + fullJndiName() + "\" found.");
+				ds = dataSource;
+				return true;
+			} catch (NamingException e) {
+				logger.debug("Jndi object \"" + fullJndiName() + "\" not found.");
+				return false;
+			}
 		}
 	}
 }

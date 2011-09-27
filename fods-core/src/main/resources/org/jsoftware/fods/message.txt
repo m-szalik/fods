@@ -2,4 +2,5 @@
      DataSource name: %fodsName%
      Database selector: %databaseSelector%
      Management bean at: %mxbeanObjectName% 
+     Log file: %loggerFile%
   For more details visit: http://jsoftware.org/fods 

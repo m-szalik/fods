@@ -22,6 +22,20 @@ import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
 public class FoDataSource implements DataSource {
 	private DataSource fods;
 
+	public FoDataSource(Properties props) throws IOException {
+		setup(props);
+	}
+	
+	public FoDataSource(InputStream inputStream) throws IOException {
+		if (inputStream == null) {
+			throw new IllegalArgumentException("InputStream can not be null.");
+		}
+		Properties props = new Properties();
+		props.load(inputStream);
+		setup(props);
+	}
+
+	
 	public FoDataSource(String loaction) throws IOException {
 		InputStream ins = getClass().getResourceAsStream(loaction);
 		if (ins == null) {
@@ -35,10 +49,6 @@ public class FoDataSource implements DataSource {
 		}
 		Properties props = new Properties();
 		props.load(ins);
-		setup(props);
-	}
-
-	public FoDataSource(Properties props) throws IOException {
 		setup(props);
 	}
 	

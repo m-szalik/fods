@@ -63,6 +63,7 @@ public abstract class AbstractFoDataSourceFactory {
 
 	private static void displayInfo(Configuration configuration, Map<String, Boolean> testResults) {
 		// display information
+		String logFile = configuration.getProperty("loggerFile", "").trim();
 		boolean debug = configuration.getLogger().isDebugEnabled();
 		try {
 			InputStream ins = FoDataSourceImpl.class.getResourceAsStream("/org/jsoftware/fods/message.txt");
@@ -78,6 +79,7 @@ public abstract class AbstractFoDataSourceFactory {
 				s = s.replaceAll("%databaseSelector%", componentToString(selector, debug));
 				s = s.replace("%dbsCount%", Integer.toString(configuration.getDatabaseConfigurations().length));
 				s = s.replace("%fodsName%", configuration.getFoDSName());
+				s = s.replace("%loggerFile%", logFile.length() == 0 ? "-" : logFile);
 				ObjectName on = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
 				s = s.replace("%mxbeanObjectName%", on == null ? "-" : on.toString());
 				StringBuilder sb = new StringBuilder(s).append("  FoDS state:");
