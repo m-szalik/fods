@@ -33,7 +33,7 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 	public DefaultConfiguration(Properties main) {
 		pu = new PropertiesUtil(main);
 		fodsName = getProperty("fodsName");
-		logLongSqls = Integer.valueOf(getProperty("logSQLsLongerThen"));
+		logLongSqls = Integer.valueOf(getProperty("loggerLogLongSQLs"));
 	}
 	
 	public Object getMXBeanInstance() {
