@@ -24,6 +24,7 @@ public class JndiDataSourceConnectionCreatorFactoryTest {
 		ctx.bind("java:/comp/env/" + JNDI_DS, new Object());
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test @Ignore
 	public void test() {
 		JndiDataSourceConnectionCreatorFactory factory = new JndiDataSourceConnectionCreatorFactory();

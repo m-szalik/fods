@@ -41,7 +41,8 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * <li>maxActive - maximal active connections</li>
  * <li>maxIdle - maximal idle connections</li>
  * <li>minWait - minimal idle connections</li>
- * <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be forced to close</li>
+ * <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be
+ * forced to close</li>
  * <li>setReadOnly=true - set connection as read only</li>
  * </ul>
  * </p>
@@ -62,6 +63,7 @@ public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFact
 }
 
 class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCreatorBase implements Runnable {
+	private static final long POOL_THREAD_SLEEP = 1000 * 60 * 2;
 	private int maxActive;
 	private int maxIdle;
 	private int minIdle;
@@ -69,7 +71,6 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 	private List<JdbcWrappedConnection> activeConnections;
 	private List<JdbcWrappedConnection> availableConnections;
 	private Thread thread;
-
 
 	public SimplePoolConnectionCreator(String dbname, Logger logger, Properties properties) {
 		super(dbname, logger, properties);
@@ -80,23 +81,23 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		if (maxIdle < minIdle) {
 			throw new IllegalArgumentException("maxIdle < minIdle");
 		}
-		this.closeTimout = Integer.valueOf(pu.getProperty("closeTimeout", "3600000"));
+		this.closeTimout = Integer.valueOf(pu.getProperty("closeTimeout", "-1"));
 		this.thread = new Thread(this, getConnectionCreatorName() + "-cleaner");
 		this.thread.setDaemon(true);
+		this.activeConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+		this.availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
 	}
 
-	
 	public void start() throws Exception {
-		activeConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
-		availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
-		for (int a = 0; a < this.minIdle; a++) {
-			this.availableConnections.add(createNewConnection());
+		synchronized (availableConnections) {
+			for (int a = 0; a < this.minIdle; a++) {
+				this.availableConnections.add(createNewConnection());
+			}
 		}
 		thread.start();
 		super.start();
 	}
 
-	
 	public void stop() {
 		super.stop();
 		synchronized (activeConnections) {
@@ -104,10 +105,10 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 				con.realClose();
 			}
 		}
-		availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+		availableConnections.clear();
+		activeConnections.clear();
 	}
 
-		
 	protected Connection createConnection() throws SQLException {
 		JdbcWrappedConnection con = null;
 		synchronized (availableConnections) {
@@ -116,7 +117,12 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 			}
 		}
 		if (con != null && con.isClosed()) {
-			abandon(con);
+			final JdbcWrappedConnection con2 = con;
+			doInLock(new Runnable() {
+				public void run() {
+					abandon(con2);
+				}
+			});
 			con = createNewConnection();
 		}
 		if (con == null) {
@@ -125,13 +131,11 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		con.ts = System.currentTimeMillis();
 		return con;
 	}
-	
-	
+
 	protected String getConnectionCreatorName() {
 		return "SimplePoolConnectionCreator";
 	}
-	
-	
+
 	private JdbcWrappedConnection createNewConnection() throws SQLException {
 		int maxLoginTimeout = DriverManager.getLoginTimeout();
 		DriverManager.setLoginTimeout(maxWait);
@@ -153,60 +157,105 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 	}
 
 	
+	/**
+	 * WARN do in lock only @see {@link #doInLock(Runnable)}
+	 */
 	private void abandon(JdbcWrappedConnection con) {
-		synchronized (activeConnections) {
-			activeConnections.remove(con);
-		}
-		synchronized (availableConnections) {
-			availableConnections.remove(con);
-		}
+		activeConnections.remove(con);
+		availableConnections.remove(con);
 		logger.debug("Connection to \"" + dbname + "\" abandoned.");
 	}
+	
 
 	void release(JdbcWrappedConnection conn) {
-		conn.ts = -1;
+		conn.ts = 0;
 		synchronized (availableConnections) {
-			availableConnections.add(conn);
+			if (!conn.abandoned) {
+				availableConnections.add(conn);
+			}
 		}
 	}
 
 	public void run() {
 		try {
 			while (true) {
-				if (! isConnectorCreatorActive())
+				if (!isConnectorCreatorActive())
 					break;
-				Thread.sleep(closeTimout);
-				if (! isConnectorCreatorActive())
+				Thread.sleep(POOL_THREAD_SLEEP);
+				if (!isConnectorCreatorActive())
 					break;
-				long ts = System.currentTimeMillis() - closeTimout;
-				synchronized (activeConnections) {
-					for (JdbcWrappedConnection jc : activeConnections) {
-						if (jc.ts < ts) {
+				if (closeTimout > 0) {
+					long ts = System.currentTimeMillis() - closeTimout;
+					List<JdbcWrappedConnection> newActiveList = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+					synchronized (activeConnections) {
+						newActiveList.addAll(activeConnections);
+					}
+					// check for release timeouts
+					boolean ab = false;
+					for (final JdbcWrappedConnection jc : newActiveList) {
+						if (jc.ts > 0 && jc.ts < ts) {
 							logger.warn("Connection " + jc + " not released in " + closeTimout + " ms. Autoclosing.");
 							jc.realClose();
-							abandon(jc);
+							ab = true;
 						} else {
 							try {
-								if (jc.conn.isClosed())
-									abandon(jc);
+								if (jc.conn.isClosed()) {
+									ab = true;
+								}
 							} catch (SQLException e) {
-								abandon(jc);
+								ab = true;
 							}
 						}
-					}
-					synchronized (availableConnections) {
-						while (availableConnections.size() < minIdle) {
-							try {
-								availableConnections.add(createNewConnection());
-							} catch (SQLException e) {
-								break;
-							}
+						if (ab) {
+							doInLock(new Runnable() {
+								public void run() {
+									abandon(jc);
+								}
+							});
 						}
 					}
 				}
-			}
+				// check idle
+				final int avc = availableConnections.size();
+				// check min
+				if (avc < minIdle) {
+					doInLock(new Runnable() {
+						public void run() {
+							for (int a = avc; a < minIdle; a++) {
+								try {
+									availableConnections.add(createNewConnection());
+								} catch (SQLException e) {
+									logger.warn("Can not create new connection to database \"" + dbname + "\".");
+									break;
+								}
+							}
+						}
+					});
+				}
+				// check max
+				if (avc > maxIdle) {
+					doInLock(new Runnable() {
+						public void run() {
+							for (int a = avc; a > maxIdle; a--) {
+								if (availableConnections.size() > 0) {
+									JdbcWrappedConnection con = availableConnections.get(0);
+									abandon(con);
+								}
+							}
+						}
+					});
+				}
+			} // thread.run try
 		} catch (InterruptedException e) {
 			logger.warn(Thread.currentThread().getName() + " closing.");
+		}
+	}
+
+	private void doInLock(Runnable op) {
+		synchronized (activeConnections) {
+			synchronized (activeConnections) {
+				op.run();
+			}
 		}
 	}
 
@@ -216,6 +265,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 	class JdbcWrappedConnection implements Connection {
 		private Connection conn;
 		private long ts;
+		private boolean abandoned;
 
 		public JdbcWrappedConnection(Connection c) {
 			this.conn = c;
@@ -372,8 +422,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 			}
 		}
 
-		// ------------------ Methods for JDK6
-		// ---------------------------------------
+		// ------------------ Methods for JDK6----------------------------
 		public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
 			throw new RuntimeException("Not supported.");
 		}
