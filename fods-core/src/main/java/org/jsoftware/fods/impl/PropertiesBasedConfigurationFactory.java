@@ -8,12 +8,11 @@ import java.util.Properties;
 
 import org.jsoftware.fods.DefaultSelectorFactory;
 import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.client.ext.Configuration.DatabaseConfiguration;
-import org.jsoftware.fods.client.ext.ConfigurationFactory;
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
 import org.jsoftware.fods.client.ext.LoggerFactory;
 import org.jsoftware.fods.client.ext.SelectorFactory;
+import org.jsoftware.fods.client.ext.Configuration.DatabaseConfiguration;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 import org.jsoftware.fods.log.DefaultLoggerFactory;
 

@@ -1,5 +1,6 @@
 package org.jsoftware.fods.client.ext;
 
+
 /**
  * Indicates that an {@link Object} can be displayed.
  * Can be applied to {@link Configuration}, {@link Configuration}, {@link Selector}, {@link ConnectionCreator} and many others componets.

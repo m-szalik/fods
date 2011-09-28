@@ -7,6 +7,7 @@ import java.util.Properties;
 import javax.management.ObjectName;
 import javax.sql.DataSource;
 
+
 /**
  * Fods main configuration for single {@link DataSource}.
  * @author szalik
