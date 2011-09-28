@@ -3,7 +3,7 @@
 	<groupId>org.jsoftware</groupId>
 	<artifactId>foDS</artifactId>
 	<packaging>pom</packaging>
-	<version>4.0</version>
+	<version>4.0-SNAPSHOT</version>
 	<name>foDS</name>
 	<url>http://jsoftware.org/fods</url>
 	<inceptionYear>2008</inceptionYear>
