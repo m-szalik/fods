@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.jsoftware</groupId>
 		<artifactId>foDS</artifactId>
-		<version>4.0</version>
+		<version>4.1-SNAPSHOT</version>
 	</parent>
 
 	<build>
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>org.jsoftware</groupId>
 			<artifactId>foDS-client</artifactId>
-			<version>4.0</version>
+			<version>4.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
