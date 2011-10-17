@@ -1,5 +1,7 @@
 package org.jsoftware.fods.impl.utils;
 
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -42,7 +44,8 @@ public class PropertiesUtil {
 	public void loadDriver(String key) {
 		String className = getProperty(key);
 		try {
-			Class.forName(className).newInstance();
+			Driver driver = (Driver) Class.forName(className).newInstance();
+			DriverManager.registerDriver(driver);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("Driver class not found for database \"" + dbName + "\", dirverClassName=" + className, e);
 		} catch (Exception e) {

@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
@@ -195,51 +196,51 @@ public class StatsConnectionWrapper implements Connection {
 
 	// ------------------ Methods for JDK6 ------------------------------------
 	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.createArrayOf(typeName, elements);
 	}
 
 	public Blob createBlob() throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.createBlob();
 	}
 
 	public Clob createClob() throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.createClob();
 	}
 
 	public NClob createNClob() throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.createNClob();
 	}
 
 	public SQLXML createSQLXML() throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.createSQLXML();
 	}
 
 	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.createStruct(typeName, attributes);
 	}
 
 	public Properties getClientInfo() throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.getClientInfo();
 	}
 
 	public String getClientInfo(String name) throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.getClientInfo(name);
 	}
 
 	public boolean isValid(int timeout) throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.isValid(timeout);
 	}
 
-	public void setClientInfo(Properties properties) {
-		throw new RuntimeException(NOT_SUPPORTED);
+	public void setClientInfo(Properties properties) throws SQLClientInfoException {
+		connection.setClientInfo(properties);
 	}
 
-	public void setClientInfo(String name, String value) {
-		throw new RuntimeException(NOT_SUPPORTED);
+	public void setClientInfo(String name, String value) throws SQLClientInfoException {
+		connection.setClientInfo(name, value);
 	}
 
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		return connection.isWrapperFor(iface);
 	}
 
 	public <T> T unwrap(Class<T> iface) throws SQLException {

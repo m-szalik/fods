@@ -52,5 +52,10 @@ public class SingleConnectionJdbcConnectionCreatorFactory implements ConnectionC
 			return con;
 		}
 		
+		@Override
+		protected String[] getNonConnectionProperties() {
+			return new String[0];
+		}
+		
 	}
 }

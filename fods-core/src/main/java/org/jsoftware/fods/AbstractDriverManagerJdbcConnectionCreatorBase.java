@@ -26,7 +26,16 @@ public abstract class AbstractDriverManagerJdbcConnectionCreatorBase implements 
 	
 	
 	public AbstractDriverManagerJdbcConnectionCreatorBase(String dbname, Logger logger, Properties properties) {
-		this.connectionProperties = properties;
+		Properties cprops = new Properties();
+		cprops.putAll(properties);
+		for(String key : getNonConnectionProperties()) {
+			cprops.remove(key);
+		}
+		cprops.remove("connectionCreatorFactory");
+		cprops.remove("driverClassName");
+		cprops.remove("maxWait");
+		cprops.remove("jdbcURI");
+		this.connectionProperties = cprops;
 		this.dbname = dbname;
 		this.logger = logger;
 		PropertiesUtil pu = new PropertiesUtil(properties, dbname);
@@ -39,6 +48,11 @@ public abstract class AbstractDriverManagerJdbcConnectionCreatorBase implements 
 		this.setReadOnly = Boolean.getBoolean(pu.getProperty("setReadOnly", "false"));
 	}
 	
+	/**
+	 * @return list of properties that should be not passed to jdbc driver.
+	 */
+	protected abstract String[] getNonConnectionProperties();
+
 	public boolean isConnectorCreatorActive() {
 		return active;
 	}

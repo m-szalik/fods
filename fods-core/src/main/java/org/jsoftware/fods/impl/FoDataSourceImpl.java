@@ -195,7 +195,13 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 			Configuration.DatabaseConfiguration dbc = configuration.getDatabaseConfigurationByName(dbname);
 			connection = dbc.getConnectionCreator().getConnection();
 			PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
-			statement.execute();
+			try {
+				statement.execute();
+			} finally {
+				if (statement != null) {
+					try { statement.close(); } catch (SQLException e) {	}
+				}
+			}
 			//
 			if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
 				notifyChangeEvent(new RecoverySucessEvent(dbname));
