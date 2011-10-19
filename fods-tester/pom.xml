@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jsoftware</groupId>
-	<artifactId>foDS-tester-hosts</artifactId>
+	<artifactId>foDS-tester</artifactId>
 	<version>4.1</version>
-	<name>foDS Tester - host (server)</name>
+	<name>foDS Tester</name>
 	<url>http://jsoftware.org/fods</url>
-
+	<description>A independent program that tests foDS.</description>
 
 	<dependencies>
 		<dependency>
