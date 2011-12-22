@@ -70,11 +70,10 @@
 	</build>
 	
 	<scm>
-	    <url>svn://jsoftware.org/grucha/fods/tags/foDS-4.0</url>
-	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/tags/foDS-4.0</connection>
-	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/tags/foDS-4.0</developerConnection>
+	    <url>svn://jsoftware.org/grucha/fods/trunk</url>
+	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</connection>
+	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</developerConnection>
 	</scm>
-
 
 	<dependencyManagement>
 		<dependencies>
