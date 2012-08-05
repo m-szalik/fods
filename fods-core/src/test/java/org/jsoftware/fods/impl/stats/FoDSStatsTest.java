@@ -41,6 +41,7 @@ public class FoDSStatsTest extends AbstractDbTestTemplate {
 		PreparedStatement ps = con.prepareStatement("SELECT * FROM stable");
 		ps.execute();
 		ps.executeQuery();
+		ps.close();
 		con.close();
 		Assert.assertEquals(1, db0si.release);
 	}

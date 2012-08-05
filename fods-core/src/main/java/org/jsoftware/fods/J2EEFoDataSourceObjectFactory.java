@@ -54,6 +54,7 @@ public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 					throw new IOException("Can not load foDS properties form " + pl.getContent());
 				}
 				properties.load(ins);
+				ins.close();
 			}
 			for (Enumeration<RefAddr> en = r.getAll(); en.hasMoreElements();) {
 				RefAddr ra = en.nextElement();

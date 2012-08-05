@@ -83,11 +83,11 @@ public abstract class AbstractFoDataSourceFactory {
 				ObjectName on = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
 				s = s.replace("%mxbeanObjectName%", on == null ? "-" : on.toString());
 				StringBuilder sb = new StringBuilder(s).append("  FoDS state:");
-				for (String dbName : testResults.keySet()) {
-					sb.append("\n    Database ").append(dbName);
-					sb.append(" status ").append(testResults.get(dbName) ? "OK" : "FAIL");
+				for (Map.Entry<String,Boolean> me : testResults.entrySet()) {
+					sb.append("\n    Database ").append(me.getKey());
+					sb.append(" status ").append(me.getValue() ? "OK" : "FAIL");
 					if (debug) {
-						sb.append(", connectionCreator: ").append(componentToString(configuration.getDatabaseConfigurationByName(dbName).getConnectionCreator(), debug));
+						sb.append(", connectionCreator: ").append(componentToString(configuration.getDatabaseConfigurationByName(me.getKey()).getConnectionCreator(), debug));
 					}
 				}
 				if (sb.length() > 0) {
@@ -146,9 +146,7 @@ public abstract class AbstractFoDataSourceFactory {
 		try {
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 			Object bean = new FoDataSourceConsole(ds, configuration);
-			if (bean instanceof FodsEventListener) {
-				ds.addChangeEventListener((FodsEventListener) bean);
-			}
+			ds.addChangeEventListener((FodsEventListener) bean);
 			if (mbs.isRegistered(objectName)) {
 				mbs.unregisterMBean(objectName);
 			}

@@ -47,13 +47,14 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 				connection = dbc.getConnectionCreator().getConnection();
 				PreparedStatement statement = connection.prepareStatement(dbc.getTestSql());
 				statement.execute();
+				statement.close();
 				pw.append("OK\n");
 			} catch (SQLException e) {
 				pw.append("FAILED " + e.getMessage() + "\n");
 				e.printStackTrace(pw);
 				pw.append('\n');
 			} finally {
-				try { if (connection != null) connection.close(); } catch (SQLException e) {	}
+				try { if (connection != null) connection.close(); } catch (SQLException e) { /* ignore */	}
 			}
 		}
 		pw.close();

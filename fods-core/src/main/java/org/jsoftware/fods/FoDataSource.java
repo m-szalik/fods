@@ -37,18 +37,24 @@ public class FoDataSource implements DataSource {
 
 	
 	public FoDataSource(String loaction) throws IOException {
-		InputStream ins = getClass().getResourceAsStream(loaction);
-		if (ins == null) {
-			File file = new File(loaction);
-			if (file.exists()) {
-				ins = new FileInputStream(file);
+		Properties props = new Properties();
+		InputStream ins = FoDataSource.class.getResourceAsStream(loaction);
+		try {
+			if (ins == null) {
+				File file = new File(loaction);
+				if (file.exists()) {
+					ins = new FileInputStream(file);
+				}
+			}
+			if (ins == null) {
+				throw new IOException("Can not load configuration from location " + loaction);
+			}
+			props.load(ins);
+		} finally {
+			if (ins != null) {
+				ins.close();
 			}
 		}
-		if (ins == null) {
-			throw new IOException("Can not load configuration from location " + loaction);
-		}
-		Properties props = new Properties();
-		props.load(ins);
 		setup(props);
 	}
 	

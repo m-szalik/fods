@@ -27,7 +27,7 @@ public class StatisticsItem implements Serializable {
 	
 	public JMXStatistics createJMXStatistics(String myDbName) {
 		double avrSelectQyeryMS = (executedSelectQueries == 0) ? 0 : executedSelectTime / executedSelectQueries;
-		double avrQyeryMS = (executedQueries == 0) ? 0 : executedTime / executedQueries;
+		double avrQyeryMS = (executedQueries == 0) ? 0 : (double)executedTime / (double)executedQueries;
 		return new JMXStatistics(get, release, breakTimes, recoveryTimes, executedQueries, executedSelectQueries, myDbName, avrSelectQyeryMS, avrQyeryMS);
 	}
 }

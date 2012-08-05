@@ -14,7 +14,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.hsqldb.jdbc.JDBCDriver;
-import org.hsqldb.server.Server;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
 import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
@@ -52,16 +51,22 @@ public abstract class AbstractDbTestTemplate {
 		PropertiesBasedConfigurationFactory propertiesConfigurationFactory = new PropertiesBasedConfigurationFactory();
 		Properties properties = new Properties();
 		int i=4; String name = TEST_CONFIGURATION_PROPERTIES;
-		InputStream ins;
-		do {
-			ins = getClass().getResourceAsStream(name);
-			i--;
-			name = "../" + name;
-		} while(i > 0 && ins == null);
-		if (ins == null) {
-			throw new IOException("Can not load " + TEST_CONFIGURATION_PROPERTIES);
+		InputStream ins = null;
+		try {
+			do {
+				ins = getClass().getResourceAsStream(name);
+				i--;
+				name = "../" + name;
+			} while(i > 0 && ins == null);
+			if (ins == null) {
+				throw new IOException("Can not load " + TEST_CONFIGURATION_PROPERTIES);
+			}
+			properties.load(ins);
+		} finally {
+			if (ins != null) {
+				ins.close();
+			}
 		}
-		properties.load(ins);
 		propertiesConfigurationFactory.setProperties(properties);
 		configuration = propertiesConfigurationFactory.getConfiguration();
 	}
@@ -95,7 +100,6 @@ public abstract class AbstractDbTestTemplate {
 }
 
 class DBHolder {
-	Server server;
 	int index;
 	private boolean working;
 
@@ -125,7 +129,14 @@ class DBHolder {
 	public void stop() throws SQLException {
 		if (working) {
 			Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:db" + index, "sa", "");
-			connection.createStatement().execute("shutdown");
+			Statement stm = null;
+			try {
+				stm = connection.createStatement();
+				stm.execute("shutdown");
+			} finally {
+				stm.close();
+				connection.close();
+			}
 			working = false;
 		}
 	}

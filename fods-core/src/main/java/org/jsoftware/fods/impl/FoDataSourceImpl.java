@@ -32,7 +32,7 @@ import org.jsoftware.fods.log.LoggerWriter;
  * Fail over {@link DataSource} implementation.
  * @author szalik
  */
-public class FoDataSourceImpl implements DataSource, Closeable {
+public final class FoDataSourceImpl implements DataSource, Closeable {
 	private Logger logger;
 	private PrintWriter printWriter;
 	private Configuration configuration;
@@ -47,7 +47,7 @@ public class FoDataSourceImpl implements DataSource, Closeable {
 		this.printWriter = new PrintWriter(new LoggerWriter(logger));
 		if (! Boolean.valueOf(configuration.getProperty("disableEvents"))) {
 			this.eventsSenderThread = new ChangeEventsThread(configuration.getLogger());
-			this.eventsSenderThread.start();
+			this.eventsSenderThread.start(); // this is the reason why this class is final
 		}
 		stats = new Statistics(configuration.getDatabaseNames());
 		this.fodsState = new FodsStateImpl(configuration.getDatabaseNames()); 

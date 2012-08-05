@@ -73,8 +73,8 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 	private int maxIdle;
 	private int minIdle;
 	private long closeTimout;
-	private List<JdbcWrappedConnection> activeConnections;
-	private List<JdbcWrappedConnection> availableConnections;
+	private volatile List<JdbcWrappedConnection> activeConnections;
+	private volatile List<JdbcWrappedConnection> availableConnections;
 	private Thread thread;
 
 	public SimplePoolConnectionCreator(String dbname, Logger logger, Properties properties) {
@@ -174,8 +174,10 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 	private JdbcWrappedConnection createNewConnection() throws SQLException {
 		int maxLoginTimeout = DriverManager.getLoginTimeout();
 		DriverManager.setLoginTimeout(maxWait);
+		boolean success = false;
+		Connection con = null;
 		try {
-			Connection con = DriverManager.getConnection(jdbcURI, connectionProperties);
+			con = DriverManager.getConnection(jdbcURI, connectionProperties);
 			JdbcWrappedConnection jdbcWrappedConnection = new JdbcWrappedConnection(con);
 			synchronized (activeConnections) {
 				if (activeConnections.size() == maxActive) {
@@ -183,11 +185,17 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 					throw new SQLException("Can not create more connections to " + dbname + ". MaxActive is set to " + maxActive);
 				}
 				activeConnections.add(jdbcWrappedConnection);
+				success = true;
 			}
 			logger.debug("New connection to \"" + dbname + "\" created for pool.");
 			return jdbcWrappedConnection;
 		} finally {
 			DriverManager.setLoginTimeout(maxLoginTimeout);
+			if (! success && con != null) {
+				try {
+					con.close();
+				} catch (Exception e) { /* ignore it */ }
+			}
 		}
 	}
 

@@ -31,7 +31,7 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 		if (str != null) {
 			recoveryTime = Long.valueOf(str);
 		} else {
-			new RequiredPropertyMissing("selectorMinRecoveryTime");
+			throw new RequiredPropertyMissing("selectorMinRecoveryTime");
 		}
 
 		String selectorSeq = configuration.getProperty("selectorSequence", null);
@@ -90,7 +90,6 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 				break;
 			}
 		} while(true);
-		last = str;
 		return str;
 	}
 

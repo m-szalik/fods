@@ -8,11 +8,11 @@ import java.util.Properties;
 
 import org.jsoftware.fods.DefaultSelectorFactory;
 import org.jsoftware.fods.client.ext.Configuration;
+import org.jsoftware.fods.client.ext.Configuration.DatabaseConfiguration;
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
 import org.jsoftware.fods.client.ext.LoggerFactory;
 import org.jsoftware.fods.client.ext.SelectorFactory;
-import org.jsoftware.fods.client.ext.Configuration.DatabaseConfiguration;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 import org.jsoftware.fods.log.DefaultLoggerFactory;
 
@@ -29,13 +29,18 @@ public class PropertiesBasedConfigurationFactory implements ConfigurationFactory
 	
 	public void setProperties(Properties properties) {
 		Properties props = new Properties();
+		InputStream ins = null;
 		try {
 			String res = "/defaults.properties";
-			InputStream ins = getClass().getResourceAsStream(res);
+			ins = getClass().getResourceAsStream(res);
 			if (ins == null) throw new IOException("Resource classpath::" + res + " not found.");
 			props.load(ins);
 		} catch (IOException e) {
 			throw new RuntimeException("Can not load default configuration values.", e);
+		} finally {
+			if (ins != null) {
+				try {	ins.close(); } catch (IOException e) {	/* ignore */ }
+			}
 		}
 		for(String k : properties.stringPropertyNames()) {
 			props.setProperty(k, properties.getProperty(k));
@@ -68,13 +73,13 @@ public class PropertiesBasedConfigurationFactory implements ConfigurationFactory
 	
 		DatabaseConfiguration[] dbsco = new DatabaseConfiguration[map.size()];
 		int i = 0;
-		for(String dbname : map.keySet()) {
-			DatabaseConfigurationImpl dbc = new DatabaseConfigurationImpl(dbname);
-			dbc.props = map.get(dbname);
-			PropertiesUtil pu = new PropertiesUtil(dbc.props, dbname);
+		for(Map.Entry<String,Properties> me : map.entrySet()) {
+			DatabaseConfigurationImpl dbc = new DatabaseConfigurationImpl(me.getKey());
+			dbc.props = me.getValue();
+			PropertiesUtil pu = new PropertiesUtil(dbc.props, me.getKey());
 			dbc.testSQL = pu.getProperty("testSQL", mainPU.getProperty("testSQL"));
 			ConnectionCreatorFactory fac = pu.load("connectionCreatorFactory", null);
-			dbc.connectionCreator = fac.getConnectionCreator(dbname, configuration.getLogger(), dbc.props);
+			dbc.connectionCreator = fac.getConnectionCreator(me.getKey(), configuration.getLogger(), dbc.props);
 			dbsco[i++] = dbc;
 		}
 		configuration.setDatabases(dbsco);

@@ -11,7 +11,7 @@ import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
 import org.jsoftware.fods.client.ext.Logger;
 
 /**
- * Creates {@link ConnectionCreator} that uses pool of {@link Connection}s.
+ * Creates {@link ConnectionCreator} that creates new {@link Connection} each time a {@link Connection} is required.
  * <p>
  * Required configuration values:
  * <ul>
@@ -37,7 +37,7 @@ public class SingleConnectionJdbcConnectionCreatorFactory implements ConnectionC
 	/**
 	 * @author szalik
 	 */
-	class SingleConnectionJdbcConnectionCreator extends AbstractDriverManagerJdbcConnectionCreatorBase {
+	static class SingleConnectionJdbcConnectionCreator extends AbstractDriverManagerJdbcConnectionCreatorBase {
 		public SingleConnectionJdbcConnectionCreator(String dbname, Logger logger, Properties properties) {
 			super(dbname, logger, properties);
 		}
