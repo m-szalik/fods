@@ -3,7 +3,7 @@
 	<groupId>org.jsoftware</groupId>
 	<artifactId>foDS</artifactId>
 	<packaging>pom</packaging>
-	<version>4.2-SNAPSHOT</version>
+	<version>4.2</version>
 	<name>foDS</name>
 	<url>http://jsoftware.org/fods</url>
 	<inceptionYear>2008</inceptionYear>
@@ -80,9 +80,9 @@
 	</build>
 	
 	<scm>
-	    <url>svn://jsoftware.org/grucha/fods/trunk</url>
-	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</connection>
-	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</developerConnection>
+	    <url>svn://jsoftware.org/grucha/fods/tags/foDS-4.2</url>
+	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/tags/foDS-4.2</connection>
+	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/tags/foDS-4.2</developerConnection>
 	</scm>
 
 	<dependencyManagement>
