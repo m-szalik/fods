@@ -23,7 +23,9 @@ import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
 
 /**
  * Factory of {@link FoDataSourceImpl} object.
- * <p>Use this factory to place {@link FoDataSourceImpl} into {@link InitialContext}.</p> 
+ * <p>
+ * Use this factory to place {@link FoDataSourceImpl} into {@link InitialContext}.
+ * </p>
  * @author szalik
  * @see also {@link FoDataSource}.
  */
@@ -71,7 +73,7 @@ public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 					return factory.getConfiguration();
 				}
 			};
-			
+
 			DataSource ds = factory.getObjectInstance();
 			return ds;
 		} else {

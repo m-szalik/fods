@@ -41,25 +41,33 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 	private FodsStateImpl fodsState;
 	private boolean active;
 
+
+
 	FoDataSourceImpl(Configuration configuration) {
 		this.logger = configuration.getLogger();
 		this.configuration = configuration;
 		this.printWriter = new PrintWriter(new LoggerWriter(logger));
-		if (! Boolean.valueOf(configuration.getProperty("disableEvents"))) {
+		if (!Boolean.valueOf(configuration.getProperty("disableEvents"))) {
 			this.eventsSenderThread = new ChangeEventsThread(configuration.getLogger());
 			this.eventsSenderThread.start(); // this is the reason why this class is final
 		}
 		stats = new Statistics(configuration.getDatabaseNames());
-		this.fodsState = new FodsStateImpl(configuration.getDatabaseNames()); 
+		this.fodsState = new FodsStateImpl(configuration.getDatabaseNames());
 	}
-	
+
+
+
 	public FodsStateImpl getFodsState() {
 		return fodsState;
 	}
 
+
+
 	public Statistics getStatistics() {
 		return stats;
 	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -69,6 +77,8 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 	public Connection getConnection() throws SQLException {
 		return connection();
 	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -80,6 +90,8 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		return connection();
 	}
 
+
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -88,6 +100,8 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 	public PrintWriter getLogWriter() throws SQLException {
 		return printWriter;
 	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -99,6 +113,8 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		return 10;
 	}
 
+
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -107,6 +123,8 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		printWriter = out;
 	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -118,7 +136,8 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		// creator.setLoginTimeout(seconds);
 	}
 
-	
+
+
 	public Boolean testDatabase(String dbName) {
 		Configuration.DatabaseConfiguration dbc = configuration.getDatabaseConfigurationByName(dbName);
 		Boolean b = null;
@@ -129,13 +148,15 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 				if (connection != null) {
 					connection.close();
 				}
-			} catch (SQLException e) {		}
+			} catch (SQLException e) {}
 		}
 		return b;
 	}
-	
+
+
+
 	public void start() {
-		for(Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
+		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
 			try {
 				dbc.getConnectionCreator().start();
 			} catch (Exception e) {
@@ -144,26 +165,32 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		}
 		active = true;
 	}
-	
+
+
+
 	public void stop() {
-		for(Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
+		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
 			try {
 				dbc.getConnectionCreator().stop();
-			} catch (Exception e) {	}
+			} catch (Exception e) {}
 		}
 		active = false;
 	}
 
+
+
 	public void close() throws IOException {
 		stop();
 	}
-	
+
+
+
 	/**
 	 * @return
 	 * @throws SQLException
 	 */
 	private Connection connection() throws SQLException {
-		if (! active) throw new SQLException("DataSource is not active / closed.");
+		if (!active) throw new SQLException("DataSource is not active / closed.");
 		Selector selector = configuration.getSelector();
 		String dbname;
 		Connection connection;
@@ -172,9 +199,9 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 			if (dbname == null) break;
 			connection = getConnectionFromDb(dbname);
 			if (connection != null) {
-				if (! dbname.equals(fodsState.getCurrentDatabase())) {
+				if (!dbname.equals(fodsState.getCurrentDatabase())) {
 					notifyChangeEvent(new ActiveDatabaseChangedEvent(dbname, fodsState.getCurrentDatabase()));
-					fodsState.setCurrentDatabase(dbname); 
+					fodsState.setCurrentDatabase(dbname);
 				}
 				return wrap(connection, dbname);
 			}
@@ -182,7 +209,9 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		notifyChangeEvent(new NoMoreDatabasesEvent());
 		throw new SQLException("No more databases avaialable.");
 	}
-	
+
+
+
 	private Connection getConnectionFromDb(String dbname) {
 		FodsDbStateImpl dbState = fodsState.getDbstate(dbname);
 		FodsDbStateStatus newStatus = dbState.getStatus();
@@ -199,7 +228,9 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 				statement.execute();
 			} finally {
 				if (statement != null) {
-					try { statement.close(); } catch (SQLException e) {	}
+					try {
+						statement.close();
+					} catch (SQLException e) {}
 				}
 			}
 			//
@@ -224,12 +255,14 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		if (connection != null) {
 			try {
 				dbState.setReadonly(connection.isReadOnly());
-			} catch (SQLException e) {	
+			} catch (SQLException e) {
 				logger.log(LogLevel.DEBUG, "Error obtaining readOnly information from " + dbname, e);
 			}
 		}
 		return connection;
 	}
+
+
 
 	private Connection wrap(Connection con, String dbName) {
 		Connection connection;
@@ -242,14 +275,18 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		return connection;
 	}
 
+
+
 	public void addChangeEventListener(FodsEventListener listener) {
 		if (eventsSenderThread != null) {
 			eventsSenderThread.addChangeEventListener(listener);
 		}
 	}
 
+
+
 	public void notifyChangeEvent(AbstractFodsEvent event) {
-		if (eventsSenderThread != null) {	
+		if (eventsSenderThread != null) {
 			eventsSenderThread.notifyChangeEvent(event);
 		}
 		if (configuration.isEnableStats()) {
@@ -267,10 +304,14 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		logger.logEvent(event);
 	}
 
+
+
 	// ------------------ Methods for JDK6 ---------------------------------------
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		throw new RuntimeException("Not supported.");
 	}
+
+
 
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		throw new RuntimeException("Not supported.");

@@ -8,5 +8,5 @@ import org.jsoftware.fods.client.ext.Configuration;
 public interface ConfigurationFactory {
 
 	Configuration getConfiguration();
-	
+
 }

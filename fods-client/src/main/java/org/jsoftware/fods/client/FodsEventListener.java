@@ -7,7 +7,7 @@ import org.jsoftware.fods.event.AbstractFodsEvent;
  * @author szalik
  */
 public interface FodsEventListener {
-	
+
 	void onEvent(AbstractFodsEvent event);
-	
+
 }

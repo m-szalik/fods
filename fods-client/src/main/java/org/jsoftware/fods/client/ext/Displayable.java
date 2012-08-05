@@ -1,9 +1,8 @@
 package org.jsoftware.fods.client.ext;
 
-
 /**
- * Indicates that an {@link Object} can be displayed.
- * Can be applied to {@link Configuration}, {@link Configuration}, {@link Selector}, {@link ConnectionCreator} and many others componets.
+ * Indicates that an {@link Object} can be displayed. Can be applied to {@link Configuration}, {@link Configuration}, {@link Selector}, {@link ConnectionCreator} and many others
+ * componets.
  * @author szalik
  */
 public interface Displayable {
@@ -14,5 +13,5 @@ public interface Displayable {
 	 * @return displayable form of component
 	 */
 	String asString(boolean addDebugInfo);
-	
+
 }

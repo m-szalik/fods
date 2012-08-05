@@ -32,42 +32,47 @@ import org.junit.Test;
 public class FoDSEventsTest extends AbstractDbTestTemplate implements NotificationListener {
 	private List<AbstractFodsEvent> events;
 	private DataSource ds;
-	
+
+
+
 	@Before
 	public void registerMxBeanListener() throws InstanceNotFoundException, IOException {
 		events = new ArrayList<AbstractFodsEvent>();
 		ds = getFoDS();
 		ManagementFactory.getPlatformMBeanServer().addNotificationListener(configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX), this, null, null);
 	}
-	
+
+
+
 	@After
 	public void unregisterMxBeanListener() throws InstanceNotFoundException, ListenerNotFoundException {
 		ManagementFactory.getPlatformMBeanServer().removeNotificationListener(configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX), this);
-//		System.out.println(events);
+		//		System.out.println(events);
 	}
-		
-	
-//	@Test public void testWaitForever() throws InterruptedException {	Thread.sleep(Long.MAX_VALUE); }
-	
-	@Test 
+
+
+
+	//	@Test public void testWaitForever() throws InterruptedException {	Thread.sleep(Long.MAX_VALUE); }
+
+	@Test
 	public void testSwitch() throws Exception {
 		getDbnameForConnection(ds.getConnection());
 		stop(0);
 		getDbnameForConnection(ds.getConnection());
 		Thread.sleep(500);
-		
+
 		ActiveDatabaseChangedEvent ev1 = (ActiveDatabaseChangedEvent) events.get(0);
 		Assert.assertNull(ev1.getFromDbName());
 		Assert.assertEquals("db0", ev1.getToDbName());
-		
+
 		DatabaseFiledEvent ev2 = (DatabaseFiledEvent) events.get(1);
 		Assert.assertEquals("db0", ev2.getDbName());
-		
+
 		DatabaseStatusChangedEvent ev3 = (DatabaseStatusChangedEvent) events.get(2);
 		Assert.assertEquals("db0", ev3.getDbName());
 		Assert.assertEquals(FodsDbStateStatus.VALID, ev3.getPrevStatus());
 		Assert.assertEquals(FodsDbStateStatus.BROKEN, ev3.getNewStatus());
-		
+
 		ActiveDatabaseChangedEvent ev4 = (ActiveDatabaseChangedEvent) events.get(3);
 		Assert.assertEquals("db0", ev4.getFromDbName());
 		Assert.assertEquals("db1", ev4.getToDbName());
@@ -76,36 +81,39 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 	}
 
 
-	@Test 
+
+	@Test
 	public void testSwitchOutOfConnections() throws Exception {
 		stop(0);
 		stop(1);
 		try {
 			getDbnameForConnection(ds.getConnection());
-		} catch (SQLException e) { /* ignore */	}
+		} catch (SQLException e) { /* ignore */}
 		Thread.sleep(500);
-		
+
 		DatabaseFiledEvent ev1 = (DatabaseFiledEvent) events.get(0);
 		Assert.assertEquals("db0", ev1.getDbName());
-		
+
 		DatabaseStatusChangedEvent ev1b = (DatabaseStatusChangedEvent) events.get(1);
 		Assert.assertEquals("db0", ev1b.getDbName());
 		Assert.assertEquals(FodsDbStateStatus.VALID, ev1b.getPrevStatus());
 		Assert.assertEquals(FodsDbStateStatus.BROKEN, ev1b.getNewStatus());
-		
+
 		DatabaseFiledEvent ev2 = (DatabaseFiledEvent) events.get(2);
 		Assert.assertEquals("db1", ev2.getDbName());
-		
+
 		DatabaseStatusChangedEvent ev2b = (DatabaseStatusChangedEvent) events.get(3);
 		Assert.assertEquals("db1", ev2b.getDbName());
 		Assert.assertEquals(FodsDbStateStatus.VALID, ev2b.getPrevStatus());
 		Assert.assertEquals(FodsDbStateStatus.BROKEN, ev2b.getNewStatus());
-		
-		Assert.assertTrue(events.get(4) instanceof NoMoreDatabasesEvent);		
+
+		Assert.assertTrue(events.get(4) instanceof NoMoreDatabasesEvent);
 		Assert.assertEquals(5, events.size());
 	}
-	
-	@Test 
+
+
+
+	@Test
 	public void testEventOnForceChange() throws InterruptedException {
 		ObjectName objectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
 		FoDataSourceConsoleMXBean bean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(), objectName, FoDataSourceConsoleMXBean.class);
@@ -115,6 +123,8 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 		Assert.assertNull(ev1.getFromDbName());
 		Assert.assertEquals("db1", ev1.getToDbName());
 	}
+
+
 
 	public void handleNotification(Notification notification, Object handback) {
 		if (notification instanceof EventNotification) {

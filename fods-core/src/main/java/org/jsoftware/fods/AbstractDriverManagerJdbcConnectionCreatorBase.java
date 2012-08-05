@@ -11,7 +11,7 @@ import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
 /**
- * Helper class for {@link DriverManager} based {@link ConnectionCreator}s. 
+ * Helper class for {@link DriverManager} based {@link ConnectionCreator}s.
  * <p>
  * Supported parameters: dbname, driverClassName, jdbcURI, maxWait, setReadOnly
  * </p>
@@ -23,12 +23,13 @@ public abstract class AbstractDriverManagerJdbcConnectionCreatorBase implements 
 	protected Properties connectionProperties;
 	protected int maxWait;
 	private boolean active, setReadOnly;
-	
-	
+
+
+
 	public AbstractDriverManagerJdbcConnectionCreatorBase(String dbname, Logger logger, Properties properties) {
 		Properties cprops = new Properties();
 		cprops.putAll(properties);
-		for(String key : getNonConnectionProperties()) {
+		for (String key : getNonConnectionProperties()) {
 			cprops.remove(key);
 		}
 		cprops.remove("connectionCreatorFactory");
@@ -47,18 +48,24 @@ public abstract class AbstractDriverManagerJdbcConnectionCreatorBase implements 
 		}
 		this.setReadOnly = Boolean.getBoolean(pu.getProperty("setReadOnly", "false"));
 	}
-	
+
+
+
 	/**
 	 * @return list of properties that should be not passed to jdbc driver.
 	 */
 	protected abstract String[] getNonConnectionProperties();
 
+
+
 	public boolean isConnectorCreatorActive() {
 		return active;
 	}
-	
+
+
+
 	public Connection getConnection() throws SQLException {
-		if (! active) {
+		if (!active) {
 			throw new SQLException("Can not obtain connection from \"" + getConnectionCreatorName() + "\". ConnectionCreator stoped.");
 		}
 		int maxLoginTimeout = DriverManager.getLoginTimeout();
@@ -75,20 +82,30 @@ public abstract class AbstractDriverManagerJdbcConnectionCreatorBase implements 
 		return con;
 	}
 
+
+
 	public void start() throws Exception {
 		active = true;
 	}
 
+
+
 	public void stop() {
 		active = false;
 	}
+
+
 
 	@Override
 	public String asString(boolean addDebugInfo) {
 		return getConnectionCreatorName() + (addDebugInfo ? "(jdbcURI=" + jdbcURI + ")" : "");
 	}
 
+
+
 	protected abstract Connection createConnection() throws SQLException;
+
+
 
 	protected abstract String getConnectionCreatorName();
 

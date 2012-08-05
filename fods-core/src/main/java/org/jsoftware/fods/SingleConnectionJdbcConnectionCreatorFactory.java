@@ -25,7 +25,6 @@ import org.jsoftware.fods.client.ext.Logger;
  * <li>setReadOnly=true - set connection as read only</li>
  * </ul>
  * </p>
- * 
  * @author szalik
  */
 public class SingleConnectionJdbcConnectionCreatorFactory implements ConnectionCreatorFactory {
@@ -42,20 +41,26 @@ public class SingleConnectionJdbcConnectionCreatorFactory implements ConnectionC
 			super(dbname, logger, properties);
 		}
 
+
+
 		protected String getConnectionCreatorName() {
 			return "SingleConnectionJdbcConnection";
 		}
-	
+
+
+
 		protected Connection createConnection() throws SQLException {
 			Connection con = DriverManager.getConnection(jdbcURI, connectionProperties);
 			logger.debug("New connection to \"" + dbname + "\" created.");
 			return con;
 		}
-		
+
+
+
 		@Override
 		protected String[] getNonConnectionProperties() {
 			return new String[0];
 		}
-		
+
 	}
 }

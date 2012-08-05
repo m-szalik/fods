@@ -6,7 +6,9 @@ import org.jsoftware.fods.jmx.JMXStatistics;
 
 /**
  * FoDS statistic item.
- * <p>Statistics for particular database.</p>
+ * <p>
+ * Statistics for particular database.
+ * </p>
  * @author szalik
  */
 public class StatisticsItem implements Serializable {
@@ -15,19 +17,24 @@ public class StatisticsItem implements Serializable {
 	int breakTimes, recoveryTimes;
 	long executedQueries, executedSelectQueries;
 	long executedSelectTime, executedTime;
-	
-	
+
+
+
 	public void addBreak() {
 		breakTimes++;
 	}
-	
+
+
+
 	public void addRecovery() {
 		recoveryTimes++;
 	}
-	
+
+
+
 	public JMXStatistics createJMXStatistics(String myDbName) {
 		double avrSelectQyeryMS = (executedSelectQueries == 0) ? 0 : executedSelectTime / executedSelectQueries;
-		double avrQyeryMS = (executedQueries == 0) ? 0 : (double)executedTime / (double)executedQueries;
+		double avrQyeryMS = (executedQueries == 0) ? 0 : (double) executedTime / (double) executedQueries;
 		return new JMXStatistics(get, release, breakTimes, recoveryTimes, executedQueries, executedSelectQueries, myDbName, avrSelectQyeryMS, avrQyeryMS);
 	}
 }

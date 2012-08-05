@@ -22,9 +22,7 @@ import org.jsoftware.fods.impl.FodsDbStateImpl;
 import org.jsoftware.fods.impl.stats.StatisticsItem;
 
 /**
- * JmxBean implementation of {@link FoDataSourceConsoleMBean} for
- * {@link FoDataSourceImpl}.
- * 
+ * JmxBean implementation of {@link FoDataSourceConsoleMBean} for {@link FoDataSourceImpl}.
  * @author szalik
  */
 public class FoDataSourceConsole extends NotificationBroadcasterSupport implements NotificationEmitter, FoDataSourceConsoleMXBean, FodsEventListener {
@@ -32,10 +30,14 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 	private long notificationSeq;
 	private Configuration configuration;
 
+
+
 	public FoDataSourceConsole(FoDataSourceImpl ds, Configuration configuration) {
 		this.ds = ds;
 		this.configuration = configuration;
 	}
+
+
 
 	public String testRaport() {
 		StringWriter sw = new StringWriter();
@@ -54,28 +56,40 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 				e.printStackTrace(pw);
 				pw.append('\n');
 			} finally {
-				try { if (connection != null) connection.close(); } catch (SQLException e) { /* ignore */	}
+				try {
+					if (connection != null) connection.close();
+				} catch (SQLException e) { /* ignore */}
 			}
 		}
 		pw.close();
 		return sw.toString();
 	}
 
+
+
 	public boolean test(String dbName) {
 		return ds.testDatabase(dbName);
 	}
+
+
 
 	public String[] getDatabaseNames() {
 		return configuration.getDatabaseNames().toArray(new String[0]);
 	}
 
+
+
 	public boolean turnOffDatabase(String dbName) {
 		return turnInternal(dbName, false);
 	}
 
+
+
 	public boolean turnOnDatabase(String dbName) {
 		return turnInternal(dbName, true);
 	}
+
+
 
 	private boolean turnInternal(String dbName, boolean b) {
 		FodsDbStateImpl dbs = ds.getFodsState().getDbstate(dbName);
@@ -89,7 +103,8 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 		return true;
 	}
 
-	
+
+
 	public JMXFodsDbState getCurrentDatabaseState(String dbName) {
 		FodsDbStateImpl dbs = ds.getFodsState().getDbstate(dbName);
 		if (dbs == null) {
@@ -99,6 +114,8 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 		Throwable reason = bt > 0 ? dbs.getLastException() : null;
 		return new JMXFodsDbState(dbName, dbs.getStatus().name(), reason, bt > 0 ? bt : null, dbs.isReadOnly());
 	}
+
+
 
 	public JMXStatistics[] getStatistics() {
 		JMXStatistics[] ret = new JMXStatistics[configuration.getDatabaseNames().size()];
@@ -114,13 +131,19 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 		return ret;
 	}
 
+
+
 	public String getFodsName() {
 		return configuration.getFoDSName();
 	}
 
+
+
 	public String getCurrentDatabaseName() {
 		return ds.getFodsState().getCurrentDatabase();
 	}
+
+
 
 	public boolean forceSetCurrentDatabaseName(String name) {
 		if (configuration.getDatabaseConfigurationByName(name) == null) {
@@ -135,16 +158,22 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 		return true;
 	}
 
+
+
 	public void onEvent(AbstractFodsEvent event) {
 		EventNotification notification = new EventNotification(event, this, notificationSeq++, System.currentTimeMillis());
 		sendNotification(notification);
 	}
+
+
 
 	@Override
 	public MBeanNotificationInfo[] getNotificationInfo() {
 		MBeanNotificationInfo mbni1 = new MBeanNotificationInfo(new String[] { EventNotification.NTYPE }, EventNotification.class.getName(), "DataSource event");
 		return new MBeanNotificationInfo[] { mbni1 };
 	}
+
+
 
 	private void thrownodb(String dbName) throws NoSuchElementException {
 		throw new NoSuchElementException("No database named \"" + dbName + "\"");

@@ -8,5 +8,5 @@ import org.jsoftware.fods.client.ext.Selector;
  * @author szalik
  */
 public class DefaultSelectorFactory extends RoundRobinOnFailSelectorFactory {
-	
+
 }

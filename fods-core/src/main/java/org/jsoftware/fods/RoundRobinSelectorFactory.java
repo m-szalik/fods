@@ -7,12 +7,14 @@ import org.jsoftware.fods.client.ext.SelectorFactory;
 import org.jsoftware.fods.impl.AbstractRoundRobinSelector;
 
 /**
- * Factory for Round robin {@link Selector}. 
- * <p>Next database is selected every connection request.</p>
+ * Factory for Round robin {@link Selector}.
+ * <p>
+ * Next database is selected every connection request.
+ * </p>
  * @author szalik
  */
 public class RoundRobinSelectorFactory implements SelectorFactory {
-	
+
 	public Selector getSelector(Configuration configuration) {
 		return new AbstractRoundRobinSelector("RoundRobinOnFail", configuration) {
 			public String select(FodsState fodsState) {
@@ -20,5 +22,5 @@ public class RoundRobinSelectorFactory implements SelectorFactory {
 			}
 		};
 	}
-	
+
 }

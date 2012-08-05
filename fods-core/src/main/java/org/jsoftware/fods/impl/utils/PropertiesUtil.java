@@ -8,7 +8,6 @@ import java.util.Set;
 
 /**
  * Helps to read {@link Properties}.
- * 
  * @author szalik
  */
 public class PropertiesUtil {
@@ -16,14 +15,20 @@ public class PropertiesUtil {
 	private String dbName;
 	private Properties properties;
 
+
+
 	public PropertiesUtil(Properties properties) {
 		this.properties = properties;
 	}
+
+
 
 	public PropertiesUtil(Properties properties, String dbName) {
 		this(properties);
 		this.dbName = dbName;
 	}
+
+
 
 	public String getProperty(String key) {
 		String p = getProperty(key, null);
@@ -33,6 +38,8 @@ public class PropertiesUtil {
 		return p;
 	}
 
+
+
 	public String getProperty(String key, String defaultValue) {
 		String prop = properties.getProperty(key);
 		if (prop == null) {
@@ -40,6 +47,8 @@ public class PropertiesUtil {
 		}
 		return prop;
 	}
+
+
 
 	public void loadDriver(String key) {
 		String className = getProperty(key);
@@ -52,6 +61,8 @@ public class PropertiesUtil {
 			throw new RuntimeException("Can not load jdbc driver for database \"" + dbName + "\", dirverClassName= " + className, e);
 		}
 	}
+
+
 
 	@SuppressWarnings("unchecked")
 	public <T> T load(String key, Class<T> defaultImpl) {
@@ -82,9 +93,11 @@ public class PropertiesUtil {
 		}
 	}
 
+
+
 	public Set<String> getPropertyKeys() {
 		HashSet<String> keys = new HashSet<String>();
-		for(Object o : properties.keySet()) {
+		for (Object o : properties.keySet()) {
 			if (o != null) {
 				keys.add(o.toString());
 			}

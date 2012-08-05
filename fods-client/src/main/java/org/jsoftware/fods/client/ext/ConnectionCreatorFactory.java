@@ -8,6 +8,6 @@ import java.util.Properties;
  */
 public interface ConnectionCreatorFactory {
 
-	ConnectionCreator getConnectionCreator(String dbName, Logger logger,Properties properties);
-	
+	ConnectionCreator getConnectionCreator(String dbName, Logger logger, Properties properties);
+
 }

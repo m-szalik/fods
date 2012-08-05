@@ -12,12 +12,13 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
 /**
  * Factory for {@link DefaultLoggerImpl}.
- * <p>Default {@link Logger} writes logs to:
+ * <p>
+ * Default {@link Logger} writes logs to:
  * <ul>
- * 	<li>Slf4j if found.</li>
- * 	<li>Commons logging if found.</li>
- * 	<li>Console if none of above was found.</li>
- *  <li>File if property <i>loggerFile</i> is set.</li>
+ * <li>Slf4j if found.</li>
+ * <li>Commons logging if found.</li>
+ * <li>Console if none of above was found.</li>
+ * <li>File if property <i>loggerFile</i> is set.</li>
  * </ul>
  * </p>
  * @author szalik
@@ -34,43 +35,45 @@ public class DefaultLoggerFactory implements LoggerFactory {
 			Class.forName("org.slf4j.LoggerFactory");
 			console = false;
 			logger.addLogEventListener(new Slf4jLogEventListener());
-		} catch (ClassNotFoundException e) {	}
+		} catch (ClassNotFoundException e) {}
 		try {
 			Class.forName("org.apache.commons.logging.LogFactory");
 			console = false;
 			logger.addLogEventListener(new CommonsLoggingLogEventListener());
-		} catch (ClassNotFoundException e) {	}
-		
+		} catch (ClassNotFoundException e) {}
+
 		String logFile = pu.getProperty("loggerFile", "").trim();
 		if (logFile.length() > 0) {
 			logger.addLogEventListener(new FileLogEventListener(new File(logFile)));
 			console = false;
 		}
-		
+
 		if (Boolean.valueOf(properties.getProperty("loggerForceLogOnConsole"))) {
 			console = true;
 		}
 		logger.setLogOnConsole(console);
 		logger.setLogEvents(Boolean.valueOf(properties.getProperty("loggerLogEvents")));
-		
+
 		return logger;
-	}	
+	}
 }
 
 class FileLogEventListener implements LogEventListener {
 	private PrintWriter writer;
-	
+
+
+
 	public FileLogEventListener(File file) {
 		boolean ok = true;
-		if (! file.exists()) {
+		if (!file.exists()) {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
 				ok = false;
 			}
 		}
-		if (! file.canWrite()) ok = false;
-		if (! ok) {
+		if (!file.canWrite()) ok = false;
+		if (!ok) {
 			System.err.println("Can not create / write to file " + file.getAbsolutePath());
 		} else {
 			try {
@@ -79,7 +82,9 @@ class FileLogEventListener implements LogEventListener {
 				throw new RuntimeException(e);
 			}
 		}
-	} 
+	}
+
+
 
 	@Override
 	public void logEvent(LogLevel level, String message, Throwable throwable) {
@@ -90,15 +95,17 @@ class FileLogEventListener implements LogEventListener {
 			}
 		}
 	}
-	
+
+
+
 	@Override
 	protected void finalize() throws Throwable {
 		try {
 			if (writer != null) {
 				writer.close();
 			}
-		} catch (Exception e) {		}
+		} catch (Exception e) {}
 		super.finalize();
 	}
-	
+
 }

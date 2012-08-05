@@ -13,10 +13,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-
 public class JndiDataSourceConnectionCreatorFactoryTest {
-	
+
 	private static final String JNDI_DS = "remoteDS";
+
+
 
 	@Before
 	public void putDataSourceIntoInitialContext() throws NamingException {
@@ -24,8 +25,11 @@ public class JndiDataSourceConnectionCreatorFactoryTest {
 		ctx.bind("java:/comp/env/" + JNDI_DS, new Object());
 	}
 
+
+
 	@SuppressWarnings("deprecation")
-	@Test @Ignore
+	@Test
+	@Ignore
 	public void test() {
 		JndiDataSourceConnectionCreatorFactory factory = new JndiDataSourceConnectionCreatorFactory();
 		Properties properties = new Properties();

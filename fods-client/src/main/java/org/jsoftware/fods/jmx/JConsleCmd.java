@@ -16,7 +16,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 /**
- * Simple CommandLine JConsole 
+ * Simple CommandLine JConsole
  * <p>
  * More advanced Java console can be found at <a href="http://jsoftware.org/tjconsole">www.jsoftware.org/tjconsole</a>.
  * </p>
@@ -29,12 +29,11 @@ public class JConsleCmd {
 	private OPERATION operation;
 	private String propertyName;
 	private String newValue;
-	
-	
+
+
 
 	/**
-	 * @param args
-	 * <code>arg0<code> mbeanServer (hostName:portNum)
+	 * @param args <code>arg0<code> mbeanServer (hostName:portNum)
 	 * <code>arg1<code> operation: <tt>get</tt> or <tt>set</tt> or <tt>info</tt>
 	 * <code>arg2<code> mbean name
 	 * <code>arg3<code> property name <i>case sensitive</i>
@@ -70,6 +69,8 @@ public class JConsleCmd {
 		}
 	}
 
+
+
 	private void parseArgs(String[] args) throws Exception {
 		String serviceURLConenctionString = "service:jmx:rmi:///jndi/rmi://" + args[0] + "/jmxrmi";
 		// service:jmx:rmi:///jndi/rmi://hostName:portNum/jmxrmi
@@ -85,20 +86,22 @@ public class JConsleCmd {
 			newValue = args[4];
 		}
 	}
-	
+
+
+
 	private Object doAction() throws Exception {
 		if (operation == OPERATION.LIST) {
 			System.out.println("MBeans:");
-			for(Object obj : mbc.queryNames(null, null)) {
+			for (Object obj : mbc.queryNames(null, null)) {
 				System.out.println("\t" + obj);
 			}
 			return null;
 		}
 		if (operation == OPERATION.INFO) {
 			MBeanInfo info = mbc.getMBeanInfo(beanName);
-			for(MBeanAttributeInfo ai : info.getAttributes()) {
-				char[] rwro = {'R', 'O'};
-				if (! ai.isReadable()) rwro = new char[] { ' ', ' ' }; 
+			for (MBeanAttributeInfo ai : info.getAttributes()) {
+				char[] rwro = { 'R', 'O' };
+				if (!ai.isReadable()) rwro = new char[] { ' ', ' ' };
 				if (ai.isWritable()) rwro[1] = 'W';
 				System.out.println(ai.getName() + " - " + new String(rwro) + ", type:" + ai.getType() + " (" + ai.getDescription() + ")");
 			}
@@ -113,7 +116,11 @@ public class JConsleCmd {
 			mbc.addNotificationListener(beanName, listener, null, null);
 			System.out.println("Press enter to stop!");
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			try {	br.readLine(); 	} catch (IOException e) { System.out.println("break!"); }
+			try {
+				br.readLine();
+			} catch (IOException e) {
+				System.out.println("break!");
+			}
 			mbc.removeNotificationListener(beanName, listener);
 			return null;
 		}
@@ -137,12 +144,16 @@ public class JConsleCmd {
 		throw new IllegalArgumentException("Can not convert to type " + type);
 	}
 
+
+
 	private void connect() throws IOException {
 		mbc = JMXConnectorFactory.connect(serviceURL).getMBeanServerConnection();
-		if (beanName != null && ! mbc.isRegistered(beanName)) {
+		if (beanName != null && !mbc.isRegistered(beanName)) {
 			throw new IOException("No bean for name " + beanName);
 		}
 	}
+
+
 
 	private static void displayHelp() {
 		System.out.println("arg0 - mbeanServer (hostName:portNum)");
@@ -152,9 +163,7 @@ public class JConsleCmd {
 		System.out.println("arg4 - new value, for set only");
 	}
 
-	
 }
-
 
 enum OPERATION {
 	GET, SET, INFO, LIST, NOTIFICATIONS

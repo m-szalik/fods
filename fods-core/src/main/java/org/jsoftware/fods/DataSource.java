@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * An alias for {@link FoDataSource} 
+ * An alias for {@link FoDataSource}
  * @author szalik
  */
 public class DataSource extends FoDataSource {
@@ -14,10 +14,14 @@ public class DataSource extends FoDataSource {
 		super(inputStream);
 	}
 
+
+
 	public DataSource(String location) throws IOException {
 		super(location);
 	}
-	
+
+
+
 	public DataSource(Properties props) throws IOException {
 		super(props);
 	}

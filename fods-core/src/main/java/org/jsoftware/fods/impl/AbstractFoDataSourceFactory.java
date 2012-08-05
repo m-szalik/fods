@@ -23,12 +23,13 @@ import org.jsoftware.fods.jmx.FoDataSourceConsole;
  * <p>
  * This is the only way to create {@link FoDataSourceImpl} object.
  * <p>
- * 
  * @author szalik
  */
 public abstract class AbstractFoDataSourceFactory {
 	private static final String PACKAGE_PREFIX = "org.jsoftware.fods.";
 	public static final String FODS_JMX_SUFIX = "ds";
+
+
 
 	public DataSource getObjectInstance() throws IOException {
 		Configuration configuration = getConfiguration();
@@ -57,9 +58,12 @@ public abstract class AbstractFoDataSourceFactory {
 		displayInfo(configuration, testResults);
 		return ds;
 	}
-	
+
+
 
 	protected abstract Configuration getConfiguration() throws IOException;
+
+
 
 	private static void displayInfo(Configuration configuration, Map<String, Boolean> testResults) {
 		// display information
@@ -83,7 +87,7 @@ public abstract class AbstractFoDataSourceFactory {
 				ObjectName on = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
 				s = s.replace("%mxbeanObjectName%", on == null ? "-" : on.toString());
 				StringBuilder sb = new StringBuilder(s).append("  FoDS state:");
-				for (Map.Entry<String,Boolean> me : testResults.entrySet()) {
+				for (Map.Entry<String, Boolean> me : testResults.entrySet()) {
 					sb.append("\n    Database ").append(me.getKey());
 					sb.append(" status ").append(me.getValue() ? "OK" : "FAIL");
 					if (debug) {
@@ -95,9 +99,10 @@ public abstract class AbstractFoDataSourceFactory {
 				}
 				br.close();
 			} // if ins
-		} catch (IOException e) {
-		}
+		} catch (IOException e) {}
 	}
+
+
 
 	private static String componentToString(Object comp, boolean debug) {
 		String str;
@@ -120,6 +125,8 @@ public abstract class AbstractFoDataSourceFactory {
 		return str;
 	}
 
+
+
 	private void registerMXBeanFromFactory(Object objectToCheck, Configuration configuration, String sufix) {
 		Object bean = null;
 		if (objectToCheck instanceof ManageableViaMXBean) {
@@ -135,11 +142,12 @@ public abstract class AbstractFoDataSourceFactory {
 				mbs.registerMBean(bean, objectName);
 				configuration.getLogger().info("Main MXBean registered at " + objectName);
 			} catch (Exception e) {
-				throw new RuntimeException("Error registering MXBean for " + objectToCheck.getClass().getSimpleName() + " in " + configuration.getFoDSName() + " as \""
-						+ objectName.toString(), e);
+				throw new RuntimeException("Error registering MXBean for " + objectToCheck.getClass().getSimpleName() + " in " + configuration.getFoDSName() + " as \"" + objectName.toString(), e);
 			}
 		}
 	}
+
+
 
 	private void registerMXBeanForDS(FoDataSourceImpl ds, Configuration configuration, ObjectName objectName) {
 		String dsName = configuration.getFoDSName();

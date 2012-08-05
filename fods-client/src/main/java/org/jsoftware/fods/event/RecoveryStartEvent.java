@@ -1,6 +1,5 @@
 package org.jsoftware.fods.event;
 
-
 /**
  * On database recovery try.
  * @see RecoverySucessEvent

@@ -17,14 +17,18 @@ import org.junit.Test;
 public class FoDSStatsTest extends AbstractDbTestTemplate {
 	private DataSource ds;
 	private StatisticsItem db0si;
-	
+
+
+
 	@Before
 	public void registerMxBeanListener() throws InstanceNotFoundException, IOException {
-		FoDataSourceImpl fods  = (FoDataSourceImpl) getFoDS();
+		FoDataSourceImpl fods = (FoDataSourceImpl) getFoDS();
 		ds = fods;
 		db0si = fods.getStatistics().getItem("db0");
 	}
-	
+
+
+
 	@Test
 	public void releaseStatTest() throws SQLException {
 		Connection con = ds.getConnection();
@@ -34,7 +38,8 @@ public class FoDSStatsTest extends AbstractDbTestTemplate {
 		Assert.assertEquals(1, db0si.release);
 	}
 
-	
+
+
 	@Test
 	public void statementStatTest() throws SQLException {
 		Connection con = ds.getConnection();
@@ -46,5 +51,4 @@ public class FoDSStatsTest extends AbstractDbTestTemplate {
 		Assert.assertEquals(1, db0si.release);
 	}
 
-	
 }

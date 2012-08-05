@@ -14,16 +14,20 @@ import org.jsoftware.fods.client.ext.FodsState;
  */
 public class FodsStateImpl implements Serializable, FodsState {
 	private static final long serialVersionUID = -1497442471039822107L;
-	private Map<String,FodsDbStateImpl> dbstates;
+	private Map<String, FodsDbStateImpl> dbstates;
 	private String currentDatabase;
-	
+
+
+
 	public FodsStateImpl(Collection<String> names) {
 		dbstates = new HashMap<String, FodsDbStateImpl>();
-		for(String name : names) {
+		for (String name : names) {
 			dbstates.put(name, new FodsDbStateImpl());
 		}
 	}
-	
+
+
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jsoftware.fods.client.ext.FodsState#getDbstate(java.lang.String)
@@ -31,7 +35,9 @@ public class FodsStateImpl implements Serializable, FodsState {
 	public FodsDbStateImpl getDbstate(String name) {
 		return dbstates.get(name);
 	}
-	
+
+
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jsoftware.fods.client.ext.FodsState#getCurrentDatabase()
@@ -39,13 +45,15 @@ public class FodsStateImpl implements Serializable, FodsState {
 	public String getCurrentDatabase() {
 		return currentDatabase;
 	}
-	
+
+
+
 	/**
 	 * Set database that should be used on next {@link Connection} request.
 	 * @param currentDatabase
 	 */
 	public void setCurrentDatabase(String currentDatabase) {
 		this.currentDatabase = currentDatabase;
-	}	
-	
+	}
+
 }

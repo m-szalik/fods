@@ -30,18 +30,22 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 	private PropertiesUtil pu;
 	private int logLongSqls;
 
+
+
 	public DefaultConfiguration(Properties main) {
 		pu = new PropertiesUtil(main);
 		fodsName = getProperty("fodsName");
 		logLongSqls = Integer.valueOf(getProperty("loggerLogLongSQLs"));
 	}
-	
+
+
+
 	public Object getMXBeanInstance() {
-		return new DefaultConfigurationMXBean() {	
+		return new DefaultConfigurationMXBean() {
 			@Override
 			public Map<String, String> getGlobalConfigurationValues() {
-				Map<String,String> map = new HashMap<String,String>();
-				for(String key : pu.getPropertyKeys()) {
+				Map<String, String> map = new HashMap<String, String>();
+				for (String key : pu.getPropertyKeys()) {
 					map.put(key, pu.getProperty(key, null));
 				}
 				return map;
@@ -49,31 +53,44 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 		};
 	}
 
+
+
 	@Override
 	public int getLogLongSqls() {
 		return logLongSqls;
 	}
-	
+
+
+
 	public Selector getSelector() {
 		return selector;
 	}
-	
+
+
+
 	public void setSelector(Selector selector) {
 		this.selector = selector;
 	}
-		
+
+
+
 	public void setLogger(Logger logger) {
 		this.logger = logger;
 	}
+
 
 
 	public Logger getLogger() {
 		return logger;
 	}
 
+
+
 	public String getFoDSName() {
 		return fodsName;
 	}
+
+
 
 	public Collection<String> getDatabaseNames() {
 		Set<String> names = new HashSet<String>();
@@ -82,6 +99,8 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 		}
 		return Collections.unmodifiableSet(names);
 	}
+
+
 
 	public DatabaseConfiguration getDatabaseConfigurationByName(String name) throws NoSuchElementException {
 		for (DatabaseConfiguration dbc : getDatabaseConfigurations()) {
@@ -92,26 +111,37 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 		throw new NoSuchElementException("No database named \"" + name + "\"");
 	}
 
+
+
 	public DatabaseConfiguration[] getDatabaseConfigurations() {
 		return databases;
 	}
+
+
 
 	public void setDatabases(DatabaseConfiguration[] databases) {
 		this.databases = databases;
 	}
 
+
+
 	public String getProperty(String key) {
 		return pu.getProperty(key);
 	}
+
+
 
 	public String getProperty(String key, Object defaultValue) {
 		return pu.getProperty(key, defaultValue != null ? defaultValue.toString() : null);
 	}
 
 
+
 	public boolean isEnableStats() {
 		return Boolean.valueOf(getProperty("statsEnabled", "false"));
 	}
+
+
 
 	public ObjectName getMxBeanObjectName(String sufix) {
 		if (Boolean.valueOf(getProperty("registerMXBeans", "false"))) {

@@ -19,6 +19,7 @@ public class FoDSConnectionTest extends AbstractDbTestTemplate {
 	}
 
 
+
 	@Test
 	public void testSwitchAround() throws Exception {
 		DataSource ds = getFoDS();
@@ -31,7 +32,9 @@ public class FoDSConnectionTest extends AbstractDbTestTemplate {
 		Assert.assertEquals("db0", getDbnameForConnection(ds.getConnection()));
 	}
 
-	@Test(expected=SQLException.class)
+
+
+	@Test(expected = SQLException.class)
 	public void testSwitchOutOfConnections() throws Exception {
 		DataSource ds = getFoDS();
 		stop(0);

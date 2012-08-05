@@ -1,25 +1,32 @@
 package org.jsoftware.fods.event;
 
-
 /**
- * Invoked on active database changed. 
+ * Invoked on active database changed.
  * @author szalik
  */
 public class ActiveDatabaseChangedEvent extends AbstractFodsEvent {
 	private String from;
+
+
 
 	public ActiveDatabaseChangedEvent(String toDbName, String fromDbName) {
 		super(toDbName);
 		this.from = fromDbName;
 	}
 
+
+
 	public String getFromDbName() {
 		return from;
 	}
 
+
+
 	public String getToDbName() {
 		return getDbName();
 	}
+
+
 
 	@Override
 	public String toString() {

@@ -16,13 +16,14 @@ import org.jsoftware.fods.impl.utils.RequiredPropertyMissing;
 
 /**
  * Base class for round robin {@link Selector} strategy.
- * 
  * @author szalik
  */
 public abstract class AbstractRoundRobinSelector implements Selector, ManageableViaMXBean, Displayable {
 	protected List<String> sequenceList;
 	protected long recoveryTime;
 	private String selectorName;
+
+
 
 	public AbstractRoundRobinSelector(String selectorName, Configuration configuration) {
 		this.selectorName = selectorName.endsWith("Selector") ? selectorName : selectorName + "Selector";
@@ -50,6 +51,8 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 		}
 	}
 
+
+
 	public Object getMXBeanInstance() {
 		return new RoundRobinSelectorMXBean() {
 			public List<String> getSequence() {
@@ -58,20 +61,24 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 		};
 	}
 
+
+
 	@SuppressWarnings("unchecked")
 	private Collection<? extends String> getSequenceList() {
 		return (Collection<? extends String>) (sequenceList == null ? Collections.emptyList() : sequenceList);
 	}
 
+
+
 	protected String next(FodsState fodsState) {
-		int ta = 0, i; 
+		int ta = 0, i;
 		String str;
 		String last = fodsState.getCurrentDatabase();
 		int size = sequenceList.size();
 		if (last == null) {
 			i = 0;
 		} else {
-			i = sequenceList.indexOf(last) +1;
+			i = sequenceList.indexOf(last) + 1;
 		}
 		do {
 			if (i == size) {
@@ -89,13 +96,17 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 				str = null;
 				break;
 			}
-		} while(true);
+		} while (true);
 		return str;
 	}
+
+
 
 	public String asString(boolean addDebugInfo) {
 		return selectorName + "(" + sequenceList + ")";
 	}
+
+
 
 	protected boolean isValid(FodsDbState fodsdbState) {
 		if (fodsdbState.getStatus() == FodsDbStateStatus.VALID) {

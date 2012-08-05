@@ -7,15 +7,25 @@ package org.jsoftware.fods.log;
 public interface DefaulLoggerMXBean {
 
 	boolean isDebug();
-	
+
+
+
 	void setDebug(boolean debug);
-	
+
+
+
 	boolean isLogEvents();
-	
+
+
+
 	void setLogEvents(boolean logEvents);
-	
+
+
+
 	boolean isLogOnConsole();
-	
+
+
+
 	void setLogOnConsole(boolean logOnConsole);
-	
+
 }

@@ -22,10 +22,14 @@ import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
 public class FoDataSource implements DataSource {
 	private DataSource fods;
 
+
+
 	public FoDataSource(Properties props) throws IOException {
 		setup(props);
 	}
-	
+
+
+
 	public FoDataSource(InputStream inputStream) throws IOException {
 		if (inputStream == null) {
 			throw new IllegalArgumentException("InputStream can not be null.");
@@ -35,7 +39,8 @@ public class FoDataSource implements DataSource {
 		setup(props);
 	}
 
-	
+
+
 	public FoDataSource(String loaction) throws IOException {
 		Properties props = new Properties();
 		InputStream ins = FoDataSource.class.getResourceAsStream(loaction);
@@ -57,7 +62,9 @@ public class FoDataSource implements DataSource {
 		}
 		setup(props);
 	}
-	
+
+
+
 	private void setup(final Properties props) throws IOException {
 		AbstractFoDataSourceFactory factory = new AbstractFoDataSourceFactory() {
 			@Override
@@ -70,33 +77,49 @@ public class FoDataSource implements DataSource {
 		fods = factory.getObjectInstance();
 	}
 
+
+
 	public PrintWriter getLogWriter() throws SQLException {
 		return fods.getLogWriter();
 	}
+
+
 
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		fods.setLogWriter(out);
 	}
 
+
+
 	public void setLoginTimeout(int seconds) throws SQLException {
 		fods.setLoginTimeout(seconds);
 	}
+
+
 
 	public int getLoginTimeout() throws SQLException {
 		return fods.getLoginTimeout();
 	}
 
+
+
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		return fods.unwrap(iface);
 	}
+
+
 
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		return fods.isWrapperFor(iface);
 	}
 
+
+
 	public Connection getConnection() throws SQLException {
 		return fods.getConnection();
 	}
+
+
 
 	public Connection getConnection(String username, String password) throws SQLException {
 		return fods.getConnection(username, password);

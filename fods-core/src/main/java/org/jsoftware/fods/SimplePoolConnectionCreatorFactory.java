@@ -44,12 +44,10 @@ import org.jsoftware.fods.impl.utils.PropertiesUtil;
  * <li>maxActive - maximal active connections</li>
  * <li>maxIdle - maximal idle connections</li>
  * <li>minWait - minimal idle connections</li>
- * <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be
- * forced to close</li>
+ * <li>closeTimeout - time [ms] after that borrowed {@link Connection} will be forced to close</li>
  * <li>setReadOnly=true - set connection as read only</li>
  * </ul>
  * </p>
- * 
  * @author szalik
  */
 public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFactory {
@@ -77,6 +75,8 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 	private volatile List<JdbcWrappedConnection> availableConnections;
 	private Thread thread;
 
+
+
 	public SimplePoolConnectionCreator(String dbname, Logger logger, Properties properties) {
 		super(dbname, logger, properties);
 		PropertiesUtil pu = new PropertiesUtil(properties, dbname);
@@ -95,11 +95,15 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		this.activeConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
 		this.availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
 	}
-	
+
+
+
 	@Override
 	protected String[] getNonConnectionProperties() {
 		return LOCAL_PROP_KEYS;
 	}
+
+
 
 	public void start() throws Exception {
 		synchronized (availableConnections) {
@@ -112,6 +116,8 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		super.start();
 	}
 
+
+
 	public void stop() {
 		super.stop();
 		synchronized (activeConnections) {
@@ -123,11 +129,13 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		activeConnections.clear();
 	}
 
+
+
 	protected Connection createConnection() throws SQLException {
 		long wait = maxWait > MIN_WAIT_FOR_CON ? maxWait : MIN_WAIT_FOR_CON;
 		JdbcWrappedConnection con = null;
 		synchronized (availableConnections) {
-			if (! availableConnections.isEmpty()) {
+			if (!availableConnections.isEmpty()) {
 				con = availableConnections.remove(0);
 			}
 		}
@@ -147,7 +155,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 				} else {
 					try {
 						availableConnections.wait(wait);
-						if (! availableConnections.isEmpty()) {
+						if (!availableConnections.isEmpty()) {
 							con = availableConnections.remove(0);
 						}
 					} catch (InterruptedException e) {
@@ -167,9 +175,13 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		return con;
 	}
 
+
+
 	protected String getConnectionCreatorName() {
 		return "SimplePoolConnectionCreator";
 	}
+
+
 
 	private JdbcWrappedConnection createNewConnection() throws SQLException {
 		int maxLoginTimeout = DriverManager.getLoginTimeout();
@@ -191,30 +203,32 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 			return jdbcWrappedConnection;
 		} finally {
 			DriverManager.setLoginTimeout(maxLoginTimeout);
-			if (! success && con != null) {
+			if (!success && con != null) {
 				try {
 					con.close();
-				} catch (Exception e) { /* ignore it */ }
+				} catch (Exception e) { /* ignore it */}
 			}
 		}
 	}
 
-	
+
+
 	/**
 	 * WARN do in lock only @see {@link #doInLock(Runnable)}
 	 */
 	private void abandon(JdbcWrappedConnection con) {
 		activeConnections.remove(con);
 		availableConnections.remove(con);
-		for(Statement stm : con.resources) {
+		for (Statement stm : con.resources) {
 			try {
 				stm.close();
-			} catch (SQLException e) {	}
+			} catch (SQLException e) {}
 		}
 		con.realClose();
 		logger.debug("Connection to \"" + dbname + "\" abandoned.");
 	}
-	
+
+
 
 	void release(JdbcWrappedConnection conn) {
 		conn.ts = 0;
@@ -239,25 +253,25 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 				try {
 					availableConnections.add(createNewConnection());
 					availableConnections.notify();
-				} catch (SQLException e) {	}
+				} catch (SQLException e) {}
 			}
 		}
-		for(Statement stm : resourcesToRelease) {
+		for (Statement stm : resourcesToRelease) {
 			try {
 				stm.close();
-			} catch (SQLException e) {	}
+			} catch (SQLException e) {}
 		}
 		resourcesToRelease = null;
 	}
 
+
+
 	public void run() {
 		try {
 			while (true) {
-				if (!isConnectorCreatorActive())
-					break;
+				if (!isConnectorCreatorActive()) break;
 				Thread.sleep(POOL_THREAD_SLEEP);
-				if (!isConnectorCreatorActive())
-					break;
+				if (!isConnectorCreatorActive()) break;
 				if (closeTimout > 0) {
 					long ts = System.currentTimeMillis() - closeTimout;
 					List<JdbcWrappedConnection> newActiveList = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
@@ -326,6 +340,8 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		}
 	}
 
+
+
 	private void doInLock(Runnable op) {
 		synchronized (activeConnections) {
 			synchronized (availableConnections) {
@@ -343,13 +359,17 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		private boolean abandoned;
 		private Set<Statement> resources;
 		private boolean closed;
-		
+
+
+
 		public JdbcWrappedConnection(Connection c) {
 			this.conn = c;
 			this.resources = new HashSet<Statement>();
-			
+
 		}
-		
+
+
+
 		private <T extends Statement> T saveForRelease(final T so) throws SQLException {
 			if (so == null) {
 				return null;
@@ -361,204 +381,305 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 			return so;
 		}
 
+
+
 		public void clearWarnings() throws SQLException {
 			conn.clearWarnings();
 		}
+
+
 
 		public void close() throws SQLException {
 			release(this);
 		}
 
+
+
 		public void commit() throws SQLException {
 			conn.commit();
 		}
+
+
 
 		public Statement createStatement() throws SQLException {
 			return saveForRelease(conn.createStatement());
 		}
 
+
+
 		public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
 			return saveForRelease(conn.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
 		}
+
+
 
 		public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
 			return saveForRelease(conn.createStatement(resultSetType, resultSetConcurrency));
 		}
 
+
+
 		public boolean getAutoCommit() throws SQLException {
 			return conn.getAutoCommit();
 		}
+
+
 
 		public String getCatalog() throws SQLException {
 			return conn.getCatalog();
 		}
 
+
+
 		public int getHoldability() throws SQLException {
 			return conn.getHoldability();
 		}
+
+
 
 		public DatabaseMetaData getMetaData() throws SQLException {
 			return conn.getMetaData();
 		}
 
+
+
 		public int getTransactionIsolation() throws SQLException {
 			return conn.getTransactionIsolation();
 		}
+
+
 
 		public Map<String, Class<?>> getTypeMap() throws SQLException {
 			return conn.getTypeMap();
 		}
 
+
+
 		public SQLWarning getWarnings() throws SQLException {
 			return conn.getWarnings();
 		}
+
+
 
 		public boolean isClosed() throws SQLException {
 			return conn.isClosed();
 		}
 
+
+
 		public boolean isReadOnly() throws SQLException {
 			return conn.isReadOnly();
 		}
+
+
 
 		public String nativeSQL(String sql) throws SQLException {
 			return conn.nativeSQL(sql);
 		}
 
+
+
 		public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
 			return saveForRelease(conn.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability));
 		}
+
+
 
 		public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
 			return saveForRelease(conn.prepareCall(sql, resultSetType, resultSetConcurrency));
 		}
 
+
+
 		public CallableStatement prepareCall(String sql) throws SQLException {
 			return saveForRelease(conn.prepareCall(sql));
 		}
+
+
 
 		public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
 			return saveForRelease(conn.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability));
 		}
 
+
+
 		public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
 			return saveForRelease(conn.prepareStatement(sql, resultSetType, resultSetConcurrency));
 		}
+
+
 
 		public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
 			return saveForRelease(conn.prepareStatement(sql, autoGeneratedKeys));
 		}
 
+
+
 		public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
 			return saveForRelease(conn.prepareStatement(sql, columnIndexes));
 		}
+
+
 
 		public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
 			return saveForRelease(conn.prepareStatement(sql, columnNames));
 		}
 
+
+
 		public PreparedStatement prepareStatement(String sql) throws SQLException {
 			return saveForRelease(conn.prepareStatement(sql));
 		}
+
+
 
 		public void releaseSavepoint(Savepoint savepoint) throws SQLException {
 			conn.releaseSavepoint(savepoint);
 		}
 
+
+
 		public void rollback() throws SQLException {
 			conn.rollback();
 		}
+
+
 
 		public void rollback(Savepoint savepoint) throws SQLException {
 			conn.rollback(savepoint);
 		}
 
+
+
 		public void setAutoCommit(boolean autoCommit) throws SQLException {
 			conn.setAutoCommit(autoCommit);
 		}
+
+
 
 		public void setCatalog(String catalog) throws SQLException {
 			conn.setCatalog(catalog);
 		}
 
+
+
 		public void setHoldability(int holdability) throws SQLException {
 			conn.setHoldability(holdability);
 		}
+
+
 
 		public void setReadOnly(boolean readOnly) throws SQLException {
 			conn.setReadOnly(readOnly);
 		}
 
+
+
 		public Savepoint setSavepoint() throws SQLException {
 			return conn.setSavepoint();
 		}
+
+
 
 		public Savepoint setSavepoint(String name) throws SQLException {
 			return conn.setSavepoint(name);
 		}
 
+
+
 		public void setTransactionIsolation(int level) throws SQLException {
 			conn.setTransactionIsolation(level);
 		}
+
+
 
 		public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
 			conn.setTypeMap(map);
 		}
 
+
+
 		public void realClose() {
 			try {
 				conn.close();
-			} catch (SQLException e) {	}
+			} catch (SQLException e) {}
 		}
+
+
 
 		// ------------------ Methods for JDK6----------------------------
 		public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
 			return conn.createArrayOf(typeName, elements);
 		}
 
+
+
 		public Blob createBlob() throws SQLException {
 			return conn.createBlob();
 		}
+
+
 
 		public Clob createClob() throws SQLException {
 			return conn.createClob();
 		}
 
+
+
 		public NClob createNClob() throws SQLException {
 			return conn.createNClob();
 		}
+
+
 
 		public SQLXML createSQLXML() throws SQLException {
 			return conn.createSQLXML();
 		}
 
+
+
 		public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
 			return conn.createStruct(typeName, attributes);
 		}
+
+
 
 		public Properties getClientInfo() throws SQLException {
 			return conn.getClientInfo();
 		}
 
+
+
 		public String getClientInfo(String name) throws SQLException {
 			return conn.getClientInfo(name);
 		}
+
+
 
 		public boolean isValid(int timeout) throws SQLException {
 			return conn.isValid(timeout);
 		}
 
+
+
 		public void setClientInfo(Properties properties) throws SQLClientInfoException {
 			conn.setClientInfo(properties);
 		}
+
+
 
 		public void setClientInfo(String name, String value) throws SQLClientInfoException {
 			conn.setClientInfo(name, value);
 		}
 
+
+
 		public boolean isWrapperFor(Class<?> iface) throws SQLException {
 			return conn.isWrapperFor(iface);
 		}
+
+
+
 		public <T> T unwrap(Class<T> iface) throws SQLException {
 			throw new RuntimeException("Not supported.");
 		}

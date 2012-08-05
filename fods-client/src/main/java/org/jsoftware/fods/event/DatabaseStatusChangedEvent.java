@@ -7,25 +7,33 @@ import org.jsoftware.fods.client.ext.FodsDbStateStatus;
  * @author szalik
  */
 public class DatabaseStatusChangedEvent extends AbstractFodsEvent {
-	
+
 	private FodsDbStateStatus prevStatus;
 	private FodsDbStateStatus newStatus;
+
+
 
 	public DatabaseStatusChangedEvent(String dbName, FodsDbStateStatus from, FodsDbStateStatus to) {
 		super(dbName);
 		this.prevStatus = from;
 		this.newStatus = to;
 	}
-	
+
+
+
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(dbName="+getDbName()+" " + prevStatus + " --> " + newStatus + ")";
+		return getClass().getSimpleName() + "(dbName=" + getDbName() + " " + prevStatus + " --> " + newStatus + ")";
 	}
-	
+
+
+
 	public FodsDbStateStatus getNewStatus() {
 		return newStatus;
 	}
-	
+
+
+
 	public FodsDbStateStatus getPrevStatus() {
 		return prevStatus;
 	}

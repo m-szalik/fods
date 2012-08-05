@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 
-
 /**
  * Single database state.
  * @author szalik
@@ -17,27 +16,36 @@ public class FodsDbStateImpl implements Serializable, FodsDbState {
 	private SQLException lastException;
 	private FodsDbStateStatus status = FodsDbStateStatus.VALID;
 	private boolean readonly;
-	
-	
+
+
+
 	public long getBrokenTime() {
 		if (status == FodsDbStateStatus.BROKEN) {
 			return System.currentTimeMillis() - brokenTS;
 		}
 		return -1;
 	}
-	
-	public FodsDbStateStatus getStatus(){
+
+
+
+	public FodsDbStateStatus getStatus() {
 		return status;
 	}
-	
+
+
+
 	public boolean isReadOnly() {
 		return readonly;
 	}
-	
+
+
+
 	public void setReadonly(boolean readonly) {
 		this.readonly = readonly;
 	}
-	
+
+
+
 	public void setState(FodsDbStateStatus status) {
 		if (status != this.status && status == FodsDbStateStatus.BROKEN) {
 			brokenTS = System.currentTimeMillis();
@@ -45,12 +53,16 @@ public class FodsDbStateImpl implements Serializable, FodsDbState {
 		this.status = status;
 	}
 
+
+
 	public SQLException getLastException() {
 		return status == FodsDbStateStatus.BROKEN ? lastException : null;
 	}
-	
+
+
+
 	public void setLastException(SQLException lastException) {
 		this.lastException = lastException;
 	}
-	
+
 }

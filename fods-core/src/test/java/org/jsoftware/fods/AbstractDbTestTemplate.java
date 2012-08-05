@@ -26,11 +26,15 @@ public abstract class AbstractDbTestTemplate {
 	private DBHolder[] dbs = new DBHolder[] { new DBHolder(0), new DBHolder(1) };
 	protected Configuration configuration;
 
+
+
 	@BeforeClass
 	public static void loadDriver() throws InstantiationException, IllegalAccessException, SQLException, IOException {
 		JDBCDriver.class.newInstance();
 		DriverManager.setLoginTimeout(10);
 	}
+
+
 
 	@Before
 	public void startDbs() throws SQLException, IOException {
@@ -39,6 +43,8 @@ public abstract class AbstractDbTestTemplate {
 		}
 	}
 
+
+
 	@After
 	public void stop() throws SQLException {
 		for (DBHolder holder : dbs) {
@@ -46,18 +52,21 @@ public abstract class AbstractDbTestTemplate {
 		}
 	}
 
+
+
 	@Before
 	public void prepareFODS() throws SQLException, IOException {
 		PropertiesBasedConfigurationFactory propertiesConfigurationFactory = new PropertiesBasedConfigurationFactory();
 		Properties properties = new Properties();
-		int i=4; String name = TEST_CONFIGURATION_PROPERTIES;
+		int i = 4;
+		String name = TEST_CONFIGURATION_PROPERTIES;
 		InputStream ins = null;
 		try {
 			do {
 				ins = getClass().getResourceAsStream(name);
 				i--;
 				name = "../" + name;
-			} while(i > 0 && ins == null);
+			} while (i > 0 && ins == null);
 			if (ins == null) {
 				throw new IOException("Can not load " + TEST_CONFIGURATION_PROPERTIES);
 			}
@@ -71,6 +80,8 @@ public abstract class AbstractDbTestTemplate {
 		configuration = propertiesConfigurationFactory.getConfiguration();
 	}
 
+
+
 	protected DataSource getFoDS() throws IOException {
 		AbstractFoDataSourceFactory dsFactory = new AbstractFoDataSourceFactory() {
 			@Override
@@ -81,13 +92,19 @@ public abstract class AbstractDbTestTemplate {
 		return dsFactory.getObjectInstance();
 	}
 
+
+
 	protected final void start(int i) throws SQLException, IOException {
 		dbs[i].start();
 	}
 
+
+
 	protected final void stop(int i) throws SQLException {
 		dbs[i].stop();
 	}
+
+
 
 	protected String getDbnameForConnection(Connection connection) throws SQLException {
 		ResultSet rs = connection.createStatement().executeQuery("SELECT str_col FROM stable WHERE id=1");
@@ -103,9 +120,13 @@ class DBHolder {
 	int index;
 	private boolean working;
 
+
+
 	public DBHolder(int index) {
 		this.index = index;
 	}
+
+
 
 	public void start() throws SQLException, IOException {
 		if (!working) {
@@ -125,6 +146,8 @@ class DBHolder {
 			}
 		}
 	}
+
+
 
 	public void stop() throws SQLException {
 		if (working) {

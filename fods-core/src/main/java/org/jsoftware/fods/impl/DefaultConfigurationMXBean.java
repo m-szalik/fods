@@ -11,6 +11,6 @@ import javax.management.MXBean;
 @MXBean
 public interface DefaultConfigurationMXBean {
 
-	Map<String,String> getGlobalConfigurationValues();
-	
+	Map<String, String> getGlobalConfigurationValues();
+
 }

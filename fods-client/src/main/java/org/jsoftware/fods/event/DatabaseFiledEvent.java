@@ -9,12 +9,15 @@ import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 public class DatabaseFiledEvent extends AbstractFodsEvent {
 
 	private Throwable reason;
-	
-	
+
+
+
 	public Throwable getReason() {
 		return reason;
 	}
-	
+
+
+
 	public DatabaseFiledEvent(String dbname, Throwable reason) {
 		super(dbname);
 		this.reason = reason;

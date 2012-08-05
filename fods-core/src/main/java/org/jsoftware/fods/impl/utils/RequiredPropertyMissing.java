@@ -7,10 +7,12 @@ import org.jsoftware.fods.client.ext.Configuration;
  * @author szalik
  */
 public class RequiredPropertyMissing extends RuntimeException {
-	
+
 	public RequiredPropertyMissing(String dbname, String key) {
 		super("Required configuration property \"" + key + "\" is missing for database " + dbname + ".");
 	}
+
+
 
 	public RequiredPropertyMissing(String key) {
 		super("Required configuration property \"" + key + "\" is missing.");
