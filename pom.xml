@@ -10,7 +10,7 @@
 	<description>Failover DataSource. Add failover database layer to your application without any modification of your code.</description>
 	<licenses>
 		<license>
-			<name>LGPL</name>
+			<name>LGPL 3.0</name>
 		</license>
 	</licenses>
 	<organization>
