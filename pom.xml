@@ -8,22 +8,12 @@
 	<url>http://jsoftware.org/fods</url>
 	<inceptionYear>2008</inceptionYear>
 	<description>Failover DataSource. Add failover database layer to your application without any modification of your code.</description>
-	<licenses>
-		<license>
-			<name>LGPL 3.0</name>
-		</license>
-	</licenses>
-	<organization>
-		<name>Jsoftware.org</name>
-		<url>http://www.jsoftware.org</url>
-	</organization>
-	<developers>
-		<developer>
-			<name>Marek Szalik</name>
-			<email>marek.szalik@jsoftware.org</email>
-		</developer>
-	</developers>
 
+	<parent>
+	    <groupId>org.jsoftware</groupId>
+	    <artifactId>jsoftware</artifactId>
+	    <version>1.6</version>
+	</parent>
 
 	<modules>
 		<module>fods-client</module>
@@ -31,45 +21,8 @@
 		<!-- fods-tester shold not be here because of release plugin -->
 	</modules>
 
-	<properties>
-	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	    <eclipse.downloadSources>true</eclipse.downloadSources>
-	</properties>
-	
+<!--
 	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<compilerVersion>1.6</compilerVersion>
-					<source>1.6</source>
-					<target>1.6</target>
-					<fork>true</fork>
-					<encoding>utf-8</encoding>
-					<showDeprecation>true</showDeprecation>
-					<showWarnings>true</showWarnings>
-					<optimize>true</optimize>
-					<debug>true</debug>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<projectNameTemplate>[artifactId]</projectNameTemplate>
-					<workspace>${basedir}</workspace>
-					<workspaceCodeStylesURL>http://jsoftware.org/files/intami-eclipse-formatter.xml</workspaceCodeStylesURL>
-				</configuration>
-			</plugin>
-		</plugins>
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -78,7 +31,8 @@
 			</extension>
 		</extensions>
 	</build>
-	
+-->
+
 	<scm>
 	    <url>svn://jsoftware.org/grucha/fods/trunk</url>
 	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</connection>
@@ -94,14 +48,5 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
-	<distributionManagement>
-		<repository>
-			<id>jsLocal</id>
-			<name>myCompanyReporsitory</name>
-			<url>file:///home/maven-repo/maven-repo-public/</url>
-		</repository>
-	</distributionManagement>
-
 
 </project>
