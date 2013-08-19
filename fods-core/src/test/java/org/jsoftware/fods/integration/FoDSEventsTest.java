@@ -88,7 +88,7 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 		stop(1);
 		try {
 			getDbnameForConnection(ds.getConnection());
-		} catch (SQLException e) { /* ignore */}
+		} catch (SQLException e) { /* ignore */ }
 		Thread.sleep(500);
 
 		DatabaseFiledEvent ev1 = (DatabaseFiledEvent) events.get(0);

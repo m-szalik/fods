@@ -37,26 +37,31 @@ public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 			Reference r = (Reference) obj;
 			RefAddr pl = r.get("location");
 			if (pl != null) {
-				InputStream ins;
-				if (pl.getContent() instanceof File) {
-					ins = new FileInputStream((File) pl.getContent());
-				}
-				if (pl.getContent() instanceof InputStream) {
-					ins = (InputStream) pl.getContent();
-				}
-				ins = getClass().getResourceAsStream(pl.getContent().toString());
-				if (ins == null) {
-					try {
-						ins = new FileInputStream(pl.getContent().toString());
-					} catch (IOException e) {
-						ins = null;
+				InputStream ins = null;
+				try {
+					if (pl.getContent() instanceof File) {
+						ins = new FileInputStream((File) pl.getContent());
+					}
+					if (pl.getContent() instanceof InputStream) {
+						ins = (InputStream) pl.getContent();
+					}
+					ins = getClass().getResourceAsStream(pl.getContent().toString());
+					if (ins == null) {
+						try {
+							ins = new FileInputStream(pl.getContent().toString());
+						} catch (IOException e) {
+							ins = null;
+						}
+					}
+					if (ins == null) {
+						throw new IOException("Can not load foDS properties form " + pl.getContent());
+					}
+					properties.load(ins);
+				} finally {
+					if (ins != null) {
+						ins.close();
 					}
 				}
-				if (ins == null) {
-					throw new IOException("Can not load foDS properties form " + pl.getContent());
-				}
-				properties.load(ins);
-				ins.close();
 			}
 			for (Enumeration<RefAddr> en = r.getAll(); en.hasMoreElements();) {
 				RefAddr ra = en.nextElement();

@@ -58,7 +58,7 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 			} finally {
 				try {
 					if (connection != null) connection.close();
-				} catch (SQLException e) { /* ignore */}
+				} catch (SQLException e) { /* ignore */ }
 			}
 		}
 		pw.close();

@@ -104,7 +104,7 @@ class FileLogEventListener implements LogEventListener {
 			if (writer != null) {
 				writer.close();
 			}
-		} catch (Exception e) {}
+		} catch (Exception e) { /* firebug ok */ }
 		super.finalize();
 	}
 

@@ -63,7 +63,7 @@ public abstract class AbstractDbTestTemplate {
 		InputStream ins = null;
 		try {
 			do {
-				ins = getClass().getResourceAsStream(name);
+				ins = AbstractDbTestTemplate.class.getResourceAsStream(name);
 				i--;
 				name = "../" + name;
 			} while (i > 0 && ins == null);

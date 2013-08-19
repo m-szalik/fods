@@ -602,7 +602,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		public void realClose() {
 			try {
 				conn.close();
-			} catch (SQLException e) {}
+			} catch (SQLException e) { /* firebug - ok */ }
 		}
 
 
