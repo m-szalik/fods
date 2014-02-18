@@ -189,7 +189,9 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 		Connection connection;
 		do {
 			dbname = selector.select(fodsState);
-			if (dbname == null) break;
+			if (dbname == null) {
+                break;
+            }
 			connection = getConnectionFromDb(dbname);
 			if (connection != null) {
 				if (!dbname.equals(fodsState.getCurrentDatabase())) {
@@ -198,7 +200,7 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 				}
 				return wrap(connection, dbname);
 			}
-		} while (dbname != null);
+		} while (true);
 		notifyChangeEvent(new NoMoreDatabasesEvent());
 		throw new SQLException("No more databases avaialable.");
 	}
