@@ -3,7 +3,7 @@ package org.jsoftware.fods.event;
 /**
  * On database recovery failed.
  * @see RecoveryStartEvent
- * @see RecoverySucessEvent
+ * @see RecoverySuccessEvent
  * @author szalik
  */
 public class RecoveryFailedEvent extends AbstractFodsEvent {

@@ -230,7 +230,7 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 			}
 			//
 			if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {
-				notifyChangeEvent(new RecoverySucessEvent(dbname));
+				notifyChangeEvent(new RecoverySuccessEvent(dbname));
 			}
 			newStatus = FodsDbStateStatus.VALID;
 		} catch (SQLException e) {
@@ -285,7 +285,7 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 			eventsSenderThread.notifyChangeEvent(event);
 		}
 		if (configuration.isEnableStats()) {
-			if (event instanceof RecoverySucessEvent) {
+			if (event instanceof RecoverySuccessEvent) {
 				stats.getItem(event.getDbName()).addRecovery();
 			}
 			if (event instanceof DatabaseFiledEvent) {

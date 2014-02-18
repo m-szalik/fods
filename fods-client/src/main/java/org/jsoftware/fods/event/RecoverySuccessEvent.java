@@ -6,9 +6,9 @@ package org.jsoftware.fods.event;
  * @see RecoveryStartEvent
  * @author szalik
  */
-public class RecoverySucessEvent extends AbstractFodsEvent {
+public class RecoverySuccessEvent extends AbstractFodsEvent {
 
-	public RecoverySucessEvent(String dbname) {
+	public RecoverySuccessEvent(String dbname) {
 		super(dbname);
 	}
 
