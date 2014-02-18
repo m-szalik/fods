@@ -1,16 +1,15 @@
 package org.jsoftware.fods;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import junit.framework.Assert;
-
 import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 import org.jsoftware.fods.client.ext.FodsState;
 import org.jsoftware.fods.client.ext.Selector;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class TestOfAllAbstractRoundRobinSelectorTest extends AbstractDbTestTemplate {
 	private FodsState fodsState;
@@ -37,8 +36,7 @@ public class TestOfAllAbstractRoundRobinSelectorTest extends AbstractDbTestTempl
 		invalidDbs.remove("db0");
 		Assert.assertEquals("db1", selector.select(fodsState));
 		invalidDbs.add("db1");
-		Assert.assertEquals("db2", selector.select(fodsState));
-		Assert.assertEquals("db2", selector.select(fodsState));
+		Assert.assertEquals("db0", selector.select(fodsState));
 		invalidDbs.add("db2");
 		Assert.assertEquals("db0", selector.select(fodsState));
 	}
@@ -50,11 +48,9 @@ public class TestOfAllAbstractRoundRobinSelectorTest extends AbstractDbTestTempl
 		Selector selector = new SelectorWrapper(new RoundRobinSelectorFactory().getSelector(configuration));
 		Assert.assertEquals("db0", selector.select(fodsState));
 		Assert.assertEquals("db1", selector.select(fodsState));
-		Assert.assertEquals("db2", selector.select(fodsState));
 
 		invalidDbs.add("db0");
 		Assert.assertEquals("db1", selector.select(fodsState));
-		Assert.assertEquals("db2", selector.select(fodsState));
 
 		invalidDbs.remove("db0");
 		Assert.assertEquals("db0", selector.select(fodsState));

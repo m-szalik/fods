@@ -1,33 +1,13 @@
 package org.jsoftware.fods;
 
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
+
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.Executor;
 
 /**
  * Creates {@link ConnectionCreator} that uses pool of {@link Connection}s.
@@ -642,9 +622,33 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 			return conn.createStruct(typeName, attributes);
 		}
 
+        @Override
+        public void setSchema(String schema) throws SQLException {
+            conn.setSchema(schema);
+        }
+
+        @Override
+        public String getSchema() throws SQLException {
+            return conn.getSchema();
+        }
+
+        @Override
+        public void abort(Executor executor) throws SQLException {
+            conn.abort(executor);
+        }
+
+        @Override
+        public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+            conn.setNetworkTimeout(executor, milliseconds);
+        }
+
+        @Override
+        public int getNetworkTimeout() throws SQLException {
+            return conn.getNetworkTimeout();
+        }
 
 
-		public Properties getClientInfo() throws SQLException {
+        public Properties getClientInfo() throws SQLException {
 			return conn.getClientInfo();
 		}
 

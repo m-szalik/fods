@@ -1,19 +1,16 @@
 package org.jsoftware.fods;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
 import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
+
+import javax.sql.DataSource;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Fail over {@link DataSource}
@@ -101,9 +98,13 @@ public class FoDataSource implements DataSource {
 		return fods.getLoginTimeout();
 	}
 
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return Logger.getLogger(getClass().getName());
+    }
 
 
-	public <T> T unwrap(Class<T> iface) throws SQLException {
+    public <T> T unwrap(Class<T> iface) throws SQLException {
 		return fods.unwrap(iface);
 	}
 
