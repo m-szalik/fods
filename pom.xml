@@ -7,7 +7,7 @@
 	<name>foDS</name>
 	<url>http://jsoftware.org/fods</url>
 	<inceptionYear>2008</inceptionYear>
-	<description>Failover DataSource. Add failover database layer to your application without any modification of your code.</description>
+	<description>Fail-over DataSource. Add fail-over database layer to your application without any modification of your code.</description>
 
 	<parent>
 	    <groupId>org.jsoftware</groupId>
@@ -18,26 +18,14 @@
 	<modules>
 		<module>fods-client</module>
 		<module>fods-core</module>
-		<!-- fods-tester shold not be here because of release plugin -->
+		<!-- fods-tester should not be here because of release plugin - we don't want to release tester -->
 	</modules>
 
-<!--
-	<build>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-file</artifactId>
-				<version>2.1</version>
-			</extension>
-		</extensions>
-	</build>
--->
-
 	<scm>
-	    <url>svn://jsoftware.org/grucha/fods/trunk</url>
-	    <connection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</connection>
-	    <developerConnection>scm:svn:svn://jsoftware.org/grucha/fods/trunk</developerConnection>
-	</scm>
+        <url>https://github.com/m-szalik/fods.git</url>
+        <connection>scm:git:https://github.com/m-szalik/fods.git</connection>
+        <developerConnection>scm:git:https://github.com/m-szalik/fods.git</developerConnection>
+    </scm>
 
 	<dependencyManagement>
 		<dependencies>
@@ -48,5 +36,14 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>jsoftware</id>
+            <url>http://maven.jsoftware.org/</url>
+        </repository>
+    </repositories>
+
+
 
 </project>
