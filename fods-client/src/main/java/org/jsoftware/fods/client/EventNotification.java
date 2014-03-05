@@ -1,9 +1,12 @@
 package org.jsoftware.fods.client;
 
-import javax.management.Notification;
-
 import org.jsoftware.fods.event.AbstractFodsEvent;
 
+import javax.management.Notification;
+
+/**
+ * JMX notification event for database state changes
+ */
 public class EventNotification extends Notification {
 	private static final long serialVersionUID = -5128253683032137315L;
 	public static final String NTYPE = "jmx.fods.event";
