@@ -72,8 +72,8 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		this.closeTimout = Integer.valueOf(pu.getProperty("closeTimeout", "-1"));
 		this.thread = new Thread(this, getConnectionCreatorName() + "-cleaner");
 		this.thread.setDaemon(true);
-		this.activeConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
-		this.availableConnections = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+		this.activeConnections = new LinkedList<>();
+		this.availableConnections = new LinkedList<>();
 	}
 
 
@@ -216,7 +216,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 		Set<Statement> resourcesToRelease;
 		synchronized (conn) {
 			resourcesToRelease = conn.resources;
-			conn.resources = new HashSet<Statement>();
+			conn.resources = new HashSet<>();
 		}
 		synchronized (availableConnections) { // give back to pool
 			if (!conn.abandoned) {
@@ -241,7 +241,6 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 				stm.close();
 			} catch (SQLException e) {}
 		}
-		resourcesToRelease = null;
 	}
 
 
@@ -254,7 +253,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 				if (!isConnectorCreatorActive()) break;
 				if (closeTimout > 0) {
 					long ts = System.currentTimeMillis() - closeTimout;
-					List<JdbcWrappedConnection> newActiveList = new LinkedList<SimplePoolConnectionCreator.JdbcWrappedConnection>();
+					List<JdbcWrappedConnection> newActiveList = new LinkedList<>();
 					synchronized (activeConnections) {
 						newActiveList.addAll(activeConnections);
 					}
@@ -344,7 +343,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 
 		public JdbcWrappedConnection(Connection c) {
 			this.conn = c;
-			this.resources = new HashSet<Statement>();
+			this.resources = new HashSet<>();
 
 		}
 

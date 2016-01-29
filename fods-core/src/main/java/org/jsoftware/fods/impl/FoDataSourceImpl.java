@@ -179,7 +179,7 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 
 
 	/**
-	 * @return
+	 * @return sql connection
 	 * @throws SQLException
 	 */
 	private Connection connection() throws SQLException {
@@ -209,7 +209,7 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 
 	private Connection getConnectionFromDb(String dbname) {
 		FodsDbStateImpl dbState = fodsState.getDbstate(dbname);
-		FodsDbStateStatus newStatus = dbState.getStatus();
+		FodsDbStateStatus newStatus;
 		Connection connection;
 		try {
 			if (dbState.getStatus() == FodsDbStateStatus.BROKEN) {

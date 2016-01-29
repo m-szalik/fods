@@ -1,16 +1,5 @@
 package org.jsoftware.fods.jmx;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.NoSuchElementException;
-
-import javax.management.MBeanNotificationInfo;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationEmitter;
-
 import org.jsoftware.fods.client.EventNotification;
 import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
@@ -21,8 +10,19 @@ import org.jsoftware.fods.impl.FoDataSourceImpl;
 import org.jsoftware.fods.impl.FodsDbStateImpl;
 import org.jsoftware.fods.impl.stats.StatisticsItem;
 
+import javax.management.MBeanNotificationInfo;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.NotificationEmitter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.NoSuchElementException;
+
 /**
- * JmxBean implementation of {@link FoDataSourceConsoleMBean} for {@link FoDataSourceImpl}.
+ * JmxBean implementation of {@link FoDataSourceConsoleMXBean} for {@link FoDataSourceImpl}.
  * @author szalik
  */
 public class FoDataSourceConsole extends NotificationBroadcasterSupport implements NotificationEmitter, FoDataSourceConsoleMXBean, FodsEventListener {
@@ -52,7 +52,7 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 				statement.close();
 				pw.append("OK\n");
 			} catch (SQLException e) {
-				pw.append("FAILED " + e.getMessage() + "\n");
+				pw.append("FAILED ").append(e.getMessage()).append("\n");
 				e.printStackTrace(pw);
 				pw.append('\n');
 			} finally {
@@ -74,7 +74,8 @@ public class FoDataSourceConsole extends NotificationBroadcasterSupport implemen
 
 
 	public String[] getDatabaseNames() {
-		return configuration.getDatabaseNames().toArray(new String[0]);
+		Collection<String> names = configuration.getDatabaseNames();
+		return names.toArray(new String[names.size()]);
 	}
 
 

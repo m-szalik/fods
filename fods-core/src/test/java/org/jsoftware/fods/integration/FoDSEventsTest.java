@@ -34,16 +34,16 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 
 	@Before
 	public void registerMxBeanListener() throws InstanceNotFoundException, IOException {
-		events = new ArrayList<AbstractFodsEvent>();
+		events = new ArrayList<>();
 		ds = getFoDS();
-		ManagementFactory.getPlatformMBeanServer().addNotificationListener(configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX), this, null, null);
+		ManagementFactory.getPlatformMBeanServer().addNotificationListener(configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFFIX), this, null, null);
 	}
 
 
 
 	@After
 	public void unregisterMxBeanListener() throws InstanceNotFoundException, ListenerNotFoundException {
-		ManagementFactory.getPlatformMBeanServer().removeNotificationListener(configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX), this);
+		ManagementFactory.getPlatformMBeanServer().removeNotificationListener(configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFFIX), this);
 		//		System.out.println(events);
 	}
 
@@ -113,7 +113,7 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 
 	@Test
 	public void testEventOnForceChange() throws InterruptedException {
-		ObjectName objectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
+		ObjectName objectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFFIX);
 		FoDataSourceConsoleMXBean bean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(), objectName, FoDataSourceConsoleMXBean.class);
 		Assert.assertTrue(bean.forceSetCurrentDatabaseName("db1"));
 		Thread.sleep(500);

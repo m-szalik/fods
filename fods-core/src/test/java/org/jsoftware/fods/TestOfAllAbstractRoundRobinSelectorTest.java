@@ -20,7 +20,7 @@ public class TestOfAllAbstractRoundRobinSelectorTest extends AbstractDbTestTempl
 
 	@Before
 	public void prepareState() {
-		invalidDbs = new HashSet<String>();
+		invalidDbs = new HashSet<>();
 		fodsState = new FodsDbStateForTesting();
 	}
 
@@ -84,7 +84,7 @@ public class TestOfAllAbstractRoundRobinSelectorTest extends AbstractDbTestTempl
 			currentName = str;
 			return str;
 		}
-	};
+	}
 
 	class FodsDbStateForTesting implements FodsState {
 		public FodsDbState getDbstate(final String name) {

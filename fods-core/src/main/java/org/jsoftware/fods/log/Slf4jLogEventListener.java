@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link LogEventListener} thats writes logs to slf4j {@link Logger}
- * @see DefaultLoggerImpl
+ * @see DefaultLogger
  * @author szalik
  */
 public class Slf4jLogEventListener implements LogEventListener {

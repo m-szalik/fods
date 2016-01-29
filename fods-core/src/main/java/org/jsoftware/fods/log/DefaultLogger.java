@@ -118,7 +118,7 @@ public class DefaultLogger implements Logger, ManageableViaMXBean {
 
 	void addLogEventListener(LogEventListener listener) {
 		if (listener != null) {
-			Set<LogEventListener> l = new HashSet<LogEventListener>(this.listeners);
+			Set<LogEventListener> l = new HashSet<>(this.listeners);
 			l.add(listener);
 			this.listeners = l;
 		}

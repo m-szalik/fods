@@ -30,7 +30,7 @@ public class FoDSMXBeanTest extends AbstractDbTestTemplate {
 	@Before
 	public void registerMxBeanListener() throws InstanceNotFoundException, IOException {
 		ds = getFoDS();
-		ObjectName objectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
+		ObjectName objectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFFIX);
 		bean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(), objectName, FoDataSourceConsoleMXBean.class);
 	}
 

@@ -15,7 +15,7 @@ public interface FoDataSourceConsoleMXBean {
 
 	/**
 	 * @return get name of current {@link DataSource}
-	 * @see #getCurrentDataSourceIndex()
+	 * @see #getCurrentDatabaseName()
 	 */
 	String getFodsName();
 
@@ -30,7 +30,7 @@ public interface FoDataSourceConsoleMXBean {
 
 	/**
 	 * Change {@link DataSource} index
-	 * @param index new database
+	 * @param name new database
 	 * @return <tt>true</tt> if operation successful.
 	 */
 	boolean forceSetCurrentDatabaseName(String name);
@@ -47,7 +47,7 @@ public interface FoDataSourceConsoleMXBean {
 
 	/**
 	 * Test single database
-	 * @param dbName
+	 * @param dbName database name to be tested
 	 * @return test result
 	 */
 	boolean test(String dbName);
@@ -71,7 +71,7 @@ public interface FoDataSourceConsoleMXBean {
 
 	/**
 	 * Turned off databases sholdn't be used.
-	 * @param dbName
+	 * @param dbName database name
 	 * @return <tt>true</tt> if state changed.
 	 */
 	boolean turnOffDatabase(String dbName);
@@ -80,7 +80,7 @@ public interface FoDataSourceConsoleMXBean {
 
 	/**
 	 * Turn on database.
-	 * @param dbName
+	 * @param dbName database name
 	 * @return <tt>true</tt> if state changed.
 	 */
 	boolean turnOnDatabase(String dbName);
@@ -88,7 +88,7 @@ public interface FoDataSourceConsoleMXBean {
 
 
 	/**
-	 * @param dbName
+	 * @param dbName database name
 	 * @return current database state, <tt>null</tt> if database not found.
 	 */
 	JMXFodsDbState getCurrentDatabaseState(String dbName);

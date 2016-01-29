@@ -1,17 +1,17 @@
 package org.jsoftware.fods.log;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Properties;
-
 import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.client.ext.LoggerFactory;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Properties;
+
 /**
- * Factory for {@link DefaultLoggerImpl}.
+ * Factory for {@link DefaultLogger}.
  * <p>
  * Default {@link Logger} writes logs to:
  * <ul>
@@ -35,12 +35,16 @@ public class DefaultLoggerFactory implements LoggerFactory {
 			Class.forName("org.slf4j.LoggerFactory");
 			console = false;
 			logger.addLogEventListener(new Slf4jLogEventListener());
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+			/* ignore */
+		}
 		try {
 			Class.forName("org.apache.commons.logging.LogFactory");
 			console = false;
 			logger.addLogEventListener(new CommonsLoggingLogEventListener());
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+			/* ignore */
+		}
 
 		String logFile = pu.getProperty("loggerFile", "").trim();
 		if (logFile.length() > 0) {

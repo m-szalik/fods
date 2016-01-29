@@ -20,7 +20,7 @@ public class Statistics implements Serializable {
 	public Statistics(Collection<String> dbNames) {
 		this.startTime = System.currentTimeMillis();
 
-		this.statisticItems = new HashMap<String, StatisticsItem>();
+		this.statisticItems = new HashMap<>();
 		for (String name : dbNames) {
 			statisticItems.put(name, new StatisticsItem());
 		}
@@ -37,7 +37,7 @@ public class Statistics implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
-		out.append("Statistics - " + new Date(startTime)).append("\n:");
+		out.append("Statistics - ").append(new Date(startTime)).append("\n:");
 		for (String dbn : statisticItems.keySet()) {
 			out.append(dbn).append(": ");
 			out.append(statisticItems.get(dbn).toString());

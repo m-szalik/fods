@@ -67,7 +67,7 @@ public class PropertiesUtil {
 	@SuppressWarnings("unchecked")
 	public <T> T load(String key, Class<T> defaultImpl) {
 		String className = defaultImpl != null ? getProperty(key, "") : getProperty(key);
-		Class<T> cl = null;
+		Class<T> cl;
 		if (className.length() > 0) {
 			try {
 				cl = (Class<T>) Class.forName(className);
@@ -96,7 +96,7 @@ public class PropertiesUtil {
 
 
 	public Set<String> getPropertyKeys() {
-		HashSet<String> keys = new HashSet<String>();
+		HashSet<String> keys = new HashSet<>();
 		for (Object o : properties.keySet()) {
 			if (o != null) {
 				keys.add(o.toString());

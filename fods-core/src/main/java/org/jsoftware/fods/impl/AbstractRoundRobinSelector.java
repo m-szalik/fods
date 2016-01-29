@@ -1,10 +1,5 @@
 package org.jsoftware.fods.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.Displayable;
 import org.jsoftware.fods.client.ext.FodsDbState;
@@ -13,6 +8,11 @@ import org.jsoftware.fods.client.ext.FodsState;
 import org.jsoftware.fods.client.ext.ManageableViaMXBean;
 import org.jsoftware.fods.client.ext.Selector;
 import org.jsoftware.fods.impl.utils.RequiredPropertyMissing;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Base class for round robin {@link Selector} strategy.
@@ -27,7 +27,7 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 
 	public AbstractRoundRobinSelector(String selectorName, Configuration configuration) {
 		this.selectorName = selectorName.endsWith("Selector") ? selectorName : selectorName + "Selector";
-		this.sequenceList = new LinkedList<String>();
+		this.sequenceList = new LinkedList<>();
 		String str = configuration.getProperty("selectorMinRecoveryTime");
 		if (str != null) {
 			recoveryTime = Long.valueOf(str);
@@ -56,7 +56,7 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 	public Object getMXBeanInstance() {
 		return new RoundRobinSelectorMXBean() {
 			public List<String> getSequence() {
-				return new LinkedList<String>(getSequenceList());
+				return new LinkedList<>(getSequenceList());
 			}
 		};
 	}
@@ -112,10 +112,7 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 		if (fodsdbState.getStatus() == FodsDbStateStatus.VALID) {
 			return true;
 		}
-		if (fodsdbState.getStatus() == FodsDbStateStatus.BROKEN && fodsdbState.getBrokenTime() >= recoveryTime) {
-			return true;
-		}
-		return false;
+		return fodsdbState.getStatus() == FodsDbStateStatus.BROKEN && fodsdbState.getBrokenTime() >= recoveryTime;
 	}
 
 }

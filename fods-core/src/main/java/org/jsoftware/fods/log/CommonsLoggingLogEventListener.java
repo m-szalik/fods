@@ -6,7 +6,7 @@ import org.jsoftware.fods.client.ext.LogLevel;
 
 /**
  * {@link LogEventListener} thats writes logs to commons logging {@link Log}
- * @see DefaultLoggerImpl
+ * @see DefaultLogger
  * @author szalik
  */
 class CommonsLoggingLogEventListener implements LogEventListener {

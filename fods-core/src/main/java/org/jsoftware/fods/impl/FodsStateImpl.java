@@ -1,12 +1,12 @@
 package org.jsoftware.fods.impl;
 
+import org.jsoftware.fods.client.ext.FodsState;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.jsoftware.fods.client.ext.FodsState;
 
 /**
  * FoDS state object.
@@ -20,7 +20,7 @@ public class FodsStateImpl implements Serializable, FodsState {
 
 
 	public FodsStateImpl(Collection<String> names) {
-		dbstates = new HashMap<String, FodsDbStateImpl>();
+		dbstates = new HashMap<>();
 		for (String name : names) {
 			dbstates.put(name, new FodsDbStateImpl());
 		}
@@ -50,7 +50,7 @@ public class FodsStateImpl implements Serializable, FodsState {
 
 	/**
 	 * Set database that should be used on next {@link Connection} request.
-	 * @param currentDatabase
+	 * @param currentDatabase database name
 	 */
 	public void setCurrentDatabase(String currentDatabase) {
 		this.currentDatabase = currentDatabase;

@@ -44,7 +44,7 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 		return new DefaultConfigurationMXBean() {
 			@Override
 			public Map<String, String> getGlobalConfigurationValues() {
-				Map<String, String> map = new HashMap<String, String>();
+				Map<String, String> map = new HashMap<>();
 				for (String key : pu.getPropertyKeys()) {
 					map.put(key, pu.getProperty(key, null));
 				}
@@ -93,7 +93,7 @@ public class DefaultConfiguration implements Configuration, ManageableViaMXBean 
 
 
 	public Collection<String> getDatabaseNames() {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (DatabaseConfiguration dbc : getDatabaseConfigurations()) {
 			names.add(dbc.getDatabaseName());
 		}

@@ -1,5 +1,14 @@
 package org.jsoftware.fods.impl;
 
+import org.jsoftware.fods.client.FodsEventListener;
+import org.jsoftware.fods.client.ext.Configuration;
+import org.jsoftware.fods.client.ext.Displayable;
+import org.jsoftware.fods.client.ext.ManageableViaMXBean;
+import org.jsoftware.fods.jmx.FoDataSourceConsole;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,16 +16,6 @@ import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.sql.DataSource;
-
-import org.jsoftware.fods.client.FodsEventListener;
-import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.client.ext.Displayable;
-import org.jsoftware.fods.client.ext.ManageableViaMXBean;
-import org.jsoftware.fods.jmx.FoDataSourceConsole;
 
 /**
  * Factory of {@link FoDataSourceImpl} object.
@@ -27,13 +26,13 @@ import org.jsoftware.fods.jmx.FoDataSourceConsole;
  */
 public abstract class AbstractFoDataSourceFactory {
 	private static final String PACKAGE_PREFIX = "org.jsoftware.fods.";
-	public static final String FODS_JMX_SUFIX = "ds";
+	public static final String FODS_JMX_SUFFIX = "ds";
 
 
 
 	public DataSource getObjectInstance() throws IOException {
 		Configuration configuration = getConfiguration();
-		ObjectName mxbeanObjectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
+		ObjectName mxbeanObjectName = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFFIX);
 		FoDataSourceImpl ds = new FoDataSourceImpl(configuration);
 
 		if (mxbeanObjectName != null) {
@@ -47,7 +46,7 @@ public abstract class AbstractFoDataSourceFactory {
 		}
 
 		ds.start();
-		Map<String, Boolean> testResults = new HashMap<String, Boolean>();
+		Map<String, Boolean> testResults = new HashMap<>();
 		for (Configuration.DatabaseConfiguration dbc : configuration.getDatabaseConfigurations()) {
 			Boolean b = ds.testDatabase(dbc.getDatabaseName());
 			if (b == null) {
@@ -84,7 +83,7 @@ public abstract class AbstractFoDataSourceFactory {
 				s = s.replace("%dbsCount%", Integer.toString(configuration.getDatabaseConfigurations().length));
 				s = s.replace("%fodsName%", configuration.getFoDSName());
 				s = s.replace("%loggerFile%", logFile.length() == 0 ? "-" : logFile);
-				ObjectName on = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFIX);
+				ObjectName on = configuration.getMxBeanObjectName(AbstractFoDataSourceFactory.FODS_JMX_SUFFIX);
 				s = s.replace("%mxbeanObjectName%", on == null ? "-" : on.toString());
 				StringBuilder sb = new StringBuilder(s).append("  FoDS state:");
 				for (Map.Entry<String, Boolean> me : testResults.entrySet()) {
@@ -99,7 +98,9 @@ public abstract class AbstractFoDataSourceFactory {
 				}
 				br.close();
 			} // if ins
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -127,13 +128,13 @@ public abstract class AbstractFoDataSourceFactory {
 
 
 
-	private void registerMXBeanFromFactory(Object objectToCheck, Configuration configuration, String sufix) {
+	private void registerMXBeanFromFactory(Object objectToCheck, Configuration configuration, String suffix) {
 		Object bean = null;
 		if (objectToCheck instanceof ManageableViaMXBean) {
 			bean = ((ManageableViaMXBean) objectToCheck).getMXBeanInstance();
 		}
 		if (bean != null) {
-			ObjectName objectName = configuration.getMxBeanObjectName(sufix);
+			ObjectName objectName = configuration.getMxBeanObjectName(suffix);
 			try {
 				MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 				if (mbs.isRegistered(objectName)) {

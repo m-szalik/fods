@@ -58,7 +58,7 @@ public class PropertiesBasedConfigurationFactory implements ConfigurationFactory
 
 	public Configuration getConfiguration() {
 		Properties main = new Properties();
-		Map<String, Properties> map = new HashMap<String, Properties>();
+		Map<String, Properties> map = new HashMap<>();
 		for (Object k : properties.keySet()) {
 			String key = k.toString();
 			if (key.contains(".")) {

@@ -1,5 +1,16 @@
 package org.jsoftware.fods;
 
+import org.jsoftware.fods.client.ext.Configuration;
+import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
+import org.jsoftware.fods.impl.FoDataSourceImpl;
+import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.Name;
+import javax.naming.RefAddr;
+import javax.naming.Reference;
+import javax.naming.spi.ObjectFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,26 +19,13 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.Name;
-import javax.naming.RefAddr;
-import javax.naming.Reference;
-import javax.naming.spi.ObjectFactory;
-import javax.sql.DataSource;
-
-import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
-import org.jsoftware.fods.impl.FoDataSourceImpl;
-import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
-
 /**
  * Factory of {@link FoDataSourceImpl} object.
  * <p>
  * Use this factory to place {@link FoDataSourceImpl} into {@link InitialContext}.
  * </p>
  * @author szalik
- * @see also {@link FoDataSource}.
+ * @see FoDataSource
  */
 public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 
@@ -79,8 +77,7 @@ public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 				}
 			};
 
-			DataSource ds = factory.getObjectInstance();
-			return ds;
+			return factory.getObjectInstance();
 		} else {
 			throw new RuntimeException(obj + " is not " + Reference.class.getName());
 		}

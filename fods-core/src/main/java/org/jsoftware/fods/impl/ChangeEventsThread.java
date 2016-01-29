@@ -1,15 +1,15 @@
 package org.jsoftware.fods.impl;
 
+import org.jsoftware.fods.client.FodsEventListener;
+import org.jsoftware.fods.client.ext.LogLevel;
+import org.jsoftware.fods.client.ext.Logger;
+import org.jsoftware.fods.event.AbstractFodsEvent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.jsoftware.fods.client.FodsEventListener;
-import org.jsoftware.fods.client.ext.LogLevel;
-import org.jsoftware.fods.client.ext.Logger;
-import org.jsoftware.fods.event.AbstractFodsEvent;
 
 /**
  * This {@link Thread} sends notifications to all {@link FodsEventListener}s.
@@ -30,19 +30,21 @@ public class ChangeEventsThread extends Thread {
 
 		this.logger = logger;
 		this.chaneEventListeners = Collections.emptyList();
-		this.waitingEvents = new ArrayList<AbstractFodsEvent>();
+		this.waitingEvents = new ArrayList<>();
 	}
 
 
 
 	@Override
 	public void run() {
-		List<AbstractFodsEvent> eventsToSend = new LinkedList<AbstractFodsEvent>();
+		List<AbstractFodsEvent> eventsToSend = new LinkedList<>();
 		while (true) {
 			synchronized (waitingEvents) {
 				if (waitingEvents.isEmpty()) try {
 					waitingEvents.wait();
-				} catch (InterruptedException e) {}
+				} catch (InterruptedException e) {
+					break;
+				}
 				eventsToSend.addAll(waitingEvents);
 				waitingEvents.clear();
 			}
@@ -64,7 +66,7 @@ public class ChangeEventsThread extends Thread {
 
 	public void addChangeEventListener(FodsEventListener listener) {
 		if (listener != null) {
-			List<FodsEventListener> l = new LinkedList<FodsEventListener>();
+			List<FodsEventListener> l = new LinkedList<>();
 			l.addAll(chaneEventListeners);
 			l.add(listener);
 			chaneEventListeners = l;
