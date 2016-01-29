@@ -57,8 +57,8 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 		stop(0);
 		String n1 = getDbnameForConnection(ds.getConnection());
 		Thread.sleep(50);
-		printEvents();
 
+		Assert.assertNotEquals(n0, n1);
 		ActiveDatabaseChangedEvent ev1 = (ActiveDatabaseChangedEvent) events.get(0);
 		Assert.assertNull(ev1.getFromDbName());
 		Assert.assertEquals("db0", ev1.getToDbName());
@@ -128,12 +128,6 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 		if (notification instanceof EventNotification) {
 			EventNotification eventNotification = (EventNotification) notification;
 			events.add(eventNotification.getEvent());
-		}
-	}
-
-	private void printEvents() {
-		for(Object event : events) {
-			System.out.println("DbEvent: " + event);
 		}
 	}
 
