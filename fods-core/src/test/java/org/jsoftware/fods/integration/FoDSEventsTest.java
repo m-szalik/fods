@@ -1,19 +1,5 @@
 package org.jsoftware.fods.integration;
 
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.JMX;
-import javax.management.ListenerNotFoundException;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-import javax.management.ObjectName;
-import javax.sql.DataSource;
-
 import org.jsoftware.fods.AbstractDbTestTemplate;
 import org.jsoftware.fods.client.EventNotification;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
@@ -29,11 +15,22 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.JMX;
+import javax.management.ListenerNotFoundException;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class FoDSEventsTest extends AbstractDbTestTemplate implements NotificationListener {
 	private List<AbstractFodsEvent> events;
 	private DataSource ds;
-
-
 
 	@Before
 	public void registerMxBeanListener() throws InstanceNotFoundException, IOException {
@@ -56,10 +53,11 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 
 	@Test
 	public void testSwitch() throws Exception {
-		getDbnameForConnection(ds.getConnection());
+		String n0 = getDbnameForConnection(ds.getConnection());
 		stop(0);
-		getDbnameForConnection(ds.getConnection());
-		Thread.sleep(500);
+		String n1 = getDbnameForConnection(ds.getConnection());
+		Thread.sleep(50);
+		printEvents();
 
 		ActiveDatabaseChangedEvent ev1 = (ActiveDatabaseChangedEvent) events.get(0);
 		Assert.assertNull(ev1.getFromDbName());
@@ -130,6 +128,12 @@ public class FoDSEventsTest extends AbstractDbTestTemplate implements Notificati
 		if (notification instanceof EventNotification) {
 			EventNotification eventNotification = (EventNotification) notification;
 			events.add(eventNotification.getEvent());
+		}
+	}
+
+	private void printEvents() {
+		for(Object event : events) {
+			System.out.println("DbEvent: " + event);
 		}
 	}
 

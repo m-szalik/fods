@@ -1,10 +1,10 @@
 package org.jsoftware.fods;
 
-import junit.framework.Assert;
 import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
 import org.jsoftware.fods.client.ext.FodsState;
 import org.jsoftware.fods.client.ext.Selector;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
