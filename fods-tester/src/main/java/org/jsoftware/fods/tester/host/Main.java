@@ -1,5 +1,9 @@
 package org.jsoftware.fods.tester.host;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.jsoftware.fods.FoDataSource;
+
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,13 +12,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.jsoftware.fods.FoDataSource;
 
 public class Main {
 	private TesterConfig testerConfig;
@@ -118,7 +119,11 @@ public class Main {
 		Properties properties = new Properties();
 		properties.load(configInputStream);
 		TesterConfig tc = new TesterConfig();
-		BeanUtils.populate(tc, properties);
+		Map<String,Object> propertiesMap = new HashMap<>();
+		for(Object pk : properties.keySet()) {
+			propertiesMap.put(pk.toString(), properties.get(pk));
+		}
+		BeanUtils.populate(tc, propertiesMap);
 		testerConfig = tc;
 	}
 
