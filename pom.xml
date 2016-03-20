@@ -15,6 +15,14 @@
 	    <version>1.7.1</version>
 	</parent>
 
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<modules>
 		<module>fods-client</module>
 		<module>fods-core</module>
@@ -43,13 +51,5 @@
             <url>http://maven.jsoftware.org/</url>
         </repository>
     </repositories>
-
-    <licenses>
-        <license>
-            <name>GNU Lesser General Public License</name>
-            <url>http://www.gnu.org/licenses/lgpl.txt</url>
-        </license>
-    </licenses>
-
 
 </project>
