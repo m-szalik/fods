@@ -3,7 +3,7 @@
 	<artifactId>foDS-client</artifactId>
 	<packaging>jar</packaging>
 	<name>foDS-client</name>
-	<description>FailoverDataSource - client. Support for statistic informations, remote FoDS management.</description>
+	<description>FailoverDataSource - client. Support for statistic information and remote FoDS management.</description>
 
 	<parent>
 		<groupId>org.jsoftware</groupId>

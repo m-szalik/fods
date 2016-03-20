@@ -4,27 +4,43 @@
 	<groupId>org.jsoftware</groupId>
 	<artifactId>foDS-tester</artifactId>
 	<version>4.1</version>
+
 	<name>foDS Tester</name>
 	<url>http://jsoftware.org/fods</url>
 	<description>A independent program that tests foDS.</description>
+
+	<parent>
+		<groupId>org.jsoftware</groupId>
+		<artifactId>foDS</artifactId>
+		<version>4.3-SNAPSHOT</version>
+	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.jsoftware</groupId>
 			<artifactId>foDS-core</artifactId>
-			<version>4.1-SNAPSHOT</version>
+			<version>4.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.17</version>
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
