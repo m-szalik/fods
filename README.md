@@ -5,6 +5,7 @@ foDS - Fail-over DataSource
 [![Build Status](https://travis-ci.org/m-szalik/fods.svg?branch=master)](https://travis-ci.org/m-szalik/fods)
 [![codecov.io](https://codecov.io/github/m-szalik/fods/coverage.svg?branch=master)](https://codecov.io/github/m-szalik/fods?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/56eea64035630e0029dafc9f/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56eea64035630e0029dafc9f)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/ed26cb0441ad49e9b3b437ef525dd274)](https://www.codacy.com/app/szalik/fods)
 
 Allows to switch application between multiple databases in case of database failure.
 
