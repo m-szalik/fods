@@ -1,8 +1,19 @@
 package org.jsoftware.fods.impl;
 
 import org.jsoftware.fods.client.FodsEventListener;
-import org.jsoftware.fods.client.ext.*;
-import org.jsoftware.fods.event.*;
+import org.jsoftware.fods.client.ext.Configuration;
+import org.jsoftware.fods.client.ext.FodsDbStateStatus;
+import org.jsoftware.fods.client.ext.LogLevel;
+import org.jsoftware.fods.client.ext.Logger;
+import org.jsoftware.fods.client.ext.Selector;
+import org.jsoftware.fods.event.AbstractFodsEvent;
+import org.jsoftware.fods.event.ActiveDatabaseChangedEvent;
+import org.jsoftware.fods.event.DatabaseFiledEvent;
+import org.jsoftware.fods.event.DatabaseStatusChangedEvent;
+import org.jsoftware.fods.event.NoMoreDatabasesEvent;
+import org.jsoftware.fods.event.RecoveryFailedEvent;
+import org.jsoftware.fods.event.RecoveryStartEvent;
+import org.jsoftware.fods.event.RecoverySuccessEvent;
 import org.jsoftware.fods.impl.stats.Statistics;
 import org.jsoftware.fods.impl.stats.StatisticsItem;
 import org.jsoftware.fods.impl.stats.StatsConnectionWrapper;
@@ -303,12 +314,12 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 
 	// ------------------ Methods for JDK6 ---------------------------------------
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new NotSupportedOperationException();
 	}
 
 
 
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		throw new RuntimeException("Not supported.");
+		throw new NotSupportedOperationException();
 	}
 }

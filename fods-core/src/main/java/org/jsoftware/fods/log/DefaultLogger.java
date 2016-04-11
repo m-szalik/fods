@@ -1,15 +1,15 @@
 package org.jsoftware.fods.log;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jsoftware.fods.client.ext.LogLevel;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.client.ext.ManageableViaMXBean;
 import org.jsoftware.fods.event.AbstractFodsEvent;
 import org.jsoftware.fods.event.DatabaseFiledEvent;
 import org.jsoftware.fods.event.RecoveryFailedEvent;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Default {@link Logger} implementation.

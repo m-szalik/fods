@@ -10,7 +10,7 @@ public class TesterConfig {
 	private int runsPerThread;
 	private int threads;
 	private boolean waitAfterTest;
-	private String scenerioClass;
+	private String scenarioClass;
 	private int maxFails = 10;
 
 	
@@ -24,7 +24,7 @@ public class TesterConfig {
 			ins = getClass().getResourceAsStream(fodsConfig);
 		}
 		if (ins == null) {
-			throw new RuntimeException("Can not load fods config form " + fodsConfig);
+			throw new RuntimeException("Can not load FoDS config form " + fodsConfig);
 		}
 		return ins;
 	}
@@ -40,11 +40,11 @@ public class TesterConfig {
 	public TestScenerio getScenerio() {
 		Class<?> cl;
 		try {
-			cl = Class.forName(scenerioClass);
+			cl = Class.forName(scenarioClass);
 			Object obj = cl.newInstance();
 			return (TestScenerio) obj;
 		} catch (Exception e) {
-			throw new RuntimeException("Can not load scenerio - " + scenerioClass, e);
+			throw new RuntimeException("Can not load scenario - " + scenarioClass, e);
 		}
 	}
 
@@ -72,8 +72,8 @@ public class TesterConfig {
 		this.waitAfterTest = waitAfterTest;
 	}
 
-	public void setScenerioClass(String scenerioClass) {
-		this.scenerioClass = scenerioClass;
+	public void setScenarioClass(String scenarioClass) {
+		this.scenarioClass = scenarioClass;
 	}
 
 	public void setMaxFails(int maxFails) {

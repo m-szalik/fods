@@ -1,10 +1,10 @@
 package org.jsoftware.fods.impl;
 
-import java.io.Serializable;
-import java.sql.SQLException;
-
 import org.jsoftware.fods.client.ext.FodsDbState;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
+
+import java.io.Serializable;
+import java.sql.SQLException;
 
 /**
  * Single database state.

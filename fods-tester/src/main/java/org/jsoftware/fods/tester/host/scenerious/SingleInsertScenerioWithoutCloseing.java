@@ -1,10 +1,10 @@
 package org.jsoftware.fods.tester.host.scenerious;
 
+import org.jsoftware.fods.tester.host.AbstractScenerio;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
-import org.jsoftware.fods.tester.host.AbstractScenerio;
 
 public class SingleInsertScenerioWithoutCloseing extends AbstractScenerio {
 

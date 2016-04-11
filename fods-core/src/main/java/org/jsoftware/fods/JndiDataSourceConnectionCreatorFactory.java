@@ -1,19 +1,18 @@
 package org.jsoftware.fods;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
 import org.jsoftware.fods.client.ext.Displayable;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Creates {@link ConnectionCreator} that uses {@link DataSource} from jndi to acquire database {@link Connection}.

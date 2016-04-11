@@ -1,8 +1,7 @@
 package org.jsoftware.fods.tester.host;
 
-import java.sql.SQLException;
-
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 public interface TestScenerio {
 

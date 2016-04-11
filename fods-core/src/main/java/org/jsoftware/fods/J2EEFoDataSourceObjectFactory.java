@@ -79,7 +79,7 @@ public class J2EEFoDataSourceObjectFactory implements ObjectFactory {
 
 			return factory.getObjectInstance();
 		} else {
-			throw new RuntimeException(obj + " is not " + Reference.class.getName());
+			throw new IllegalStateException(obj + " is not " + Reference.class.getName());
 		}
 	}
 

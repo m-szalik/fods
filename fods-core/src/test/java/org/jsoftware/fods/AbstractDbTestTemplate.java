@@ -1,5 +1,14 @@
 package org.jsoftware.fods;
 
+import org.hsqldb.jdbc.JDBCDriver;
+import org.jsoftware.fods.client.ext.Configuration;
+import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
+import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,16 +19,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.hsqldb.jdbc.JDBCDriver;
-import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.impl.AbstractFoDataSourceFactory;
-import org.jsoftware.fods.impl.PropertiesBasedConfigurationFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 public abstract class AbstractDbTestTemplate {
 	private static final String TEST_CONFIGURATION_PROPERTIES = "testConfiguration.properties";
@@ -108,10 +107,17 @@ public abstract class AbstractDbTestTemplate {
 
 	protected String getDbnameForConnection(Connection connection) throws SQLException {
 		ResultSet rs = connection.createStatement().executeQuery("SELECT str_col FROM stable WHERE id=1");
-		rs.next();
-		String str = rs.getString(1);
-		rs.close();
-		return str;
+		try {
+			if (rs.next()) {
+				String str = rs.getString(1);
+				return str;
+			} else {
+				throw new IllegalStateException("Cannot fetch row from table `stable`");
+			}
+		} finally {
+			rs.close();
+		}
+
 	}
 
 }

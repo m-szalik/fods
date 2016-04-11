@@ -1,17 +1,15 @@
 package org.jsoftware.fods;
 
-import java.util.Properties;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import junit.framework.Assert;
-
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.log.DefaultLogger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.Properties;
 
 public class JndiDataSourceConnectionCreatorFactoryTest {
 

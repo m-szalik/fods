@@ -47,7 +47,7 @@ public abstract class AbstractRoundRobinSelector implements Selector, Manageable
 			sequenceList.addAll(configuration.getDatabaseNames());
 		}
 		if (sequenceList.isEmpty()) {
-			throw new RuntimeException("Property \"sequenceList\" is empty.");
+			throw new IllegalArgumentException("Property \"sequenceList\" is empty.");
 		}
 	}
 

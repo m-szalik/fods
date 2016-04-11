@@ -1,11 +1,10 @@
 package org.jsoftware.fods.client.ext;
 
+import javax.management.ObjectName;
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Properties;
-
-import javax.management.ObjectName;
-import javax.sql.DataSource;
 
 /**
  * Fods main configuration for single {@link DataSource}.

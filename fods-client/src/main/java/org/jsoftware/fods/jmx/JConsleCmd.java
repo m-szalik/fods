@@ -1,10 +1,5 @@
 package org.jsoftware.fods.jmx;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Date;
-
 import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
@@ -14,6 +9,10 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Date;
 
 /**
  * Simple CommandLine JConsole

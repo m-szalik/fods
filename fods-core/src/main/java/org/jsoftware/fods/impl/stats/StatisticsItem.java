@@ -1,8 +1,8 @@
 package org.jsoftware.fods.impl.stats;
 
-import java.io.Serializable;
-
 import org.jsoftware.fods.jmx.JMXStatistics;
+
+import java.io.Serializable;
 
 /**
  * FoDS statistic item.

@@ -1,14 +1,14 @@
 package org.jsoftware.fods;
 
+import org.jsoftware.fods.client.ext.ConnectionCreator;
+import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
+import org.jsoftware.fods.client.ext.Logger;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import org.jsoftware.fods.client.ext.ConnectionCreator;
-import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
-import org.jsoftware.fods.client.ext.Logger;
 
 /**
  * Creates {@link ConnectionCreator} that creates new {@link Connection} each time a {@link Connection} is required.

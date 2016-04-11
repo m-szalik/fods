@@ -1,5 +1,13 @@
 package org.jsoftware.fods.impl;
 
+import org.jsoftware.fods.client.ext.Configuration;
+import org.jsoftware.fods.client.ext.LogLevel;
+import org.jsoftware.fods.client.ext.Logger;
+import org.jsoftware.fods.client.ext.ManageableViaMXBean;
+import org.jsoftware.fods.client.ext.Selector;
+import org.jsoftware.fods.impl.utils.PropertiesUtil;
+
+import javax.management.ObjectName;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,15 +16,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
-
-import javax.management.ObjectName;
-
-import org.jsoftware.fods.client.ext.Configuration;
-import org.jsoftware.fods.client.ext.LogLevel;
-import org.jsoftware.fods.client.ext.Logger;
-import org.jsoftware.fods.client.ext.ManageableViaMXBean;
-import org.jsoftware.fods.client.ext.Selector;
-import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
 /**
  * Default implementation of {@link FoDataSourceImpl}'s {@link Configuration}.

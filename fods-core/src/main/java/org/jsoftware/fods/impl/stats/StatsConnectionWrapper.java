@@ -1,6 +1,7 @@
 package org.jsoftware.fods.impl.stats;
 
 import org.jsoftware.fods.client.ext.Logger;
+import org.jsoftware.fods.impl.NotSupportedOperationException;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,7 +16,6 @@ import java.util.concurrent.Executor;
  * @author szalik
  */
 public class StatsConnectionWrapper implements Connection {
-	private static final String NOT_SUPPORTED = "Not supported by fods.";
 	private Connection connection;
 	private StatisticsItem statItem;
 	private int logSQL;
@@ -294,7 +294,7 @@ public class StatsConnectionWrapper implements Connection {
 
     @Override
     public void setSchema(String schema) throws SQLException {
-        throw new RuntimeException(NOT_SUPPORTED);
+        throw new NotSupportedOperationException();
     }
 
     @Override
@@ -355,7 +355,7 @@ public class StatsConnectionWrapper implements Connection {
 
 
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		throw new RuntimeException(NOT_SUPPORTED);
+		throw new NotSupportedOperationException();
 	}
 
 
@@ -373,21 +373,21 @@ public class StatsConnectionWrapper implements Connection {
 				long ts1 = System.currentTimeMillis();
 				int q = 0;
 				try {
-					if (methodName.equals("executeQuery") || methodName.equals("execute")) {
+					if ("executeQuery".equals(methodName) || "execute".equals(methodName)) {
 						q = 1;
 					}
-					if (methodName.equals("executeBatch")) {
+					if ("executeBatch".equals(methodName)) {
 						q = batches;
 						sql = "[batch " + batches + "]";
 						batches = 0;
 					}
-					if (methodName.equals("addBatch")) {
+					if ("addBatch".equals(methodName)) {
 						batches++;
 					}
-					if (methodName.equals("clearBatch")) {
+					if ("clearBatch".equals(methodName)) {
 						batches = 0;
 					}
-					if (methodName.equals("getConnection")) {
+					if ("getConnection".equals(methodName)) {
 						return StatsConnectionWrapper.this;
 					}
 					return method.invoke(target, args);

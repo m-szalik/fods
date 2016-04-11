@@ -1,5 +1,6 @@
 package org.jsoftware.fods.tester.host;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +8,6 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import javax.sql.DataSource;
 
 
 public abstract class AbstractScenerio implements TestScenerio {

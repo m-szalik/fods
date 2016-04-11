@@ -1,14 +1,14 @@
 package org.jsoftware.fods;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.Displayable;
 import org.jsoftware.fods.client.ext.Logger;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Helper class for {@link DriverManager} based {@link ConnectionCreator}s.

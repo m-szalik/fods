@@ -1,18 +1,17 @@
 package org.jsoftware.fods.impl.stats;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import javax.management.InstanceNotFoundException;
-import javax.sql.DataSource;
-
 import org.jsoftware.fods.AbstractDbTestTemplate;
 import org.jsoftware.fods.impl.FoDataSourceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.management.InstanceNotFoundException;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class FoDSStatsTest extends AbstractDbTestTemplate {
 	private DataSource ds;

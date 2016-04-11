@@ -1,8 +1,7 @@
 package org.jsoftware.fods.impl;
 
-import java.util.Map;
-
 import javax.management.MXBean;
+import java.util.Map;
 
 /**
  * MXBean for {@link DefaultConfiguration}

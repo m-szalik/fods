@@ -1,12 +1,11 @@
 package org.jsoftware.fods.integration;
 
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import org.jsoftware.fods.AbstractDbTestTemplate;
 import org.junit.Assert;
 import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 public class FoDSConnectionTest extends AbstractDbTestTemplate {
 

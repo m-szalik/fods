@@ -1,11 +1,5 @@
 package org.jsoftware.fods.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import org.jsoftware.fods.DefaultSelectorFactory;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.Configuration.DatabaseConfiguration;
@@ -15,6 +9,12 @@ import org.jsoftware.fods.client.ext.LoggerFactory;
 import org.jsoftware.fods.client.ext.SelectorFactory;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 import org.jsoftware.fods.log.DefaultLoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Factory of {@link Configuration} based on {@link Properties}.

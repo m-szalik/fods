@@ -3,10 +3,16 @@ package org.jsoftware.fods;
 import org.jsoftware.fods.client.ext.ConnectionCreator;
 import org.jsoftware.fods.client.ext.ConnectionCreatorFactory;
 import org.jsoftware.fods.client.ext.Logger;
+import org.jsoftware.fods.impl.NotSupportedOperationException;
 import org.jsoftware.fods.impl.utils.PropertiesUtil;
 
 import java.sql.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 /**
@@ -684,7 +690,7 @@ class SimplePoolConnectionCreator extends AbstractDriverManagerJdbcConnectionCre
 
 
 		public <T> T unwrap(Class<T> iface) throws SQLException {
-			throw new RuntimeException("Not supported.");
+			throw new NotSupportedOperationException();
 		}
 	}
 }
