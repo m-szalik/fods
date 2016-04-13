@@ -43,7 +43,7 @@ public class SimplePoolConnectionCreatorFactory implements ConnectionCreatorFact
 			SimplePoolConnectionCreator creator = new SimplePoolConnectionCreator(dbName, logger, properties);
 			return creator;
 		} catch (Exception e) {
-			throw new RuntimeException("Can not create " + SimplePoolConnectionCreator.class.getName(), e);
+			throw new ConnectionCreationException("Can not create " + SimplePoolConnectionCreator.class.getName(), e);
 		}
 	}
 

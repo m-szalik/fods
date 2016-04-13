@@ -83,7 +83,7 @@ class FileLogEventListener implements LogEventListener {
 			try {
 				writer = new PrintWriter(file);
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new AssertionError(e);
 			}
 		}
 	}

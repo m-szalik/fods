@@ -1,5 +1,7 @@
 package org.jsoftware.fods.impl.utils;
 
+import org.jsoftware.fods.DriverIssueException;
+
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.HashSet;
@@ -56,9 +58,9 @@ public class PropertiesUtil {
 			Driver driver = (Driver) Class.forName(className).newInstance();
 			DriverManager.registerDriver(driver);
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Driver class not found for database \"" + dbName + "\", dirverClassName=" + className, e);
+			throw new DriverIssueException("Driver class not found for database \"" + dbName + "\", dirverClassName=" + className, e);
 		} catch (Exception e) {
-			throw new RuntimeException("Can not load jdbc driver for database \"" + dbName + "\", dirverClassName= " + className, e);
+			throw new DriverIssueException("Can not load jdbc driver for database \"" + dbName + "\", dirverClassName= " + className, e);
 		}
 	}
 
@@ -73,9 +75,9 @@ public class PropertiesUtil {
 				cl = (Class<T>) Class.forName(className);
 			} catch (ClassNotFoundException e) {
 				if (dbName != null) {
-					throw new RuntimeException("Class not found for database \"" + dbName + "\", className=" + className, e);
+					throw new DriverIssueException("Class not found for database \"" + dbName + "\", className=" + className, e);
 				} else {
-					throw new RuntimeException("Class not found className=" + className, e);
+					throw new DriverIssueException("Class not found className=" + className, e);
 				}
 			}
 		} else {
@@ -86,9 +88,9 @@ public class PropertiesUtil {
 			return cl.newInstance();
 		} catch (Exception e) {
 			if (dbName != null) {
-				throw new RuntimeException("Object can not be created for database \"" + dbName + "\", className=" + className, e);
+				throw new DriverIssueException("Object can not be created for database \"" + dbName + "\", className=" + className, e);
 			} else {
-				throw new RuntimeException("Object can not be created, className=" + className, e);
+				throw new DriverIssueException("Object can not be created, className=" + className, e);
 			}
 		}
 	}

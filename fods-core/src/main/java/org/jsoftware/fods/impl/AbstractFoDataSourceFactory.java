@@ -1,5 +1,6 @@
 package org.jsoftware.fods.impl;
 
+import org.jsoftware.fods.MBeanRegistrationException;
 import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.Displayable;
@@ -143,7 +144,7 @@ public abstract class AbstractFoDataSourceFactory {
 				mbs.registerMBean(bean, objectName);
 				configuration.getLogger().info("Main MXBean registered at " + objectName);
 			} catch (Exception e) {
-				throw new RuntimeException("Error registering MXBean for " + objectToCheck.getClass().getSimpleName() + " in " + configuration.getFoDSName() + " as \"" + objectName.toString(), e);
+				throw new MBeanRegistrationException("Error registering MXBean for " + objectToCheck.getClass().getSimpleName() + " in " + configuration.getFoDSName() + " as \"" + objectName.toString(), e);
 			}
 		}
 	}
@@ -162,7 +163,7 @@ public abstract class AbstractFoDataSourceFactory {
 			mbs.registerMBean(bean, objectName);
 			configuration.getLogger().info("DS MXBean registered at " + objectName);
 		} catch (Exception e) {
-			throw new RuntimeException("Error registering DS MXBean for " + dsName + " as \"" + objectName.toString(), e);
+			throw new MBeanRegistrationException("Error registering DS MXBean for " + dsName + " as \"" + objectName.toString(), e);
 		}
 	}
 

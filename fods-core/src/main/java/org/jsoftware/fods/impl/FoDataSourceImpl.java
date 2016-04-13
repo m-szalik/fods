@@ -1,5 +1,6 @@
 package org.jsoftware.fods.impl;
 
+import org.jsoftware.fods.MBeanInvocationException;
 import org.jsoftware.fods.client.FodsEventListener;
 import org.jsoftware.fods.client.ext.Configuration;
 import org.jsoftware.fods.client.ext.FodsDbStateStatus;
@@ -164,7 +165,7 @@ public final class FoDataSourceImpl implements DataSource, Closeable {
 			try {
 				dbc.getConnectionCreator().start();
 			} catch (Exception e) {
-				throw new RuntimeException("Error invoking start() of " + dbc.getConnectionCreator(), e);
+				throw new MBeanInvocationException("Error invoking start() of " + dbc.getConnectionCreator(), e);
 			}
 		}
 		active = true;

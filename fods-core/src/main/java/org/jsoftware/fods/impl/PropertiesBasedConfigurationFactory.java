@@ -40,7 +40,7 @@ public class PropertiesBasedConfigurationFactory implements ConfigurationFactory
 			if (ins == null) throw new IOException("Resource classpath::" + res + " not found.");
 			props.load(ins);
 		} catch (IOException e) {
-			throw new RuntimeException("Can not load default configuration values.", e);
+			throw new AssertionError("Can not load default configuration values.", e);
 		} finally {
 			if (ins != null) {
 				try {

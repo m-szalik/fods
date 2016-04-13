@@ -24,7 +24,7 @@ public class TesterConfig {
 			ins = getClass().getResourceAsStream(fodsConfig);
 		}
 		if (ins == null) {
-			throw new RuntimeException("Can not load FoDS config form " + fodsConfig);
+			throw new AssertionError("Can not load FoDS config form " + fodsConfig);
 		}
 		return ins;
 	}
@@ -44,7 +44,7 @@ public class TesterConfig {
 			Object obj = cl.newInstance();
 			return (TestScenerio) obj;
 		} catch (Exception e) {
-			throw new RuntimeException("Can not load scenario - " + scenarioClass, e);
+			throw new AssertionError("Can not load scenario - " + scenarioClass, e);
 		}
 	}
 
